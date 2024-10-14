@@ -1,0 +1,14 @@
+:root {
+  /* Colors */
+  --color-primary: #004445;
+  --color-secundary: #2c7873;
+  --color-background-dark:#021c1e;
+  --color-hover:#6fb98f;
+  /* Shadows */
+  --shadow-sm: 0px 0px 8px rgba(69, 69, 69, 0.3);
+  --shadow-md: 0px 0px 12px rgba(69, 69, 69, 0.5);
+
+  /* Borders */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+}
