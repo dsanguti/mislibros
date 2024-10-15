@@ -3,12 +3,12 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  margin-top: 10px;
-  height: 100px;
+  margin-top: 5px;
+  height: 85px;
 }
 
 .tittle {
-  color: white;
+  color: var(--color-secundary);
   font-family: "Qwitcher Grypen", cursive;
   font-size: 5em;
   font-weight: 700;
@@ -17,7 +17,7 @@
 }
 
 .subtittle{
-  color:white;
+  color: var(--color-secundary);
   font-family: "Caveat", cursive;
   font-optical-sizing: auto;
   font-weight: 700;
