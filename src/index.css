@@ -2,7 +2,12 @@
 @import "./assets/css/reset.css";
 @import "./assets/css/themes.css";
 
-
-body{
-background-color: var(--color-background-light);
+body {
+  background-color: var(--color-background-light);
 }
+
+nav a {
+  text-decoration: none;
+}
+
+

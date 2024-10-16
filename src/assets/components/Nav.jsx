@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom"; // Importa NavLink desde react-router-dom
+import { NavLink} from "react-router-dom"; // Asegúrate de importar useMatch
 import style from "../css/Nav.module.css";
 import Ham from "./Ham";
 
@@ -7,7 +7,6 @@ const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
-    console.log("Menu toggled");
     setIsOpen(!isOpen);
   };
 
@@ -24,46 +23,59 @@ const Nav = () => {
     };
   }, []);
 
-  return (
-    <>
-      <Ham isOpen={isOpen} toggleMenu={toggleMenu} />
+  
 
-      <nav className={style.navbar}>
-        <ul className={`${style.ul} ${isOpen ? style.open : ""}`}>
-          <li>
-            <NavLink
-              to="/"
-              onClick={() => {
-                toggleMenu();
-                console.log("Navigating to Home");
-              }}
-            >
-              Inicio
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/sagas" onClick={toggleMenu}>
-              Sagas
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/generos" onClick={toggleMenu}>
-              Géneros
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/starwars" onClick={toggleMenu}>
-              StarWars
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/comics" onClick={toggleMenu}>
-              Comics
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-    </>
+  return (
+    <nav className={style.navbar}>
+      <Ham isOpen={isOpen} toggleMenu={toggleMenu} />
+      <ul className={`${style.ul} ${isOpen ? style.open : ""}`}>
+        <li>
+          <NavLink
+            to="/"
+            onClick={toggleMenu}
+            className={({ isActive }) => (isActive ? style.isActive : "")}
+          >
+            Inicio
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/sagas"
+            onClick={toggleMenu}
+            className={({ isActive }) => (isActive ? style.isActive : "")}
+          >
+            Sagas
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/generos"
+            onClick={toggleMenu}
+            className={({ isActive }) => (isActive ? style.isActive : "")}
+          >
+            Géneros
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/starwars"
+            onClick={toggleMenu}
+            className={({ isActive }) => (isActive ? style.isActive : "")}
+          >
+            StarWars
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/comics"
+            onClick={toggleMenu}
+            className={({ isActive }) => (isActive ? style.isActive : "")}
+          >
+            Comics
+          </NavLink>
+        </li>
+      </ul>
+    </nav>
   );
 };
 

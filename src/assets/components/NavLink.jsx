@@ -5,7 +5,7 @@ export const NavLink = ({ to, children, ...props }) => {
     <NavLinkReactRouter
       {...props}
       className={({ isActive }) => {
-        return isActive ? "is-active" : undefined;
+        return isActive ? "isActive" : undefined;
       }}
       to={to}
     >
@@ -13,5 +13,3 @@ export const NavLink = ({ to, children, ...props }) => {
     </NavLinkReactRouter>
   );
 };
-
-

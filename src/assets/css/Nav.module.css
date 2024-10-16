@@ -1,11 +1,24 @@
 /* Estilos generales */
+* {
+  box-sizing: border-box; /* Asegura que el padding y el border se incluyan en el tamaño total */
+}
+
+nav a {
+  text-decoration: none;
+  color: inherit; /* Mantiene el color del texto igual que el del li */
+  background-color: transparent; /* Asegúrate de que el fondo sea transparente */
+  display: block; /* Asegura que el <a> ocupe todo el espacio del <li> */
+  width: 100%; /* Ocupa el 100% del ancho del <li> */
+  height: 100%; /* Ocupa el 100% del alto del <li> */
+}
+
 .navbar {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  
   background-color: var(--color-primary);
   height: 50px;
+  box-shadow: var(--shadow-md);
 }
 
 .ul {
@@ -14,28 +27,39 @@
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
 .ul li {
-  margin-right: 2rem;
-  height: 100%;
+  height: 100%; /* Asegura que el li ocupe el 100% de la altura de la navbar */
   display: flex;
   align-items: center;
+  
 }
+
 .ul li a {
-  color: white;
+  color: white; /* Color del texto del enlace */
   text-decoration: none;
   font-size: 1rem;
-  padding: 10px 15px;
-  transition: background-color 0.3 ease;
+  padding: 15px 30px; /* Espaciado interno del <a> */
   display: flex;
   align-items: center; /* Centra el contenido del enlace verticalmente */
   height: 100%; /* Hace que el enlace también ocupe el 100% de la altura del li */
 }
 
 .ul li:hover {
-  background-color: var(--color-secundary);
+  background-color: var(
+    --color-secundary
+  ); /* Color de fondo al hacer hover sobre el li */
+}
+
+.isActive {
+  font-weight: bold; /* Mantiene el texto en negrita */
+  background-color: var(
+    --color-secundary
+  ); 
+  pointer-events: none;/* Color de fondo deseado para el li activo */
 }
 
 /* Estilo para el ícono de menú hamburguesa */
@@ -69,36 +93,61 @@
 .hamburger.active span:nth-child(3) {
   transform: translateY(-9px) rotate(-45deg); /* Línea inferior */
 }
+
 /* Media query para dispositivos móviles */
 @media (max-width: 768px) {
   .ul {
-    display: none; /* Ocultar el menú en móvil */
+    display: flex; /* Mostrar el menú en móvil */
     flex-direction: column;
+    justify-content: flex-start;
     position: absolute;
-    top: 60px;
-    right: 0;
+    top: 167px; /* Ajusta según sea necesario */
+    left: 0; /* Asegura que el menú esté alineado al borde izquierdo */
     width: 100%;
-    background-color: #021c1e;
+    height: calc(100vh - 167px);
+    background-color: var(--color-background-dark-transparente);
     z-index: 10;
     padding: 0;
+    margin: 0; /* Elimina cualquier margen adicional en el contenedor */
+    transform: translateX(-100%);
+    transition: transform 0.7s ease;
   }
 
   /* Mostrar el menú cuando esté abierto */
   .ul.open {
+    transform: translateX(0);
+  }
+
+  .ul li {
     display: flex;
-  }
-
-  ul li {
-    margin: 0;
-    padding: 1rem;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--color-primary);
+    margin: 0; /* Asegúrate de que no haya margen */
+    z-index: 15;
     text-align: center;
-    width: 100%;
+    width: 75%; /* Ajusta el ancho según sea necesario */
+    height: 30%;
+    margin-left: 0;
+    margin-right: auto;
+    flex:1;
+  }
+  /* Asegúrate de que el a ocupe todo el espacio */
+  .ul li a {
+    color: white; /* Color del texto del enlace */
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 10px 0; /* Ajusta el espaciado según sea necesario */
+    display: flex; /* Para que se aplique flex y centrar el contenido */
+    align-items: center; /* Centra el contenido del enlace verticalmente */
+    justify-content: center; /* Centra el contenido del enlace horizontalmente */
+    width: 100%; /* Asegúrate de que el a ocupe el 100% del ancho del li */
+    height: 100%; /* Asegúrate de que el a ocupe el 100% del alto del li */
   }
 
-  /* Mostrar el ícono de menú hamburguesa en móviles */
   .hamburger {
     display: flex;
-    margin-left: 33px;
+    margin-right: 15px;
     margin-top: 5px;
   }
 }

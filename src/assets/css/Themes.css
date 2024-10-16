@@ -1,13 +1,15 @@
 :root {
   /* Colors */
-  --color-primary: #004445;
+  --color-primary: rgb(0,68,69);
+  --color-primary-transparente:rgb(0,68,69,0.85);
   --color-secundary: #2c7873;
-  --color-background-dark:#021c1e;
+  --color-background-dark:rgb(2,28,30);
+  --color-background-dark-transparente: rgb(2,28,30,0.85);
   --color-background-light:rgb(234, 226, 226);
   --color-hover:#6fb98f;
   /* Shadows */
   --shadow-sm: 0px 0px 8px rgba(69, 69, 69, 0.3);
-  --shadow-md: 0px 0px 12px rgba(69, 69, 69, 0.5);
+  --shadow-md: 0px 0px 16px rgba(69, 69, 69, 0.5);
 
   /* Borders */
   --radius-sm: 0.5rem;
