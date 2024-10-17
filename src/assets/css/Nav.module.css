@@ -35,7 +35,6 @@ nav a {
   height: 100%; /* Asegura que el li ocupe el 100% de la altura de la navbar */
   display: flex;
   align-items: center;
-  
 }
 
 .ul li a {
@@ -56,10 +55,10 @@ nav a {
 
 .isActive {
   font-weight: bold; /* Mantiene el texto en negrita */
-  background-color: var(
-    --color-secundary
-  ); 
-  pointer-events: none;/* Color de fondo deseado para el li activo */
+  background-color: var(--color-secundary);
+  border-left: 1px solid white;
+  border-right: 1px solid white;
+  pointer-events: none; /* Color de fondo deseado para el li activo */
 }
 
 /* Estilo para el ícono de menú hamburguesa */
@@ -128,10 +127,22 @@ nav a {
     text-align: center;
     width: 75%; /* Ajusta el ancho según sea necesario */
     height: 30%;
+    border-bottom: 1px solid white;
     margin-left: 0;
     margin-right: auto;
-    flex:1;
+    flex: 1;
   }
+
+  /* Aplica el borde izquierdo solo al hacer hover, excepto en elementos activos */
+  .ul li:hover:not(.isActive) {
+    border-left: 4px solid white;
+  }
+  /* Elimina el efecto hover en el borde izquierdo del elemento activo */
+  .ul li.isActive:hover {
+    border-left: 4px solid white !important;
+  }
+.isActive{
+border: 1px solid white;}
   /* Asegúrate de que el a ocupe todo el espacio */
   .ul li a {
     color: white; /* Color del texto del enlace */
