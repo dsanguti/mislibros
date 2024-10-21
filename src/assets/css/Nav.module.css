@@ -32,9 +32,13 @@ nav a {
 }
 
 .ul li {
-  height: 100%; /* Asegura que el li ocupe el 100% de la altura de la navbar */
   display: flex;
   align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: auto; /* Ocupa todo el ancho del li */
+  padding: 0;
+  margin: 0;
 }
 
 .ul li a {
@@ -59,6 +63,98 @@ nav a {
   border-left: 1px solid white;
   border-right: 1px solid white;
   pointer-events: none; /* Color de fondo deseado para el li activo */
+}
+
+/*Estilo para el icono Usuario*/
+
+.containeruser {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  position: relative;
+}
+.user {
+  color: white;
+  display: block;
+  width: 1.8rem;
+  height: 1.8rem;
+  cursor: pointer;
+}
+
+.ul li:hover {
+  background-color: var(--color-secundary); /* Color de fondo al hacer hover */
+}
+
+.ul li:hover .user {
+  background-color: var(--color-secundary); /* Fondo del ícono de usuario */
+}
+
+/*Submenu de usuario*/
+
+/* Submenú oculto por defecto */
+.submenuUser {
+  display: none; /* Oculta el submenú */
+  position: absolute;
+  top: 166px; /* Posiciona el submenú justo debajo del ícono */
+  right: 0;
+  background-color: var(--color-secundary); /* Fondo del submenú */
+  border-radius: 4px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 500;
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  height: 35px;
+  width: 90px; /* Ajusta el ancho del submenú */
+}
+/* Muestra el submenú cuando haces hover sobre el contenedor del usuario */
+.userMenu:hover .submenuUser {
+  display: block;
+}
+
+/* Estilo para los elementos del submenú */
+.submenuUser li {
+  margin: 0;
+
+  cursor: pointer;
+}
+/* Estilo para los elementos del submenú */
+.submenu li {
+  margin: 0;
+  padding: 10px;
+}
+
+.containerSalir {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  width: 100%;
+}
+
+.submenuUser li h4 {
+  margin: 0;
+  padding: 0;
+  font-size: 1rem;
+  color: white;
+  text-align: center;
+  width: 100%;
+}
+
+/*Estilo para icono Logout*/
+
+.logout {
+  color: white;
+  display: block;
+  width: 1.8rem;
+  height: 1.8rem;
+  cursor: pointer;
+}
+/* Cambia el color del h4 y del ícono al hacer hover en containerSalir */
+.containerSalir:hover h4,
+.containerSalir:hover .logout {
+  color: var(--color-logout); /* Cambia el color del texto y del ícono a rojo */
 }
 
 /* Estilo para el ícono de menú hamburguesa */
@@ -141,8 +237,9 @@ nav a {
   .ul li.isActive:hover {
     border-left: 4px solid white !important;
   }
-.isActive{
-border: 1px solid white;}
+  .isActive {
+    border: 1px solid white;
+  }
   /* Asegúrate de que el a ocupe todo el espacio */
   .ul li a {
     color: white; /* Color del texto del enlace */

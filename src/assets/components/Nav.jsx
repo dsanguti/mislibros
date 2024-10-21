@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom"; 
+import { NavLink } from "react-router-dom";
+import Ham from "../components/icons/Ham";
 import style from "../css/Nav.module.css";
-import Ham from "./Ham";
 import { useAuth } from "./autenticacion/UseAuth"; // Importa el hook de autenticación
+import User from "./icons/User";
+import Logout from "./icons/Logout";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,11 +81,20 @@ const Nav = () => {
             Comics
           </NavLink>
         </li>
-        {/* Opción de cerrar sesión */}
-        <li>
-          <button onClick={handleLogout} className={style.logoutButton}>
-            Salir
-          </button>
+        <li className={style.userMenu}>
+          <div className={style.containeruser}>
+            <User className={style.user} />
+          </div>
+          {/* Submenú desplegable */}
+          <ul className={style.submenuUser}>
+            <li>
+              <div onClick={handleLogout} className={style.containerSalir}>
+                  {/* Opción de cerrar sesión */}
+                <Logout className={style.logout}/>
+                <h4>Salir</h4>
+              </div>
+            </li>
+          </ul>
         </li>
       </ul>
     </nav>
@@ -91,4 +102,3 @@ const Nav = () => {
 };
 
 export default Nav;
-

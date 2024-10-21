@@ -1,5 +1,5 @@
 
-import style from "../css/Nav.module.css";
+import style from "../../css/Nav.module.css";
 
 const Ham = ({ isOpen, toggleMenu }) => {
   return (
