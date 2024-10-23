@@ -108,21 +108,27 @@ nav a {
   height: 35px;
   width: 90px; /* Ajusta el ancho del submenú */
 }
+
+/* Submenu visible en móvil al hacer clic */
+.submenuUser.open {
+  display: block;
+}
+
 /* Muestra el submenú cuando haces hover sobre el contenedor del usuario */
 .userMenu:hover .submenuUser {
-  display: block;
+  display: flex;
 }
 
 /* Estilo para los elementos del submenú */
 .submenuUser li {
   margin: 0;
-
+  border: none;
   cursor: pointer;
 }
 /* Estilo para los elementos del submenú */
 .submenu li {
   margin: 0;
-  padding: 10px;
+  padding: 0;
 }
 
 .containerSalir {
@@ -131,10 +137,10 @@ nav a {
   align-items: center;
   margin: 0;
   width: 100%;
+  border: none;
 }
 
 .submenuUser li h4 {
-  margin: 0;
   padding: 0;
   font-size: 1rem;
   color: white;
@@ -147,14 +153,21 @@ nav a {
 .logout {
   color: white;
   display: block;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 1.7rem;
+  height: 1.7rem;
   cursor: pointer;
+  transition: transform 0.4s ease, color 0.4 ease;
 }
 /* Cambia el color del h4 y del ícono al hacer hover en containerSalir */
 .containerSalir:hover h4,
 .containerSalir:hover .logout {
-  color: var(--color-logout); /* Cambia el color del texto y del ícono a rojo */
+  color: var(
+    --color-logout
+  ); /* Cambia el color del texto y del ícono a amarillo */
+}
+/* Aumenta ligeramente el tamaño del icono logout al hacer hover*/
+.containerSalir:hover .logout {
+  transform: scale(1.1);
 }
 
 /* Estilo para el ícono de menú hamburguesa */
@@ -197,7 +210,7 @@ nav a {
     justify-content: flex-start;
     position: absolute;
     top: 167px; /* Ajusta según sea necesario */
-    left: 0; /* Asegura que el menú esté alineado al borde izquierdo */
+    left: 0; /* Alinea el menú al borde izquierdo */
     width: 100%;
     height: calc(100vh - 167px);
     background-color: var(--color-background-dark-transparente);
@@ -218,12 +231,12 @@ nav a {
     justify-content: center;
     align-items: center;
     background-color: var(--color-primary);
-    margin: 0; /* Asegúrate de que no haya margen */
+    margin: 0;
     z-index: 15;
     text-align: center;
-    width: 75%; /* Ajusta el ancho según sea necesario */
+    width: 75%;
     height: 30%;
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid white; /* Borde inferior para los otros elementos */
     margin-left: 0;
     margin-right: auto;
     flex: 1;
@@ -233,29 +246,103 @@ nav a {
   .ul li:hover:not(.isActive) {
     border-left: 4px solid white;
   }
+
   /* Elimina el efecto hover en el borde izquierdo del elemento activo */
   .ul li.isActive:hover {
     border-left: 4px solid white !important;
   }
+
   .isActive {
     border: 1px solid white;
   }
+
   /* Asegúrate de que el a ocupe todo el espacio */
   .ul li a {
-    color: white; /* Color del texto del enlace */
+    color: white;
     text-decoration: none;
     font-size: 1rem;
-    padding: 10px 0; /* Ajusta el espaciado según sea necesario */
-    display: flex; /* Para que se aplique flex y centrar el contenido */
-    align-items: center; /* Centra el contenido del enlace verticalmente */
-    justify-content: center; /* Centra el contenido del enlace horizontalmente */
-    width: 100%; /* Asegúrate de que el a ocupe el 100% del ancho del li */
-    height: 100%; /* Asegúrate de que el a ocupe el 100% del alto del li */
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
   }
 
   .hamburger {
     display: flex;
     margin-right: 15px;
     margin-top: 5px;
+  }
+
+  /* Estilos del submenu User en vista móvil */
+  .submenuUser {
+    visibility: hidden; /* Oculto por defecto */
+    position: absolute;
+    top: 0;
+    right: -92px;
+    background-color: var(--color-secundary);
+    border-radius: 4px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 500;
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    height: 100%;
+    width: 90px;
+    opacity: 0;
+    transition: opacity 0.6s ease, visibility 0s 0.6s; /* Transición suave para el submenú */
+  }
+.userMenu:hover .submenuUser{
+visibility: visible;
+opacity: 1;
+transition: opacity 0.6s ease;
+}
+
+.submenuUser:not(:hover){
+  transition: opacity 0.6s ease, visibility 0s 0.6s; /* La visibilidad cambia tras la transición */
+  opacity: 0;
+  visibility: hidden;}
+  /* Eliminar bordes o efecto hover no deseados en submenuUser */
+  .submenuUser:hover,
+  .submenuUser li:hover {
+    border: none !important;
+    outline: none !important;
+  }
+
+  /* Asegurarse de que no haya un borde inferior en li del submenuUser */
+  .submenuUser li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: var(--color-secundary);
+    margin: 0; /* Asegura que no haya margen que afecte el espaciado */
+    padding: 0; /* Ajusta el padding para el espaciado interno */
+    border-bottom: none !important; /* Asegura que no haya borde inferior */
+  }
+
+  .containerSalir {
+    background-color: var(--color-secundary);
+    padding: 0 5px;
+  }
+
+  /* Estilo para el icono logout */
+  .logout {
+    display: none;
+  }
+
+  /* Mostrar el submenuUser en hover */
+  .userMenu:hover .submenuUser {
+    opacity: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Asegúrate de que el ícono de usuario no se superponga */
+  .userMenu {
+    position: relative;
   }
 }
