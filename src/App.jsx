@@ -10,11 +10,11 @@ import Tittle from "./assets/components/Tittle";
 import Login from "./assets/components/autenticacion/Login.jsx"; // Asegúrate de que esta ruta sea correcta
 import { useAuth } from "./assets/components/autenticacion/UseAuth.jsx"; // Importa el hook de autenticación
 
-const Home = lazy(() => import("./assets/components/Home.jsx"));
-const Comics = lazy(() => import("./assets/components/Comics.jsx"));
-const Generos = lazy(() => import("./assets/components/Generos.jsx"));
-const Sagas = lazy(() => import("./assets/components/Sagas.jsx"));
-const Starwars = lazy(() => import("./assets/components/Starwars.jsx"));
+const Home = lazy(() => import("./assets/components/secciones/home/Home.jsx"));
+const Comics = lazy(() => import("./assets/components/secciones/comics/Comics.jsx"));
+const Generos = lazy(() => import("./assets/components/secciones/generos/Generos.jsx"));
+const Sagas = lazy(() => import("./assets/components/secciones/sagas/Sagas.jsx"));
+const Starwars = lazy(() => import("./assets/components/secciones/starwars/Starwars.jsx"));
 
 function App() {
   const { isAuthenticated, loading } = useAuth(); // Usa el hook de autenticación
