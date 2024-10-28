@@ -7,6 +7,23 @@
   height: 85px;
 }
 
+.containertittle{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Estilo del logo */
+
+.logo {
+
+  width: 4.5rem;
+  margin-top: 12px;
+  margin-right: 7px;
+  filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.3));
+  
+}
+
 .tittle {
   color: var(--color-secundary);
   font-family: "Qwitcher Grypen", cursive;
@@ -14,9 +31,10 @@
   font-weight: 700;
   font-style: normal;
   margin: 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.subtittle{
+.subtittle {
   color: var(--color-secundary);
   font-family: "Caveat", cursive;
   font-optical-sizing: auto;
@@ -24,4 +42,6 @@
   font-size: 1.3rem;
   font-style: normal;
   margin: -10px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+  
 }

@@ -42,7 +42,7 @@ const Nav = () => {
             onClick={toggleMenu}
             className={({ isActive }) => (isActive ? style.isActive : "")}
           >
-            Inicio
+           Inicio
           </NavLink>
         </li>
         <li>

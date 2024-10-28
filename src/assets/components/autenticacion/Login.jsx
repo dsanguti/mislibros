@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "../../css/Login.module.css"; // Importa el CSS módulo
 import { useAuth } from "../autenticacion/UseAuth"; // Asegúrate de que la ruta sea correcta
 
+
 const Login = () => {
   const { login } = useAuth(); // Usar el hook de autenticación
   const [username, setUsername] = useState("");
@@ -47,7 +48,7 @@ const Login = () => {
 
   return (
     <div className={styles.container}>
-      <h1>Iniciar Sesión</h1>
+      <img src="../../../../public/logoApp.png" alt="logo app"  className={styles.logo}/>
       <form onSubmit={handleSubmit} className={styles.form}>
         <input
           type="text"

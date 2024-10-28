@@ -1,15 +1,35 @@
 /* Login.module.css */
 .container {
+  display: flex;
+  flex-direction: column;
   max-width: 400px;
+  height: 240px;
   margin: auto;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   background-color: #f9f9f9;
+  position: relative;
+  filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.3));
+}
+
+.logo {
+  position: absolute; /* Posiciona el logo absolutamente */
+  top: -30px; /* Ajusta el logo para que sobresalga en el borde superior */
+  left: 50%; /* Coloca el logo al centro horizontal */
+  transform: translateX(-50%); /* Centra el logo horizontalmente */
+  width: 70px; /* Ajusta el tamaño según sea necesario */
+  height: auto;
+  padding: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Añadir sombra */
+  background-color: white; /* Fondo blanco para contraste */
+  border-radius: 50%; /* Forma circular */
+  filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.3));
 }
 
 .form {
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
 }
@@ -33,7 +53,7 @@
 }
 
 .button:hover {
-  background-color: #2C7873; /* Cambiar el color al pasar el ratón */
+  background-color: #2c7873; /* Cambiar el color al pasar el ratón */
 }
 
 .error {

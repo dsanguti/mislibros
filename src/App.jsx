@@ -27,7 +27,8 @@ function App() {
   return (
     <>
       <div className="container-app">
-        <Tittle> Mis Libros</Tittle>
+       {/* Renderiza el título solo si está autenticado */}
+       {isAuthenticated && <Tittle>Mis Libros</Tittle>}
 
         <div className="container-nav">
           {isAuthenticated && <Nav />}{" "}
