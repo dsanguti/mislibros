@@ -6,7 +6,7 @@ const Tittle = ({ children }) => {
   return (
     <div className={style.container}>
       <div className={style.containertittle}>
-        <img className={style.logo} src="../../../public/logoApp.png" alt="logo de App" />
+        <img className={style.logo} src="../../../public/logoAppColor.png" alt="logo de App" />
         <h1 className={style.tittle}>{children}</h1>
       </div>
       <h3 className={style.subtittle}> Tu biblioteca siempre a mano</h3>
