@@ -43,7 +43,7 @@ const Login = () => {
 
         setTimeout(() => {
           login(data.token || "token-placeholder"); // Hacer login después de mostrar CargaApp
-        }, 1950); // Tiempo que CargaApp estará visible
+        }, 970); // Tiempo que CargaApp estará visible
       } else {
         console.error("Error: Credenciales incorrectas.");
         setError("Credenciales incorrectas. Inténtalo de nuevo.");
