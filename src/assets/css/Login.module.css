@@ -2,8 +2,9 @@
 .container {
   display: flex;
   flex-direction: column;
-  max-width: 400px;
+  width: 400px;
   height: 240px;
+  transition: height 0.3s ease; /*  se agrega transición para el cambio de altura cuando salga el error*/
   margin: auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -14,12 +15,15 @@
   filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.3));
 }
 
+.container.error {
+height: 280px;}
+
 .logo {
   position: absolute; /* Posiciona el logo absolutamente */
-  top: -30px; /* Ajusta el logo para que sobresalga en el borde superior */
+  top: -52px; /* Ajusta el logo para que sobresalga en el borde superior */
   left: 50%; /* Coloca el logo al centro horizontal */
   transform: translateX(-50%); /* Centra el logo horizontalmente */
-  width: 70px; /* Ajusta el tamaño según sea necesario */
+  width: 95px; /* Ajusta el tamaño según sea necesario */
   height: auto;
   padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Añadir sombra */
@@ -60,4 +64,28 @@
   color: red;
   font-size: 14px;
   margin-top: 10px;
+  opacity: 0;
+  transition: opacity 2s ease; /* transición para que aparezca*/
+}
+
+.show{
+opacity: 1;}
+
+.spinnerContainer {
+  position: absolute; /* O fija según tus necesidades */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0; /* Ocupa toda el área del contenedor */
+  display: flex; /* Centrar el spinner */
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente, opcional */
+}
+.hidden{
+display: none !important;}
+
+@media (max-width: 768px) {
+ .container{
+width: 300px;}
 }

@@ -10,7 +10,7 @@ const Tittle = ({ children }) => {
         <div className={style.containertittle}>
           <img
             className={style.logo}
-            src="../../../public/logoAppColor.png"
+            src="/logoAppColor.png"
             alt="logo de App"
           />
           <h1 className={style.tittle}>{children}</h1>
