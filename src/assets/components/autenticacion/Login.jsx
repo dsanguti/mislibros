@@ -64,7 +64,7 @@ const Login = () => {
         style={{
           height: containerHeight,
           opacity: isVisible ? 1 : 0, // Transición de opacidad
-          transition: "opacity 0.3s ease", // Duración de la transición
+          transition: "height 0.3s ease, opacity 0.3s ease", // Duración de la transición de altura y opacidad
         }}
       >
         <img src="/logoAppColor.png" alt="logo app" className={styles.logo} />
