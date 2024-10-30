@@ -14,7 +14,6 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Activar el estado de carga
     setError("");
 
     try {
@@ -37,63 +36,63 @@ const Login = () => {
         console.log("Autenticación exitosa, usuario:", data);
         setError("");
         setContainerHeight("240px");
-        setIsVisible(false); // Ocultar el contenedor al autenticar
-        setTimeout(() => {
-          login(data.token || "token-placeholder");
 
-          setLoading(false); // Desactivar el estado de carga después de redirigir
-        }, 2330);
+        // Mostrar CargaApp y ocultar el formulario
+        setLoading(true); // Activar el estado de carga
+        setIsVisible(false); // Ocultar el contenedor
+
+        setTimeout(() => {
+          login(data.token || "token-placeholder"); // Hacer login después de mostrar CargaApp
+        }, 1950); // Tiempo que CargaApp estará visible
       } else {
         console.error("Error: Credenciales incorrectas.");
         setError("Credenciales incorrectas. Inténtalo de nuevo.");
         setContainerHeight("280px");
-        setLoading(false);
       }
     } catch (error) {
       setError("Error en la autenticación. Inténtalo de nuevo más tarde.");
       console.error("Error en el login:", error);
       setContainerHeight("280px");
-      setLoading(false);
     }
   };
-
- 
 
   return (
     <div>
       {loading && <CargaApp />}
-      {isVisible && ( // Solo renderizar el contenedor si es visible
-        <div
-          className={`${styles.container} ${!isVisible ? styles.hidden : ""}`}
-          style={{ height: containerHeight }}
-        >
-          <img src="/logoAppColor.png" alt="logo app" className={styles.logo} />
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <input
-              type="text"
-              placeholder="Usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className={styles.input}
-            />
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className={styles.input}
-            />
-            {error && (
-              <p className={`${styles.error} ${styles.show}`}>{error}</p>
-            )}
-            <button type="submit" className={styles.button}>
-              Iniciar Sesión
-            </button>
-          </form>
-        </div>
-      )}
+      <div
+        className={`${styles.container} ${!isVisible ? styles.hidden : ""}`}
+        style={{
+          height: containerHeight,
+          opacity: isVisible ? 1 : 0, // Transición de opacidad
+          transition: "opacity 0.3s ease", // Duración de la transición
+        }}
+      >
+        <img src="/logoAppColor.png" alt="logo app" className={styles.logo} />
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <input
+            type="text"
+            placeholder="Usuario"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            className={styles.input}
+          />
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className={styles.input}
+          />
+          {error && (
+            <p className={`${styles.error} ${styles.show}`}>{error}</p>
+          )}
+          <button type="submit" className={styles.button}>
+            Iniciar Sesión
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
