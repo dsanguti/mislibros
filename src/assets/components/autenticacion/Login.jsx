@@ -57,43 +57,51 @@ const Login = () => {
   };
 
   return (
-    <div>
-      {loading && <CargaApp />}
-      <div
-        className={`${styles.container} ${!isVisible ? styles.hidden : ""}`}
-        style={{
-          height: containerHeight,
-          opacity: isVisible ? 1 : 0, // Transición de opacidad
-          transition: "height 0.3s ease, opacity 0.3s ease", // Duración de la transición de altura y opacidad
-        }}
-      >
-        <img src="/logoAppColor.png" alt="logo app" className={styles.logo} />
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <input
-            type="text"
-            placeholder="Usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            className={styles.input}
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className={styles.input}
-          />
-          {error && (
-            <p className={`${styles.error} ${styles.show}`}>{error}</p>
-          )}
-          <button type="submit" className={styles.button}>
-            Iniciar Sesión
-          </button>
-        </form>
+    <>
+      <div className={styles.containerLogin}>
+        <div>
+          {loading && <CargaApp />}
+          <div
+            className={`${styles.container} ${!isVisible ? styles.hidden : ""}`}
+            style={{
+              height: containerHeight,
+              opacity: isVisible ? 1 : 0, // Transición de opacidad
+              transition: "height 0.3s ease, opacity 0.3s ease", // Duración de la transición de altura y opacidad
+            }}
+          >
+            <img
+              src="/logoAppColor.png"
+              alt="logo app"
+              className={styles.logo}
+            />
+            <form onSubmit={handleSubmit} className={styles.form}>
+              <input
+                type="text"
+                placeholder="Usuario"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className={styles.input}
+              />
+              <input
+                type="password"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className={styles.input}
+              />
+              {error && (
+                <p className={`${styles.error} ${styles.show}`}>{error}</p>
+              )}
+              <button type="submit" className={styles.button}>
+                Iniciar Sesión
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

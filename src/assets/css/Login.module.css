@@ -1,4 +1,13 @@
 /* Login.module.css */
+
+.containerLogin{
+  display: flex;
+  width: 100vw;
+  align-items: start;
+  justify-content: center;
+  padding-top: 30px;
+}
+
 .container {
   display: flex;
   flex-direction: column;

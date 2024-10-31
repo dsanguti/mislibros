@@ -1,0 +1,22 @@
+.container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.carrusel{
+  display: flex;
+  gap: 10px;
+  transition: transform 0.5s ease;
+}
+
+.libroItem {
+  width: 150px;
+  text-align: center;
+}
+
+.libroItem img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}

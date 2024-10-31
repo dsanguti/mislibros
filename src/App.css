@@ -1,7 +1,15 @@
+html, body{
+margin: 0;
+padding: 0;
+overflow-x: hidden;
+}
+
 .container-app {
   display: flex;
   align-items: center;
   flex-direction: column;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 .container-nav {
   margin-top: 25px;
@@ -11,8 +19,11 @@
   z-index: 1000;
 }
 .container-contenido {
-  margin-top: 45px;
+  margin-top: 10px;
   color: var(--color-secundary);
+  width: 100vw;
+  height: 100vh;display: flex;
+  flex: 1;
 }
 .logoApp{
 height: 15rem;
