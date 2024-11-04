@@ -1,22 +1,34 @@
 .container {
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
+  margin-top: 30px;
 }
 
-.carrusel{
+.carrusel {
   display: flex;
   gap: 10px;
+  padding: 30px;
   transition: transform 0.5s ease;
 }
 
-.libroItem {
-  width: 150px;
-  text-align: center;
+.carrusel img {
+  width: 230px;
+  height: 300px; /* Ajusta la altura según el ratio que prefieras */
+  object-fit: cover; /* Asegura que las imágenes se recorten y mantengan el ratio */
+  border-radius: 7px;
+  box-shadow: var(--shadow-carrusel-img);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el tamaño y sombra */
 }
 
-.libroItem img {
-  width: 100%;
-  height: auto;
-  border-radius: 5px;
+.carrusel img:hover {
+  transform: scale(1.1); /* Aumenta el tamaño de la imagen al 110% */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Aumenta la sombra al hacer hover */
+  cursor: pointer;
+}
+
+.sagaItem {
+  width: 250px;
+  text-align: center;
 }

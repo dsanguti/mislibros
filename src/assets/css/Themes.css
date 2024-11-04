@@ -12,6 +12,7 @@
   /* Shadows */
   --shadow-sm: 0px 0px 8px rgba(69, 69, 69, 0.3);
   --shadow-md: 0px 0px 16px rgba(69, 69, 69, 0.5);
+ --shadow-carrusel-img: 10px 10px 31px -10px rgba(0,0,0,0.75);
 
   /* Borders */
   --radius-sm: 0.5rem;
