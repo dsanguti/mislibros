@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "../../css/Login.module.css"; // Importa el CSS módulo
 import { useAuth } from "../autenticacion/UseAuth";
 import CargaApp from "../CargaApp";
+import { NavLink } from "react-router-dom";
 
 const Login = () => {
   const { login } = useAuth(); // Usar el hook de autenticación
@@ -15,7 +16,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     try {
       console.log("Enviando datos de login:", { user: username, password });
       const response = await fetch(
@@ -26,23 +27,30 @@ const Login = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ user: username, password }),
+          credentials: "include", // Esto es necesario para que las cookies se envíen
         }
       );
-
+  
+      // Asegúrate de que la respuesta sea OK
+      if (!response.ok) {
+        throw new Error(`Error en la respuesta: ${response.status}`);
+      }
+  
       const data = await response.json();
       console.log("Datos recibidos del backend:", data);
-
+  
       if (data.status === "success") {
         console.log("Autenticación exitosa, usuario:", data);
         setError("");
         setContainerHeight("240px");
-
+  
         // Mostrar CargaApp y ocultar el formulario
         setLoading(true); // Activar el estado de carga
         setIsVisible(false); // Ocultar el contenedor
-
+  
         setTimeout(() => {
-          login(data.token || "token-placeholder"); // Hacer login después de mostrar CargaApp
+          login(data.token || "token-placeholder");
+          <NavLink to="/" /> // Hacer login después de mostrar CargaApp
         }, 970); // Tiempo que CargaApp estará visible
       } else {
         console.error("Error: Credenciales incorrectas.");

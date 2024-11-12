@@ -38,6 +38,10 @@ const Carrusel = ({ sagas }) => {
     };
   }, []);
 
+  if (!Array.isArray(sagas)) {
+    return <p>Error: los datos de sagas no son válidos</p>;
+  }
+
   return (
     <div className={style.container}>
       <button onClick={handlePrev}>Anterior</button>
