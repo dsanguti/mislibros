@@ -32,3 +32,26 @@
   width: 250px;
   text-align: center;
 }
+
+.arrow {
+  width: 3rem;
+  height: 3rem;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.5)); /* Añadir sombra a la flecha */
+  
+}
+
+.arrow:hover {
+  outline: 2px solid var(--color-primary); /* Usar outline en lugar de border */
+  border-radius: 50%; /* Mantener el borde redondeado */
+  background-color: var(--color-secundary); /* Cambiar el color de fondo */
+}
+
+.arrow:hover .arrowPath {
+  stroke: white; /* Cambiar el color de la flecha a blanco */
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none; /* Deshabilitar interacciones */
+}

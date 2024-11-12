@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import style from "../css/Carrusel.module.css";
+import ArrowRightCarrusel from "./icons/ArrowRightCarrusel";
+import ArrowLeftCarrusel from "./icons/ArrowLeftCarrusel";
 
 const Carrusel = ({ sagas }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -42,9 +44,17 @@ const Carrusel = ({ sagas }) => {
     return <p>Error: los datos de sagas no son válidos</p>;
   }
 
+  const isPrevDisabled = currentIndex === 0;
+  const isNextDisabled = currentIndex >= sagas.length - visibleItems;
+
   return (
     <div className={style.container}>
-      <button onClick={handlePrev}>Anterior</button>
+      <ArrowLeftCarrusel
+        className={`${style.arrow} ${isPrevDisabled ? style.disabled : ""}`}
+        pathClassName={style.arrowPath}
+        onClick={handlePrev}
+        disabled={isPrevDisabled}
+      />
       <div className={style.carrusel}>
         {sagas.slice(currentIndex, currentIndex + visibleItems).map((saga, index) => (
           <div className={style.sagaItem} key={index}>
@@ -53,7 +63,12 @@ const Carrusel = ({ sagas }) => {
           </div>
         ))}
       </div>
-      <button onClick={handleNext}>Siguiente</button>
+      <ArrowRightCarrusel
+        className={`${style.arrow} ${isNextDisabled ? style.disabled : ""}`}
+        pathClassName={style.arrowPath}
+        onClick={handleNext}
+        disabled={isNextDisabled}
+      />
     </div>
   );
 };
