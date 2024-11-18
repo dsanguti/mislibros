@@ -3,9 +3,9 @@ import style from "../css/Carrusel.module.css";
 import ArrowRightCarrusel from "./icons/ArrowRightCarrusel";
 import ArrowLeftCarrusel from "./icons/ArrowLeftCarrusel";
 
-const Carrusel = ({ sagas }) => {
+const Carrusel = ({ sagas, onSagaClick }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [visibleItems, setVisibleItems] = useState(3); // Valor inicial
+  const [visibleItems, setVisibleItems] = useState(3);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
@@ -19,24 +19,23 @@ const Carrusel = ({ sagas }) => {
     );
   };
 
-  // Función para actualizar visibleItems basado en el tamaño de la ventana
   const updateVisibleItems = () => {
     const width = window.innerWidth;
-    if (width < 768) { // Pantalla móvil
+    if (width < 768) {
       setVisibleItems(1);
-    } else if (width < 911) { // Pantalla tablet
+    } else if (width < 911) {
       setVisibleItems(2);
-    } else { // Pantalla grande
+    } else {
       setVisibleItems(3);
     }
   };
 
   useEffect(() => {
-    updateVisibleItems(); // Establecer valor inicial
-    window.addEventListener("resize", updateVisibleItems); // Escuchar cambios en el tamaño de la ventana
+    updateVisibleItems();
+    window.addEventListener("resize", updateVisibleItems);
 
     return () => {
-      window.removeEventListener("resize", updateVisibleItems); // Limpiar el listener al desmontar
+      window.removeEventListener("resize", updateVisibleItems);
     };
   }, []);
 
@@ -52,20 +51,27 @@ const Carrusel = ({ sagas }) => {
       <ArrowLeftCarrusel
         onClick={handlePrev}
         isDisabled={isPrevDisabled}
-        className={`${style.arrow} ${isPrevDisabled ? style.disabled : ''}`} // Aplicar la clase disabled
+        className={`${style.arrow} ${isPrevDisabled ? style.disabled : ''}`}
       />
       <div className={style.carrusel}>
         {sagas.slice(currentIndex, currentIndex + visibleItems).map((saga, index) => (
-          <div key={index} className={style.sagaIgem}>
+          <div
+            key={index}
+            className={style.sagaItem}
+            onClick={() => {
+              console.log(`Saga clickeada: ${saga.saga}`); // Añadido para depuración
+              onSagaClick(saga);
+            }}
+          >
             <img src={saga.coverSaga} alt={saga.saga} />
             <p>{saga.saga}</p>
           </div>
         ))}
       </div>
       <ArrowRightCarrusel
-         onClick={handleNext}
-         isDisabled={isNextDisabled}
-         className={`${style.arrow} ${isNextDisabled ? style.disabled : ''}`} // Aplicar la clase disabled
+        onClick={handleNext}
+        isDisabled={isNextDisabled}
+        className={`${style.arrow} ${isNextDisabled ? style.disabled : ''}`}
       />
     </div>
   );

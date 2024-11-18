@@ -1,15 +1,14 @@
 import Carrusel from "../../Carrusel";
 
-const HeaderSaga = ({ sagas, error }) => {
-  if (error) {
-    return <p>{error}</p>;
-  }
+const HeaderSaga = ({ sagas, onSagaClick }) => {
+  const handleSagaClick = (saga) => {
+    console.log(`Saga seleccionada en HeaderSaga: ${saga.saga}`); // Añadido para depuración
+    onSagaClick(saga);
+  };
 
   return (
     <div>
-    
-      {/* Pasa las sagas a tu componente Carrusel */}
-      <Carrusel sagas={sagas} />
+      <Carrusel sagas={sagas} onSagaClick={handleSagaClick} />
     </div>
   );
 };

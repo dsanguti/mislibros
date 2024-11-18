@@ -60,3 +60,14 @@
   cursor: not-allowed;
   pointer-events: none; /* Deshabilitar interacciones */
 }
+/* Media query para pantallas móviles */
+@media (max-width: 768px) {
+  .carrusel {
+    gap: 15px; /* Reduce el espacio entre los elementos del carrusel */
+    padding: 15px; /* Reduce el padding */
+  }
+  .arrow {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

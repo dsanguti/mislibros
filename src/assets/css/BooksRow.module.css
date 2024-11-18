@@ -1,3 +1,14 @@
-.container{
-display: flex;
+/* BooksRow.module.css */
+
+.container {
+  display: flex;
+  justify-content: space-around; /* Distribuye los elementos equitativamente */
+  width: 100%; /* Asegura que ocupe todo el ancho disponible */
+  padding: 10px 0; /* Añade un poco de relleno arriba y abajo */
+  border-bottom: 1px solid #ddd; /* Línea para separar cada fila */
+}
+
+.titulo, .autor, .genero {
+  flex: 1;
+  text-align: center; /* Centra el texto */
 }

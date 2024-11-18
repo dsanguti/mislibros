@@ -5,6 +5,7 @@ import MainSaga from "./MainSaga";
 
 const Sagas = () => {
   const [sagas, setSagas] = useState([]);
+  const [selectedSaga, setSelectedSaga] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -25,9 +26,9 @@ const Sagas = () => {
             headers: {
               Authorization: `Bearer ${authToken}`,
               "Content-Type": "application/json",
-              "Accept": "application/json", // Agregado para indicar que esperamos JSON
+              "Accept": "application/json",
             },
-            credentials: "include", // Asegura que las cookies se envíen junto con la solicitud
+            credentials: "include",
           }
         );
 
@@ -56,14 +57,18 @@ const Sagas = () => {
     fetchSagas();
   }, []);
 
+  useEffect(() => {
+    console.log(`Saga seleccionada en Sagas: ${selectedSaga ? selectedSaga.saga : 'Ninguna'}`); // Añadido para depuración
+  }, [selectedSaga]);
+
   return (
     <div className={style.container}>
       {error ? (
         <p className={style.error}>{error}</p>
       ) : (
         <>
-          <HeaderSaga className={style.header} sagas={sagas} />
-          <MainSaga className={style.main} libros={sagas} />
+          <HeaderSaga className={style.header} sagas={sagas} onSagaClick={setSelectedSaga} />
+          <MainSaga className={style.main} saga={selectedSaga} />
         </>
       )}
     </div>
