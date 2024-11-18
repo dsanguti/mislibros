@@ -50,24 +50,22 @@ const Carrusel = ({ sagas }) => {
   return (
     <div className={style.container}>
       <ArrowLeftCarrusel
-        className={`${style.arrow} ${isPrevDisabled ? style.disabled : ""}`}
-        pathClassName={style.arrowPath}
         onClick={handlePrev}
-        disabled={isPrevDisabled}
+        isDisabled={isPrevDisabled}
+        className={`${style.arrow} ${isPrevDisabled ? style.disabled : ''}`} // Aplicar la clase disabled
       />
       <div className={style.carrusel}>
         {sagas.slice(currentIndex, currentIndex + visibleItems).map((saga, index) => (
-          <div className={style.sagaItem} key={index}>
+          <div key={index} className={style.sagaIgem}>
             <img src={saga.coverSaga} alt={saga.saga} />
-            <h3>{saga.saga}</h3>
+            <p>{saga.saga}</p>
           </div>
         ))}
       </div>
       <ArrowRightCarrusel
-        className={`${style.arrow} ${isNextDisabled ? style.disabled : ""}`}
-        pathClassName={style.arrowPath}
-        onClick={handleNext}
-        disabled={isNextDisabled}
+         onClick={handleNext}
+         isDisabled={isNextDisabled}
+         className={`${style.arrow} ${isNextDisabled ? style.disabled : ''}`} // Aplicar la clase disabled
       />
     </div>
   );

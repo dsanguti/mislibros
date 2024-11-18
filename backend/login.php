@@ -1,42 +1,32 @@
 <?php
+// Configuración de CORS
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true"); // Asegúrate de que esto esté incluido
 
-// Mostrar errores
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
-// Cambiar CORS y protocolo a HTTP para pruebas locales
-header('Access-Control-Allow-Origin: http://localhost:5173'); // HTTP en vez de HTTPS
-header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Access-Control-Allow-Credentials: true');
-header('Content-Type: application/json');
-
-// Manejo de solicitudes OPTIONS
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
-// Configuración de sesión
-ini_set('session.cookie_samesite', 'None');
-ini_set('session.cookie_secure', 'false'); // Cambiar a false para desarrollo sin HTTPS
-ini_set('session.cookie_lifetime', '86400'); // Mantiene la sesión por un día
-
-// Establecer la ruta de almacenamiento de la sesión
-session_save_path('/Applications/XAMPP/xamppfiles/htdocs/backendMisLibros/api/sessions');
+// Configuración de la sesión
 session_set_cookie_params([
-    'lifetime' => 86400,           // Mantiene la sesión por un día
+    'lifetime' => 86400, // Mantiene la sesión por un día
     'path' => '/',
     'domain' => 'localhost',
-    'secure' => false,              // Cambiar a false si usas HTTP
+    'secure' => false, // Cambiar a true si usas HTTPS
     'httponly' => true,
     'samesite' => 'None'
 ]);
 
 // Iniciar sesión
 session_name("PHPSESSID");
-error_log('Iniciando sesión...');
+error_log('ID de sesión actual en login.php antes de iniciar: ' . session_id());
 session_start();
+error_log('ID de sesión actual en login.php después de iniciar: ' . session_id());
+// Al inicio del archivo login.php o después de iniciar la sesión
+error_log('Encabezados recibidos en login.php: ' . print_r(getallheaders(), true));
+error_log('Cookies recibidas en login.php: ' . print_r($_COOKIE, true));
+
+// Resto de tu código en login.php...
+
 
 // Verificar si la cookie PHPSESSID está presente
 if (!isset($_COOKIE['PHPSESSID'])) {
@@ -85,6 +75,24 @@ if ($userData && password_verify($password, $userData['password'])) {
 } else {
     error_log('Error de autenticación para el usuario: ' . $user);
     echo json_encode(["status" => "error", "message" => "Credenciales incorrectas."]);
+}
+if (headers_sent()) {
+    error_log("Encabezados enviados correctamente en login.php");
+} else {
+    error_log("No se han enviado encabezados en login.php");
+}
+
+if (!empty($_SESSION['user_id'])) {
+    error_log("La sesión contiene el ID de usuario: " . $_SESSION['user_id']);
+} else {
+    error_log("La sesión no tiene un ID de usuario establecido.");
+}
+
+error_log("Estado actual de las cookies enviadas:");
+foreach (headers_list() as $header) {
+    if (stripos($header, 'Set-Cookie') !== false) {
+        error_log("Cookie enviada: $header");
+    }
 }
 
 // Cerrar la conexión a la base de datos

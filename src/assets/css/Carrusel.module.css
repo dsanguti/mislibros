@@ -8,7 +8,7 @@
 
 .carrusel {
   display: flex;
-  gap: 10px;
+  gap: 30px;
   padding: 30px;
   transition: transform 0.5s ease;
 }
@@ -27,6 +27,10 @@
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Aumenta la sombra al hacer hover */
   cursor: pointer;
 }
+.carrusel p {
+  margin-top: 25px;
+  text-align: center;
+}
 
 .sagaItem {
   width: 250px;
@@ -36,8 +40,9 @@
 .arrow {
   width: 3rem;
   height: 3rem;
-  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.5)); /* Añadir sombra a la flecha */
-  
+  filter: drop-shadow(
+    0 4px 4px rgba(0, 0, 0, 0.5)
+  ); /* Añadir sombra a la flecha */
 }
 
 .arrow:hover {
@@ -46,7 +51,7 @@
   background-color: var(--color-secundary); /* Cambiar el color de fondo */
 }
 
-.arrow:hover .arrowPath {
+.arrow:hover path {
   stroke: white; /* Cambiar el color de la flecha a blanco */
 }
 

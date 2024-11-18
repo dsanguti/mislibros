@@ -1,15 +1,15 @@
-const ArrowRightCarrusel = (props) => {
+const ArrowRightCarrusel = ({ onClick, isDisabled, className, pathClassName }) => {
   return (
     <svg
-      {...props}
+      onClick={!isDisabled ? onClick : null} // Solo permite el clic si no está deshabilitado
       xmlns="http://www.w3.org/2000/svg"
       width="3rem"
       height="3rem"
       viewBox="0 0 24 24"
-      className={props.className}
+      className={`${className} ${isDisabled ? "disabled" : ""}`} // Aplica la clase 'disabled' si es necesario
     >
       <path
-        className={props.pathClassName}
+        className={pathClassName}
         fill="none"
         stroke="currentColor"
         strokeLinecap="round"

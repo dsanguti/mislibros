@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import style from "../../../css/Sagas.module.css";
 import HeaderSaga from "./HeaderSaga";
+import MainSaga from "./MainSaga";
 
 const Sagas = () => {
   const [sagas, setSagas] = useState([]);
@@ -9,7 +10,6 @@ const Sagas = () => {
   useEffect(() => {
     const fetchSagas = async () => {
       try {
-        // Verificar si el token está presente en el localStorage
         const authToken = localStorage.getItem("authToken");
         console.log("Token de autenticación:", authToken);
 
@@ -25,10 +25,18 @@ const Sagas = () => {
             headers: {
               Authorization: `Bearer ${authToken}`,
               "Content-Type": "application/json",
+              "Accept": "application/json", // Agregado para indicar que esperamos JSON
             },
-            credentials: "include",
+            credentials: "include", // Asegura que las cookies se envíen junto con la solicitud
           }
         );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error en la solicitud:", errorData);
+          setError("Error al obtener sagas");
+          return;
+        }
 
         const data = await response.json();
         console.log("Respuesta de la API: ", data);
@@ -46,16 +54,18 @@ const Sagas = () => {
     };
 
     fetchSagas();
-  }, []); // Solo se ejecuta una vez cuando el componente se monta
+  }, []);
 
   return (
     <div className={style.container}>
-      <div className={style.header}>
-        <HeaderSaga sagas={sagas} error={error} />
-      </div>
-      <div className={style.main}>
-        <h1>main</h1>
-      </div>
+      {error ? (
+        <p className={style.error}>{error}</p>
+      ) : (
+        <>
+          <HeaderSaga className={style.header} sagas={sagas} />
+          <MainSaga className={style.main} libros={sagas} />
+        </>
+      )}
     </div>
   );
 };
