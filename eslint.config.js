@@ -19,6 +19,7 @@ export default [
         app:true,
         db:true,
         err:true,
+        __dirname:true,
       },
       parserOptions: {
         ecmaVersion: 'latest',

@@ -13,7 +13,8 @@ const verifyToken = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET); // Clave debe coincidir con auth.js
     req.user = decoded;
     next();
-  } catch (err) {
+  } catch (error) {
+    console.error("Error al verificar el token:", error); // Log del error para depuración
     res.status(403).json({ error: "Token no válido" });
   }
 };
