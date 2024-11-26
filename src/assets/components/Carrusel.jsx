@@ -8,15 +8,22 @@ const Carrusel = ({ sagas, onSagaClick }) => {
   const [visibleItems, setVisibleItems] = useState(3);
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? sagas.length - visibleItems : prevIndex - 1
-    );
+    const newIndex = currentIndex === 0 ? sagas.length - visibleItems : currentIndex - 1;
+    setCurrentIndex(newIndex);
+    loadBooksForCurrentSaga(newIndex);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex >= sagas.length - visibleItems ? 0 : prevIndex + 1
-    );
+    const newIndex = currentIndex >= sagas.length - visibleItems ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+    loadBooksForCurrentSaga(newIndex);
+  };
+
+  const loadBooksForCurrentSaga = (index) => {
+    const saga = sagas[index];
+    if (saga) {
+      onSagaClick(saga);
+    }
   };
 
   const updateVisibleItems = () => {

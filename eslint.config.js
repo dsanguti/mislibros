@@ -20,6 +20,7 @@ export default [
         db:true,
         err:true,
         __dirname:true,
+        preIndex:true,
       },
       parserOptions: {
         ecmaVersion: 'latest',

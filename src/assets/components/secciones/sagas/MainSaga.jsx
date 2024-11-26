@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import styles from "../../../css/BooksListRow.module.css";
+import { useEffect, useState } from "react";
+import style from "../../../css/Sagas.module.css";
 import BooksListRow from "../../BooksListRow";
+import HeaderRow from "../../HeaderRow";
 
 const MainSaga = ({ saga }) => {
   const [libros, setLibros] = useState([]);
@@ -31,7 +32,7 @@ const MainSaga = ({ saga }) => {
             headers: {
               Authorization: `Bearer ${authToken}`,
               "Content-Type": "application/json",
-              "Accept": "application/json",
+              Accept: "application/json",
             },
             credentials: "include",
           }
@@ -66,9 +67,19 @@ const MainSaga = ({ saga }) => {
   }, [saga]);
 
   return (
-    <div className={styles.mainSagaContainer}>
-      <h4>Libros de la saga: {saga ? saga.saga : "Selecciona una saga"}</h4>
-      {saga && <BooksListRow books={libros} error={error} loading={loading} />}
+    <div className={style.mainSagaContainer}>
+      <h4>Saga: {saga ? saga.saga : "Selecciona una saga"}</h4>
+      {saga && (
+        <>
+          <div className={style.containerListBooks}>
+            <HeaderRow />
+            <BooksListRow books={libros} error={error} loading={loading} />
+          </div>
+          <div className={style.containerCardBook}>
+            <h4>Aquí irá el card del libro</h4>
+          </div>
+        </>
+      )}
     </div>
   );
 };

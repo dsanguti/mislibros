@@ -45,7 +45,24 @@
   font-weight: 700;
   font-size: 1.3rem;
   font-style: normal;
-  margin: -10px;
+  margin:-10px;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
   text-decoration: none;
+}
+
+/* Vista Móvil*/
+@media (max-width: 768px) {
+  .logo {
+    width: 3.5rem;
+  }
+
+  .tittle {
+    font-size: 3em;
+  }
+
+  .subtittle {
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin: 5px;
+  }
 }
