@@ -13,14 +13,14 @@ const Sagas = () => {
       try {
         const authToken = localStorage.getItem("authToken");
         console.log("Token de autenticación:", authToken);
-
+    
         if (!authToken) {
           setError("No se encontró el token de autenticación");
           return;
         }
-
+    
         const response = await fetch(
-          "http://localhost/backendMisLibros/api/sagas.php?sagas=true",
+          "http://localhost:8001/api/sagas",
           {
             method: "GET",
             headers: {
@@ -31,17 +31,17 @@ const Sagas = () => {
             credentials: "include",
           }
         );
-
+    
         if (!response.ok) {
           const errorData = await response.json();
           console.error("Error en la solicitud:", errorData);
           setError("Error al obtener sagas");
           return;
         }
-
+    
         const data = await response.json();
         console.log("Respuesta de la API: ", data);
-
+    
         if (Array.isArray(data)) {
           setSagas(data);
         } else {

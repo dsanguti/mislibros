@@ -1,8 +1,8 @@
 import { useState } from "react";
 import styles from "../../css/Login.module.css"; // Importa el CSS módulo
-import { useAuth } from "../autenticacion/UseAuth";
+import { useAuth } from "../autenticacion/UseAuth"; // Hook de autenticación
 import CargaApp from "../CargaApp";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Para redirigir al inicio después del login
 
 const Login = () => {
   const { login } = useAuth(); // Usar el hook de autenticación
@@ -12,15 +12,16 @@ const Login = () => {
   const [containerHeight, setContainerHeight] = useState("240px"); // Altura por defecto
   const [loading, setLoading] = useState(false); // Estado de carga
   const [isVisible, setIsVisible] = useState(true); // Estado de visibilidad del contenedor
+  const navigate = useNavigate(); // Hook para redirigir
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     try {
       console.log("Enviando datos de login:", { user: username, password });
       const response = await fetch(
-        "http://localhost/backendMisLibros/api/login.php",
+        "http://localhost:8001/api/login", // Asegúrate de usar el puerto correcto
         {
           method: "POST",
           headers: {
@@ -30,27 +31,30 @@ const Login = () => {
           credentials: "include", // Esto es necesario para que las cookies se envíen
         }
       );
-  
+
       // Asegúrate de que la respuesta sea OK
       if (!response.ok) {
         throw new Error(`Error en la respuesta: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log("Datos recibidos del backend:", data);
-  
-      if (data.status === "success") {
+
+      if (data.message === "Inicio de sesión exitoso") {
         console.log("Autenticación exitosa, usuario:", data);
         setError("");
         setContainerHeight("240px");
-  
+
         // Mostrar CargaApp y ocultar el formulario
         setLoading(true); // Activar el estado de carga
         setIsVisible(false); // Ocultar el contenedor
-  
+
+        // Guardar el token en localStorage
+        localStorage.setItem("token", data.token); // Guardamos el token
+
         setTimeout(() => {
-          login(data.token || "token-placeholder");
-          <NavLink to="/" /> // Hacer login después de mostrar CargaApp
+          login(data.token); // Llamar al hook login
+          navigate("/"); // Redirigir al inicio después de mostrar CargaApp
         }, 970); // Tiempo que CargaApp estará visible
       } else {
         console.error("Error: Credenciales incorrectas.");
