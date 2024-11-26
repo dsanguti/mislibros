@@ -21,6 +21,7 @@ export default [
         err:true,
         __dirname:true,
         preIndex:true,
+        onBookClick:true,
       },
       parserOptions: {
         ecmaVersion: 'latest',

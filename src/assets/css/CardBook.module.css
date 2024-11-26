@@ -1,0 +1,46 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 900px; /* Altura máxima fija */
+  overflow: hidden; /* Ocultar el desbordamiento */
+  margin-right: 15px;
+  margin-left: 6px;
+}
+
+.cover {
+  width: 100%;
+  max-width: 190px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.details {
+  margin-top: 2px;
+  text-align: center;
+  width: 100%;
+  overflow: hidden; /* Ocultar el desbordamiento */
+}
+
+.title {
+  font-size: 1.1em;
+  margin-bottom: 8px;
+}
+
+.genre {
+  margin: 8px 0;
+}
+
+.synopsis {
+  margin: 8px 0;
+  max-height: 100px; /* Altura máxima para la sinopsis */
+  overflow-y: auto; /* Habilitar scroll vertical */
+  text-align: left; /* Alinear el texto a la izquierda */
+  padding-right: 10px; /* Añadir espacio para el scroll */
+  font-size: 0.8rem;
+}

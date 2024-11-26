@@ -1,7 +1,7 @@
 import BooksRow from "./BooksRow";
 import style from "../css/BooksListRow.module.css";
 
-const BooksListRow = ({ books, error, loading }) => {
+const BooksListRow = ({ books, error, loading, onBookClick }) => {
   if (loading) return <p>Cargando libros...</p>;
   if (error) return <p>Error al cargar los libros</p>;
   if (!books.length) return <p>No hay libros</p>;
@@ -9,12 +9,13 @@ const BooksListRow = ({ books, error, loading }) => {
   return (
     <div className={style.container}>
       {books.map((book) => (
-        <BooksRow 
-          key={book.id}
-          titulo={book.titulo}
-          autor={book.autor}
-          genero={book.genero}
-        />
+        <div key={book.id} onClick={() => onBookClick(book)}>
+          <BooksRow 
+            titulo={book.titulo}
+            autor={book.autor}
+            genero={book.genero}
+          />
+        </div>
       ))}
     </div>
   );

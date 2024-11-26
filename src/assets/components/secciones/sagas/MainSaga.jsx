@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import BooksListRow from "../../BooksListRow";
 import HeaderRow from "../../HeaderRow";
+import CardBook from "../../CardBook"; // Asegúrate de que esta línea esté presente
 
 const MainSaga = ({ saga }) => {
   const [libros, setLibros] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedBook, setSelectedBook] = useState(null);
 
   useEffect(() => {
     if (!saga) return;
@@ -66,6 +68,10 @@ const MainSaga = ({ saga }) => {
     fetchLibros();
   }, [saga]);
 
+  const handleBookClick = (book) => {
+    setSelectedBook(book);
+  };
+
   return (
     <div className={style.mainSagaContainer}>
       <h4>Saga: {saga ? saga.saga : "Selecciona una saga"}</h4>
@@ -73,10 +79,10 @@ const MainSaga = ({ saga }) => {
         <>
           <div className={style.containerListBooks}>
             <HeaderRow />
-            <BooksListRow books={libros} error={error} loading={loading} />
+            <BooksListRow books={libros} error={error} loading={loading} onBookClick={handleBookClick} />
           </div>
           <div className={style.containerCardBook}>
-            <h4>Aquí irá el card del libro</h4>
+            <CardBook book={selectedBook} />
           </div>
         </>
       )}
