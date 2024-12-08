@@ -13,7 +13,6 @@ const BooksListRow = ({ books, error, loading, onBookClick }) => {
           <BooksRow 
             titulo={book.titulo}
             autor={book.autor}
-            genero={book.genero}
           />
         </div>
       ))}
