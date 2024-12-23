@@ -1,4 +1,5 @@
 .card {
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,15 +8,18 @@
   border-radius: 8px;
   padding: 16px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-height: 900px; /* Altura máxima fija */
+  height: auto; /* Ajusta la altura automáticamente */
   overflow: hidden; /* Ocultar el desbordamiento */
+  margin-top: 23px;
   margin-right: 15px;
   margin-left: 6px;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .cover {
   width: 100%;
-  max-width: 190px;
+  max-width: 250px; /* Aumenta el tamaño máximo de la imagen */
   height: auto;
   border-radius: 8px;
 }
@@ -28,7 +32,7 @@
 }
 
 .title {
-  font-size: 1.1em;
+  font-size: 1.3em; /* Aumenta el tamaño de la fuente */
   margin-bottom: 8px;
 }
 
@@ -38,9 +42,10 @@
 
 .synopsis {
   margin: 8px 0;
-  max-height: 100px; /* Altura máxima para la sinopsis */
+  max-height: 100vh; /* Altura máxima para la sinopsis */
   overflow-y: auto; /* Habilitar scroll vertical */
-  text-align: left; /* Alinear el texto a la izquierda */
+  text-align: justify; /* Alinear el texto a la izquierda */
   padding-right: 10px; /* Añadir espacio para el scroll */
-  font-size: 0.8rem;
+  font-size: 1rem; /* Aumenta el tamaño de la fuente */
+  line-height: 1.9;
 }

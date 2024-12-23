@@ -28,9 +28,9 @@ const Carrusel = ({ sagas, onSagaClick }) => {
 
   const updateVisibleItems = () => {
     const width = window.innerWidth;
-    if (width < 768) {
+    if (width < 1060) {
       setVisibleItems(1);
-    } else if (width < 911) {
+    } else if (width < 1400) {
       setVisibleItems(2);
     } else {
       setVisibleItems(3);
