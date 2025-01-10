@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 .container {
   display: flex;
   flex-direction: row;
@@ -10,22 +14,28 @@
   flex-direction: column;
   flex: 1;
   overflow-y: auto;
+  max-width: calc(100% - 30%);
 }
 
 .containerCard {
   flex: 0 0 30%; /* Ocupa el 30% del ancho de la ventana */
+  width: 30%;
   display: flex;
   flex-direction: column;
+  margin-top: 1.5rem;
+  margin-right: 1.2rem;
+  margin-bottom: 2rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-carrusel-img);
   justify-content: center; /* Centra verticalmente el contenido */
   align-items: center; /* Centra horizontalmente el contenido */
   overflow-y: auto; /* Habilitar scroll vertical */
-  
-  height: 100%; /* Asegura que ocupe todo el alto del contenedor */
+   /* Asegura que ocupe todo el alto del contenedor */
 }
 
-.mainSagaContainer h4{
-margin-left:15px}
-
+.mainSagaContainer h4 {
+  margin-left: 15px;
+}
 
 @media (max-width: 768px) {
   .container {
@@ -49,4 +59,17 @@ margin-left:15px}
     order: 2; /* Mueve containerCard debajo de ContainerHeaderMain */
     overflow-y: auto; /* Habilitar scroll vertical */
   }
+}
+
+.modalWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }

@@ -10,10 +10,7 @@ const BooksListRow = ({ books, error, loading, onBookClick }) => {
     <div className={style.container}>
       {books.map((book) => (
         <div key={book.id} onClick={() => onBookClick(book)}>
-          <BooksRow 
-            titulo={book.titulo}
-            autor={book.autor}
-          />
+          <BooksRow titulo={book.titulo} autor={book.autor} />
         </div>
       ))}
     </div>

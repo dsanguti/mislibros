@@ -1,5 +1,4 @@
 .card {
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7,14 +6,9 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  height: auto; /* Ajusta la altura automáticamente */
+  height: 100%; /* Asegura que ocupe todo el alto del contenedor */
   overflow: hidden; /* Ocultar el desbordamiento */
-  margin-top: 23px;
-  margin-right: 15px;
-  margin-left: 6px;
-  padding-bottom: 8px;
-  margin-bottom: 10px;
+  margin: 0; /* Elimina márgenes para ocupar todo el espacio */
 }
 
 .cover {
@@ -42,7 +36,7 @@
 
 .synopsis {
   margin: 8px 0;
-  max-height: 100vh; /* Altura máxima para la sinopsis */
+  max-height: calc(100% - 80px); /* Ajusta la altura máxima para la sinopsis */
   overflow-y: auto; /* Habilitar scroll vertical */
   text-align: justify; /* Alinear el texto a la izquierda */
   padding-right: 10px; /* Añadir espacio para el scroll */

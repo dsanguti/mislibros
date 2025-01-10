@@ -3,19 +3,30 @@ import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
 import HeaderSaga from "./HeaderSaga";
 import MainSaga from "./MainSaga";
+import Modal from "../../Modal"; // Importamos el modal
 
 const Sagas = () => {
   const [sagas, setSagas] = useState([]);
   const [selectedSaga, setSelectedSaga] = useState(null);
-  const [selectedBook, setSelectedBook] = useState(null); // Nuevo estado para el libro seleccionado
+  const [selectedBook, setSelectedBook] = useState(null);
   const [error, setError] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchSagas = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
-        console.log("Token de autenticación:", authToken);
-
         if (!authToken) {
           setError("No se encontró el token de autenticación");
           return;
@@ -33,39 +44,37 @@ const Sagas = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          console.error("Error en la solicitud:", errorData);
           setError("Error al obtener sagas");
+          console.error("Error en la solicitud:", errorData);
           return;
         }
 
         const data = await response.json();
-        console.log("Respuesta de la API: ", data);
-
         if (Array.isArray(data)) {
           setSagas(data);
         } else {
-          console.error("Los datos no son un array válido:", data);
           setError("Los datos no son un array válido");
+          console.error("Datos inválidos:", data);
         }
       } catch (error) {
         setError("Error al obtener sagas");
-        console.error("Error al obtener sagas:", error);
+        console.error("Error:", error);
       }
     };
 
     fetchSagas();
   }, []);
 
-  useEffect(() => {
-    console.log(
-      `Saga seleccionada en Sagas: ${
-        selectedSaga ? selectedSaga.saga : "Ninguna"
-      }`
-    ); // Añadido para depuración
-  }, [selectedSaga]);
-
   const handleBookClick = (book) => {
     setSelectedBook(book);
+    if (isMobile) {
+      setModalOpen(true); // Abre el modal si es vista móvil
+    }
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedBook(null);
   };
 
   return (
@@ -86,9 +95,15 @@ const Sagas = () => {
               onBookClick={handleBookClick}
             />
           </div>
-          <div className={style.containerCard}>
-            <CardBook book={selectedBook} />
-          </div>
+          {isMobile ? (
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+              {selectedBook && <CardBook book={selectedBook} />}
+            </Modal>
+          ) : (
+            <div className={style.containerCard}>
+              {selectedBook && <CardBook book={selectedBook} />}
+            </div>
+          )}
         </>
       )}
     </div>
