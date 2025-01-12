@@ -68,8 +68,8 @@
     justify-content: center;
  }
   .carrusel {
-    gap: 15px; /* Reduce el espacio entre los elementos del carrusel */
-    padding: 2px; /* Reduce el padding */
+    gap: 10px; /* Reduce el espacio entre los elementos del carrusel */
+    padding: 1px; /* Reduce el padding */
   }
   .carrusel img {
     width: 200px;
@@ -78,10 +78,16 @@
     border-radius: 7px;
     box-shadow: var(--shadow-carrusel-img);
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el tamaño y sombra */
+  
+  }
+
+  .sagaItem {
+    width: 214px;
+    text-align: center;
   }
   .arrow {
-    width: 15px;
-    height: 15px;
+    width: 25px;
+    height: 25px;
     display: block;
   }
 }
