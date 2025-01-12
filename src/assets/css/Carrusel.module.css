@@ -62,12 +62,26 @@
 }
 /* Media query para pantallas móviles */
 @media (max-width: 768px) {
+  .container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+ }
   .carrusel {
     gap: 15px; /* Reduce el espacio entre los elementos del carrusel */
-    padding: 15px; /* Reduce el padding */
+    padding: 2px; /* Reduce el padding */
+  }
+  .carrusel img {
+    width: 200px;
+    height: 270px; /* Ajusta la altura según el ratio que prefieras */
+    object-fit: cover; /* Asegura que las imágenes se recorten y mantengan el ratio */
+    border-radius: 7px;
+    box-shadow: var(--shadow-carrusel-img);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el tamaño y sombra */
   }
   .arrow {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: 15px;
+    height: 15px;
+    display: block;
   }
 }

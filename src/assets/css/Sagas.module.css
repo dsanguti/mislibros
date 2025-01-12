@@ -39,25 +39,24 @@
 
 @media (max-width: 768px) {
   .container {
+    display: flex;
     flex-direction: column;
     height: 100vh; /* Asegura que ocupe toda la altura de la pantalla */
+    justify-content: center;
+    align-items: center;
   }
 
   .ContainerHeaderMain {
     order: 1; /* Asegura que ContainerHeaderMain esté arriba en pantallas pequeñas */
-    flex: 1 0 50%; /* Ocupa la mitad de la pantalla */
-    height: 50vh; /* Asegura que ocupe la mitad de la altura de la pantalla */
+    flex: 1; /* Ocupa la mitad de la pantalla */
+    width: 400px;
+    height: 100vh; /* Asegura que ocupe la mitad de la altura de la pantalla */
     overflow-y: auto; /* Habilitar scroll vertical */
+
   }
 
   .containerCard {
-    flex: 1 0 50%; /* Ocupa la mitad de la pantalla */
-    width: 100%;
-    border-left: none;
-    border-top: 1px solid #ccc; /* Opcional: para separar visualmente */
-    height: 50vh; /* Asegura que ocupe la mitad de la altura de la pantalla */
-    order: 2; /* Mueve containerCard debajo de ContainerHeaderMain */
-    overflow-y: auto; /* Habilitar scroll vertical */
+   display: none;
   }
 }
 

@@ -101,7 +101,11 @@ const Sagas = () => {
             </Modal>
           ) : (
             <div className={style.containerCard}>
-              {selectedBook && <CardBook book={selectedBook} />}
+              {selectedBook ? (
+                <CardBook book={selectedBook} />
+              ) : (
+                <p>Seleccione un libro</p>
+              )}
             </div>
           )}
         </>
