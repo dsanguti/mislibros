@@ -1,0 +1,32 @@
+.container{
+display: flex;
+align-items: flex-end;
+justify-content: end;
+margin-top: 40px;
+margin-right: 25px;
+margin-bottom: 40px;
+}
+
+.container input{
+height: 2.8rem;
+width: 65%;
+border-radius: 10px;
+box-shadow: var(--shadow-md);
+padding-left: 10px;
+
+}
+
+@media (max-width:768px){
+
+  .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0px;
+  }
+  .container input{
+  width: 100%;
+  margin: 0;
+  }
+
+}

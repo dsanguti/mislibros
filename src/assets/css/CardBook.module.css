@@ -15,7 +15,8 @@
   width: 100%;
   max-width: 250px; /* Aumenta el tamaño máximo de la imagen */
   height: auto;
-  border-radius: 8px;
+  border-radius: 15px;
+  box-shadow: var(--shadow-carrusel-img);
 }
 
 .details {

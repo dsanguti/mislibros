@@ -27,11 +27,7 @@ session_start();
 
 // Registrar todas las cookies recibidas
 error_log('Cookies recibidas en all_books.php: ' . print_r($_COOKIE, true));
-// Al inicio del archivo sagas.php o después de verificar la sesión
 error_log('Encabezados recibidos en all_books.php: ' . print_r(getallheaders(), true));
-error_log('Cookies recibidas en all_books.php: ' . print_r($_COOKIE, true));
-
-// Resto de tu código en sagas.php...
 
 // Verificar el valor específico de PHPSESSID
 if (isset($_COOKIE['PHPSESSID'])) {
@@ -57,7 +53,7 @@ require 'connect.php';
 try {
     // Consultar la base de datos
     $stmt = $pdo->prepare("
-        SELECT titulo, autor, genero, saga, cover 
+        SELECT titulo, autor, genero, sinopsis, saga, cover 
         FROM books 
         WHERE user_id = :user_id
     ");

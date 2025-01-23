@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2");
-const path = require("path"); // Importar path
+const path = require("path");
 const app = express();
 
 const port = 8001;
@@ -15,8 +15,6 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Middleware
-
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -41,14 +39,16 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 
 // Rutas
 const loginRoutes = require("./api/routes/login");
-const apiRoutes = require("./api/routes/routes"); // Importar rutas protegidas
+const apiRoutes = require("./api/routes/routes");
 const sagasRoutes = require("./api/routes/sagas");
-const librosSagasRoutes = require("./api/routes/librosSagas"); // Importar el nuevo router
+const librosSagasRoutes = require("./api/routes/librosSagas");
+const all_booksRoutes = require("./api/routes/all_books");
 
-app.use("/api", loginRoutes); // Rutas de autenticación
-app.use("/api", apiRoutes); // Rutas protegidas
-app.use("/api", sagasRoutes); // Rutas sagas
-app.use("/api", librosSagasRoutes); // Rutas libros de sagas
+app.use("/api", loginRoutes);
+app.use("/api", apiRoutes);
+app.use("/api", sagasRoutes);
+app.use("/api", librosSagasRoutes);
+app.use("/api", all_booksRoutes); // Asegúrate de que esta línea esté presente
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

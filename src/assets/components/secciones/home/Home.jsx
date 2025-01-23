@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
-import HeaderHome from "./HeaderHome";
-import MainHome from "./MainHome";
+import MainHome from "./MainHome"; // Asegúrate de que el nombre del componente sea correcto
 import Modal from "../../Modal"; // Importamos el modal
 
 const Home = () => {
-  const [sagas, setSagas] = useState([]);
-  const [selectedSaga, setSelectedSaga] = useState(null);
+  const [books, setBooks] = useState([]); // Cambiado de sagas a books
   const [selectedBook, setSelectedBook] = useState(null);
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -51,7 +49,7 @@ const Home = () => {
 
         const data = await response.json();
         if (Array.isArray(data)) {
-          setSagas(data);
+          setBooks(data); // Cambiado de setSagas a setBooks
         } else {
           setError("Los datos no son un array válido");
           console.error("Datos inválidos:", data);
@@ -84,14 +82,9 @@ const Home = () => {
       ) : (
         <>
           <div className={style.ContainerHeaderMain}>
-            <HeaderHome
-              className={style.header}
-              sagas={sagas}
-              onSagaClick={setSelectedSaga}
-            />
             <MainHome
               className={style.main}
-              saga={selectedSaga}
+              books={books} // Cambiado de saga a books
               onBookClick={handleBookClick}
             />
           </div>
