@@ -6,6 +6,7 @@ import Search from "../../Search";
 
 const MainHome = ({ books, onBookClick }) => {
   const [libros, setLibros] = useState([]);
+  const [filteredBooks, setFilteredBooks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,8 +18,8 @@ const MainHome = ({ books, onBookClick }) => {
       setError(null);
 
       try {
-        // Aquí asumimos que books ya contiene los libros pasados desde el componente padre
         setLibros(books);
+        setFilteredBooks(books); // Inicialmente, los libros filtrados son todos los libros
       } catch (error) {
         setError("Error al procesar los libros");
         console.error("Error al procesar los libros:", error);
@@ -30,15 +31,28 @@ const MainHome = ({ books, onBookClick }) => {
     fetchLibros();
   }, [books]);
 
+  const handleSearch = (searchTerm) => {
+    if (!searchTerm) {
+      setFilteredBooks(libros); // Si no hay término de búsqueda, mostramos todos los libros
+    } else {
+      const filtered = libros.filter((book) =>
+        book.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.autor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.genero.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredBooks(filtered);
+    }
+  };
+
   return (
     <div className={style.mainSagaContainer}>
-      <Search />
+      <Search onSearch={handleSearch} />
       
       {books && (
         <>
           <div className={style.containerListBooks}>
             <HeaderRow />
-            <BooksListRow books={libros} error={error} loading={loading} onBookClick={onBookClick} />
+            <BooksListRow books={filteredBooks} error={error} loading={loading} onBookClick={onBookClick} />
           </div>
         </>
       )}
