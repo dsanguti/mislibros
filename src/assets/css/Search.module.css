@@ -1,32 +1,77 @@
-.container{
-display: flex;
-align-items: flex-end;
-justify-content: end;
-margin-top: 40px;
-margin-right: 25px;
-margin-bottom: 40px;
-}
-
-.container input{
-height: 2.8rem;
-width: 45%;
-border-radius: 10px;
-box-shadow: var(--shadow-md);
-padding-left: 10px;
-
-}
-
-@media (max-width:768px){
-
-  .container {
+.container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0px;
-  }
-  .container input{
+  align-items: flex-end;
+  justify-content: end;
+  margin-top: 40px;
+  margin-right: 25px;
+  margin-bottom: 40px;
+}
+
+.searchWrapper {
+  position: relative;
+  width: 40%; /* Ajusta según sea necesario */
+}
+
+.searchWrapper input {
+  height: 2.8rem;
   width: 100%;
-  margin: 0;
+  border: 1px solid #dfe1e5;;
+  border-radius: 24px;
+  box-shadow: var(--shadow-search);
+  padding-left: 48px; /* Ajusta según el tamaño de la lupa */
+  box-sizing: border-box;
+  padding-right: 30px; /* Añadimos espacio para la "X" */
+  appearance: none; /* Propiedad estándar */
+  -webkit-appearance: none; /* Deshabilitar la "X" en navegadores WebKit */
+  -moz-appearance: textfield; /* Deshabilitar la "X" en Firefox */
+}
+
+/* Deshabilitar la "X" en navegadores WebKit (Chrome, Safari) */
+.searchWrapper input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Deshabilitar la "X" en navegadores Firefox */
+.searchWrapper input[type="search"]::-moz-search-cancel-button {
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.cancelSearch {
+  position: absolute;
+  right: 22px; /* Ajusta según sea necesario */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid;
+  color: --color-primary; 
+}
+
+.lupa {
+  position: absolute;
+  left: 15px; /* Ajusta según sea necesario */
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primary);
+  pointer-events: none; /* Para que no interfiera con el input */
+}
+
+@media (max-width: 768px) {
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 0px;
   }
 
+  .searchWrapper {
+    width: 100%;
+  }
+
+  .searchWrapper input {
+    width: 100%;
+    margin: 0;
+  }
 }

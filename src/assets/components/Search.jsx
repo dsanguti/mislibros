@@ -1,26 +1,40 @@
-import style from "../css/Search.module.css"
 import { useState } from "react";
+import style from "../css/Search.module.css";
+import Lupa from "./icons/Lupa";
+import CancelSearch from "./icons/CancelSearch";
 
+const Search = ({ onSearch }) => {
+  const [searchTerm, setSearchTerm] = useState("");
 
-const Search =({ onSearch })=>{
-
-  const [searchTerm, seSearchTerm] = useState("");
-
-  const handleSearchChange = (event)=>{
+  const handleSearchChange = (event) => {
     const value = event.target.value;
-    seSearchTerm(value);
+    setSearchTerm(value);
     onSearch(value);
-  }
+  };
 
-  return <div className={style.container}>
-    <input 
-      type="search"
-      name="search"
-      id="searchBooks"
-      value={searchTerm}
-      onChange={handleSearchChange}
-      placeholder="Búsqueda de libros, autor, género"/>
-  </div>
-}
+  const clearSearch = () => {
+    setSearchTerm("");
+    onSearch("");
+  };
+
+  return (
+    <div className={style.container}>
+      <div className={style.searchWrapper}>
+        <Lupa className={style.lupa} />
+        <input
+          type="search"
+          name="search"
+          id="searchBooks"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Libros, autor, género"
+        />
+        {searchTerm && (
+          <CancelSearch className={style.cancelSearch} onClick={clearSearch} />
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default Search;
