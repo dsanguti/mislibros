@@ -3,26 +3,30 @@ import style from "../css/Carrusel.module.css";
 import ArrowRightCarrusel from "./icons/ArrowRightCarrusel";
 import ArrowLeftCarrusel from "./icons/ArrowLeftCarrusel";
 
-const Carrusel = ({ sagas, onSagaClick }) => {
+const Carrusel = ({ items, onItemClick, type }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleItems, setVisibleItems] = useState(3);
 
+  // Determinar los nombres de las claves en función del tipo
+  const nameKey = type === "sagas" ? "saga" : "genero";
+  const coverKey = type === "sagas" ? "coverSaga" : "coverGenero";
+
   const handlePrev = () => {
-    const newIndex = currentIndex === 0 ? sagas.length - visibleItems : currentIndex - 1;
+    const newIndex = currentIndex === 0 ? items.length - visibleItems : currentIndex - 1;
     setCurrentIndex(newIndex);
-    loadBooksForCurrentSaga(newIndex);
+    loadBooksForCurrentItem(newIndex);
   };
 
   const handleNext = () => {
-    const newIndex = currentIndex >= sagas.length - visibleItems ? 0 : currentIndex + 1;
+    const newIndex = currentIndex >= items.length - visibleItems ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
-    loadBooksForCurrentSaga(newIndex);
+    loadBooksForCurrentItem(newIndex);
   };
 
-  const loadBooksForCurrentSaga = (index) => {
-    const saga = sagas[index];
-    if (saga) {
-      onSagaClick(saga);
+  const loadBooksForCurrentItem = (index) => {
+    const item = items[index];
+    if (item) {
+      onItemClick(item);
     }
   };
 
@@ -46,12 +50,12 @@ const Carrusel = ({ sagas, onSagaClick }) => {
     };
   }, []);
 
-  if (!Array.isArray(sagas)) {
-    return <p>Error: los datos de sagas no son válidos</p>;
+  if (!Array.isArray(items)) {
+    return <p>Error: los datos no son válidos</p>;
   }
 
   const isPrevDisabled = currentIndex === 0;
-  const isNextDisabled = currentIndex >= sagas.length - visibleItems;
+  const isNextDisabled = currentIndex >= items.length - visibleItems;
 
   return (
     <div className={style.container}>
@@ -61,17 +65,17 @@ const Carrusel = ({ sagas, onSagaClick }) => {
         className={`${style.arrow} ${isPrevDisabled ? style.disabled : ''}`}
       />
       <div className={style.carrusel}>
-        {sagas.slice(currentIndex, currentIndex + visibleItems).map((saga, index) => (
+        {items.slice(currentIndex, currentIndex + visibleItems).map((item, index) => (
           <div
             key={index}
             className={style.sagaItem}
             onClick={() => {
-              console.log(`Saga clickeada: ${saga.saga}`); // Añadido para depuración
-              onSagaClick(saga);
+              console.log(`${type} clickeado: ${item[nameKey]}`);
+              onItemClick(item);
             }}
           >
-            <img src={saga.coverSaga} alt={saga.saga} />
-            <p>{saga.saga}</p>
+            <img src={item[coverKey]} alt={item[nameKey]} />
+            <p>{item[nameKey]}</p>
           </div>
         ))}
       </div>

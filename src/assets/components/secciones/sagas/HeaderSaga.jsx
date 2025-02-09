@@ -8,7 +8,7 @@ const HeaderSaga = ({ sagas, onSagaClick }) => {
 
   return (
     <div>
-      <Carrusel sagas={sagas} onSagaClick={handleSagaClick} />
+     <Carrusel items={sagas} onItemClick={handleSagaClick} type="sagas" />
     </div>
   );
 };
