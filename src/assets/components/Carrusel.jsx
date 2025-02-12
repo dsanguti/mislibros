@@ -1,36 +1,44 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import style from "../css/Carrusel.module.css";
-import ArrowRightCarrusel from "./icons/ArrowRightCarrusel";
 import ArrowLeftCarrusel from "./icons/ArrowLeftCarrusel";
+import ArrowRightCarrusel from "./icons/ArrowRightCarrusel";
 
-const Carrusel = ({ items, onItemClick, type }) => {
+const Carrusel = ({
+  items,
+  onItemClick,
+  type,
+  selectedItem,
+  onBookClick,
+  disableItemClic = false,
+}) => {
+
+  console.log("📌 Props en Carrusel:", { onBookClick });
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleItems, setVisibleItems] = useState(3);
 
-  // Determinar los nombres de las claves en función del tipo
-  const nameKey = type === "sagas" ? "saga" : "genero";
-  const coverKey = type === "sagas" ? "coverSaga" : "coverGenero";
+  const nameKey =
+    type === "sagas" ? "saga" : type === "starwars" ? "titulo" : "genero";
+  const coverKey =
+    type === "sagas"
+      ? "coverSaga"
+      : type === "starwars"
+      ? "cover"
+      : "coverGenero";
 
   const handlePrev = () => {
-    const newIndex = currentIndex === 0 ? items.length - visibleItems : currentIndex - 1;
+    const newIndex =
+      currentIndex === 0 ? items.length - visibleItems : currentIndex - 1;
     setCurrentIndex(newIndex);
-    loadBooksForCurrentItem(newIndex);
   };
 
   const handleNext = () => {
-    const newIndex = currentIndex >= items.length - visibleItems ? 0 : currentIndex + 1;
+    const newIndex =
+      currentIndex >= items.length - visibleItems ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
-    loadBooksForCurrentItem(newIndex);
   };
 
-  const loadBooksForCurrentItem = (index) => {
-    const item = items[index];
-    if (item) {
-      onItemClick(item);
-    }
-  };
-
-  const updateVisibleItems = () => {
+  const updateVisibleItems = useCallback(() => {
     const width = window.innerWidth;
     if (width < 1060) {
       setVisibleItems(1);
@@ -39,16 +47,15 @@ const Carrusel = ({ items, onItemClick, type }) => {
     } else {
       setVisibleItems(3);
     }
-  };
+  }, []);
 
   useEffect(() => {
     updateVisibleItems();
     window.addEventListener("resize", updateVisibleItems);
-
     return () => {
       window.removeEventListener("resize", updateVisibleItems);
     };
-  }, []);
+  }, [updateVisibleItems]);
 
   if (!Array.isArray(items)) {
     return <p>Error: los datos no son válidos</p>;
@@ -62,27 +69,39 @@ const Carrusel = ({ items, onItemClick, type }) => {
       <ArrowLeftCarrusel
         onClick={handlePrev}
         isDisabled={isPrevDisabled}
-        className={`${style.arrow} ${isPrevDisabled ? style.disabled : ''}`}
+        className={`${style.arrow} ${isPrevDisabled ? style.disabled : ""}`}
       />
       <div className={style.carrusel}>
-        {items.slice(currentIndex, currentIndex + visibleItems).map((item, index) => (
-          <div
-            key={index}
-            className={style.sagaItem}
-            onClick={() => {
-              console.log(`${type} clickeado: ${item[nameKey]}`);
-              onItemClick(item);
-            }}
-          >
-            <img src={item[coverKey]} alt={item[nameKey]} />
-            <p>{item[nameKey]}</p>
-          </div>
-        ))}
+        {items
+          .slice(currentIndex, currentIndex + visibleItems)
+          .map((item, index) => (
+            <div
+              key={index}
+              className={`${style.sagaItem} ${
+                selectedItem?.id === item.id ? style.selected : ""
+              }`}
+              onClick={() => {
+                console.log(`${type} clickeado: ${item[nameKey]}`);
+                if (!disableItemClic) {
+                  onItemClick(item);
+                }
+                if (onBookClick) {
+                  console.log("✅ onBookClick llamado con:", item);
+                  onBookClick(item);
+                } else {
+                  console.error("❌ onBookClick NO está definido en Carrusel.jsx");
+                }
+              }}
+            >
+              <img src={item[coverKey]} alt={item[nameKey]} />
+              <p>{item[nameKey]}</p>
+            </div>
+          ))}
       </div>
       <ArrowRightCarrusel
         onClick={handleNext}
         isDisabled={isNextDisabled}
-        className={`${style.arrow} ${isNextDisabled ? style.disabled : ''}`}
+        className={`${style.arrow} ${isNextDisabled ? style.disabled : ""}`}
       />
     </div>
   );

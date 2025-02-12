@@ -45,6 +45,7 @@ const librosSagasRoutes = require("./api/routes/librosSagas");
 const all_booksRoutes = require("./api/routes/all_books");
 const generosRoutes = require("./api/routes/generos");
 const librosGeneroRoutes = require("./api/routes/librosGeneros");
+const librosStarwarsRoutes = require("./api/routes/librosStarwars");
 
 app.use("/api", loginRoutes);
 app.use("/api", apiRoutes);
@@ -53,6 +54,7 @@ app.use("/api", librosSagasRoutes);
 app.use("/api", all_booksRoutes); // Asegúrate de que esta línea esté presente
 app.use("/api", generosRoutes);
 app.use("/api", librosGeneroRoutes);
+app.use("/api", librosStarwarsRoutes);
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {
