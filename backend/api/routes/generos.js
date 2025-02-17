@@ -27,7 +27,7 @@ router.get("/generos", (req, res) => {
       [userId],
       (err, results) => {
         if (err) {
-          return res.status(500).json({ error: "Error al obtener las sagas" });
+          return res.status(500).json({ error: "Error al obtener los géneros" });
         }
         res.json(results); // Enviar las sagas como respuesta
       }

@@ -18,11 +18,13 @@ const Carrusel = ({
   const [visibleItems, setVisibleItems] = useState(3);
 
   const nameKey =
-    type === "sagas" ? "saga" : type === "starwars" ? "titulo" : "genero";
+    type === "sagas" ? "saga" : type === "starwars" ? "titulo" : type === "starwars" ? "titulo" : "genero";
   const coverKey =
     type === "sagas"
       ? "coverSaga"
       : type === "starwars"
+      ? "cover"
+      : type === "comics"
       ? "cover"
       : "coverGenero";
 
