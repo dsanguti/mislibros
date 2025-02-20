@@ -3,8 +3,9 @@ import { NavLink } from "react-router-dom";
 import Ham from "../components/icons/Ham";
 import style from "../css/Nav.module.css";
 import { useAuth } from "./autenticacion/UseAuth"; // Importa el hook de autenticación
-import User from "./icons/User";
 import Logout from "./icons/Logout";
+import User from "./icons/User";
+import Gestor from "./icons/Gestor";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +43,7 @@ const Nav = () => {
             onClick={toggleMenu}
             className={({ isActive }) => (isActive ? style.isActive : "")}
           >
-           Inicio
+            Inicio
           </NavLink>
         </li>
         <li>
@@ -88,9 +89,15 @@ const Nav = () => {
           {/* Submenú desplegable */}
           <ul className={style.submenuUser}>
             <li>
+              <div className={style.containerGestor}>
+                <Gestor className={style.userIcon} />
+                <h4>Gestor</h4>
+              </div>
+            </li>
+            <li>
               <div onClick={handleLogout} className={style.containerSalir}>
-                  {/* Opción de cerrar sesión */}
-                <Logout className={style.logout}/>
+                {/* Opción de cerrar sesión */}
+                <Logout className={style.logout} />
                 <h4>Salir</h4>
               </div>
             </li>

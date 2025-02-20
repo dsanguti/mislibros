@@ -96,19 +96,23 @@ nav a {
 
 /* Submenú oculto por defecto */
 .submenuUser {
-  display: none; /* Oculta el submenú */
+  display: flex; /* Oculta el submenú */
+  flex-direction: column;
   position: absolute;
   top: 166px; /* Posiciona el submenú justo debajo del ícono */
   right: 0;
-  background-color: var(--color-secundary); /* Fondo del submenú */
   border-radius: 4px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
   z-index: 500;
   list-style: none;
-  padding: 10px;
+  padding: 0;
   margin: 0;
-  height: 35px;
-  width: 90px; /* Ajusta el ancho del submenú */
+  margin-right: 2px;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  height: 50px;
+  width: 95px; /* Ajusta el ancho del submenú */
 }
 
 /* Submenu visible en móvil al hacer clic */
@@ -118,29 +122,80 @@ nav a {
 
 /* Muestra el submenú cuando haces hover sobre el contenedor del usuario */
 .userMenu:hover .submenuUser {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 /* Estilo para los elementos del submenú */
 .submenuUser li {
-  margin: 0;
-  border: none;
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  
   cursor: pointer;
+  background-color: var(--color-primary);
 }
+
+.submenuUser li:first-child{
+border-bottom: 1px solid white;
+border-top-right-radius: 6px;
+border-top-left-radius: 6px;
+}
+.submenuUser li:last-child{
+  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: 6px;}
 /* Estilo para los elementos del submenú */
 .submenu li {
   margin: 0;
-  padding: 0;
+  padding: 5px;
 }
 
-.containerSalir {
+.containerGestor {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0;
+  /* Espaciado entre elementos */
   width: 100%;
-  border: none;
+  cursor: pointer;
 }
+
+.containerGestor, .containerSalir{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: white;
+}
+
+
+.containerGestor h4 .containerSalir h4{
+  font-size: 1rem;
+  color: white;
+  text-align: center;
+  width: 100%;
+}
+
+.containerGestor:hover h4 {
+  color: var(--color-gestor)
+}
+
+.userIcon {
+  color: white;
+  display: block;
+  width: 1.7rem;
+  height: 1.7rem;
+  margin-right: 5px;
+  transition: transform 0.4s ease, color 0.4s ease;
+}
+
+.containerGestor:hover .userIcon {
+  transform: scale(1.1);
+  color: var(--color-gestor);
+}
+
+
 
 .submenuUser li h4 {
   padding: 0;
@@ -305,6 +360,11 @@ transition: opacity 0.6s ease;
   transition: opacity 0.6s ease, visibility 0s 0.6s; /* La visibilidad cambia tras la transición */
   opacity: 0;
   visibility: hidden;}
+
+.submenuUser li:first-child{
+  border-bottom: 1px solid white;
+
+}
   /* Eliminar bordes o efecto hover no deseados en submenuUser */
   .submenuUser:hover,
   .submenuUser li:hover {
@@ -323,6 +383,8 @@ transition: opacity 0.6s ease;
     padding: 0; /* Ajusta el padding para el espaciado interno */
     border-bottom: none !important; /* Asegura que no haya borde inferior */
   }
+
+
 
   .containerSalir {
     background-color: var(--color-secundary);

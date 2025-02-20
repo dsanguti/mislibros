@@ -9,6 +9,7 @@
   --color-background-light:rgb(234, 226, 226);
   --color-hover:#6fb98f;
   --color-logout:rgb(247, 235, 68);
+  --color-gestor:rgb(226, 77, 13);
   /* Shadows */
   --shadow-sm: 0px 0px 8px rgba(69, 69, 69, 0.3);
   --shadow-md: 0px 0px 16px rgba(69, 69, 69, 0.5);
