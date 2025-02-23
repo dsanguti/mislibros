@@ -65,8 +65,6 @@ nav a {
   pointer-events: none; /* Color de fondo deseado para el li activo */
 }
 
-
-
 /*Estilo para el icono Usuario*/
 
 .containeruser {
@@ -134,19 +132,20 @@ nav a {
   text-align: left;
   display: flex;
   align-items: center;
-  
+
   cursor: pointer;
   background-color: var(--color-primary);
 }
 
-.submenuUser li:first-child{
-border-bottom: 1px solid white;
-border-top-right-radius: 6px;
-border-top-left-radius: 6px;
+.submenuUser li:first-child {
+  border-bottom: 1px solid white;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
 }
-.submenuUser li:last-child{
+.submenuUser li:last-child {
   border-bottom-right-radius: 6px;
-  border-bottom-left-radius: 6px;}
+  border-bottom-left-radius: 6px;
+}
 /* Estilo para los elementos del submenú */
 .submenu li {
   margin: 0;
@@ -162,15 +161,15 @@ border-top-left-radius: 6px;
   cursor: pointer;
 }
 
-.containerGestor, .containerSalir{
+.containerGestor,
+.containerSalir {
   display: flex;
   align-items: center;
   width: 100%;
   color: white;
 }
 
-
-.containerGestor h4 .containerSalir h4{
+.containerGestor h4 .containerSalir h4 {
   font-size: 1rem;
   color: white;
   text-align: center;
@@ -178,7 +177,7 @@ border-top-left-radius: 6px;
 }
 
 .containerGestor:hover h4 {
-  color: var(--color-gestor)
+  color: var(--color-gestor);
 }
 
 .userIcon {
@@ -187,15 +186,16 @@ border-top-left-radius: 6px;
   width: 1.7rem;
   height: 1.7rem;
   margin-right: 5px;
-  transition: transform 0.4s ease, color 0.4s ease;
+  transition: transform 0.4s ease;
 }
 
+.containerGestor:hover h4,
 .containerGestor:hover .userIcon {
-  transform: scale(1.1);
   color: var(--color-gestor);
 }
-
-
+.containerGestor:hover .userIcon {
+  transform: scale(1.1);
+}
 
 .submenuUser li h4 {
   padding: 0;
@@ -337,62 +337,74 @@ border-top-left-radius: 6px;
     visibility: hidden; /* Oculto por defecto */
     position: absolute;
     top: 0;
-    right: -92px;
-    background-color: var(--color-secundary);
+    left: 100%;
+    right: auto;
+    background-color: var(--color-primary);
     border-radius: 4px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 500;
     list-style: none;
-    padding: 10px;
+    padding: 0;
     margin: 0;
+    width: 25%;
     height: 100%;
-    width: 90px;
-    opacity: 0;
+    max-height: none;
+    max-width: 150px;
+    opacity: 1;
     transition: opacity 0.6s ease, visibility 0s 0.6s; /* Transición suave para el submenú */
+    overflow: hidden; /* Evita que los elmentos sobresalgan*/
   }
-.userMenu:hover .submenuUser{
-visibility: visible;
-opacity: 1;
-transition: opacity 0.6s ease;
-}
+  .userMenu:hover .submenuUser {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.6s ease;
+  }
 
-.submenuUser:not(:hover){
-  transition: opacity 0.6s ease, visibility 0s 0.6s; /* La visibilidad cambia tras la transición */
-  opacity: 0;
-  visibility: hidden;}
+  .submenuUser:not(:hover) {
+    transition: opacity 0.6s ease, visibility 0s 0.6s; /* La visibilidad cambia tras la transición */
+    opacity: 0;
+    visibility: hidden;
+  }
 
-.submenuUser li:first-child{
-  border-bottom: 1px solid white;
-
-}
   /* Eliminar bordes o efecto hover no deseados en submenuUser */
   .submenuUser:hover,
   .submenuUser li:hover {
     border: none !important;
+
     outline: none !important;
+  }
+  .submenuUser:hover li:first-child {
+    border-bottom: 1px solid white !important;
   }
 
   /* Asegurarse de que no haya un borde inferior en li del submenuUser */
   .submenuUser li {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
-    background-color: var(--color-secundary);
+    width: 100%;
+    background-color: var(--color-primary);
     margin: 0; /* Asegura que no haya margen que afecte el espaciado */
     padding: 0; /* Ajusta el padding para el espaciado interno */
     border-bottom: none !important; /* Asegura que no haya borde inferior */
   }
 
-
-
-  .containerSalir {
-    background-color: var(--color-secundary);
-    padding: 0 5px;
+  .containerSalir .containerGestor {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    background-color: var(--color-primary);
+    text-align: center;
   }
 
-  /* Estilo para el icono logout */
+  /* Estilo para el icono logout y gestor que desaparezcan*/
   .logout {
+    display: none;
+  }
+  .userIcon {
     display: none;
   }
 
