@@ -152,6 +152,7 @@ nav a {
   padding: 5px;
 }
 
+
 .containerGestor {
   display: flex;
   justify-content: center;
@@ -312,7 +313,7 @@ nav a {
   .isActive {
     border: 1px solid white;
   }
-
+ 
   /* Asegúrate de que el a ocupe todo el espacio */
   .ul li a {
     color: white;
@@ -359,6 +360,9 @@ nav a {
     opacity: 1;
     transition: opacity 0.6s ease;
   }
+  .userMenu:hover .submenuUser li:first-child {
+    border-bottom: 1px solid white !important;
+  }
 
   .submenuUser:not(:hover) {
     transition: opacity 0.6s ease, visibility 0s 0.6s; /* La visibilidad cambia tras la transición */
@@ -373,9 +377,7 @@ nav a {
 
     outline: none !important;
   }
-  .submenuUser:hover li:first-child {
-    border-bottom: 1px solid white !important;
-  }
+  
 
   /* Asegurarse de que no haya un borde inferior en li del submenuUser */
   .submenuUser li {
@@ -389,6 +391,7 @@ nav a {
     padding: 0; /* Ajusta el padding para el espaciado interno */
     border-bottom: none !important; /* Asegura que no haya borde inferior */
   }
+
 
   .containerSalir .containerGestor {
     width: 100%;

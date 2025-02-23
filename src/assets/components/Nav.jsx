@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom"; // Importa useNavigate
 import Ham from "../components/icons/Ham";
 import style from "../css/Nav.module.css";
 import { useAuth } from "./autenticacion/UseAuth"; // Importa el hook de autenticación
 import Logout from "./icons/Logout";
 import User from "./icons/User";
-import Gestor from "./icons/Gestor";
+import GestorIcon from "./icons/GestorIcon";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { logout } = useAuth(); // Desestructura el método de logout desde el contexto de autenticación
+  const navigate = useNavigate(); // Instancia de useNavigate para navegación programática
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -31,6 +32,12 @@ const Nav = () => {
   // Función para manejar la salida de la sesión
   const handleLogout = () => {
     logout(); // Llama a la función de logout del contexto
+  };
+
+  // Función para navegar a la sección de "Gestor"
+  const goToGestor = () => {
+    navigate("/gestor"); // Navega a la ruta /gestor
+    toggleMenu(); // Cierra el manú despues de navegar
   };
 
   return (
@@ -90,13 +97,12 @@ const Nav = () => {
           <ul className={style.submenuUser}>
             <li>
               <div className={style.containerGestor}>
-                <Gestor className={style.userIcon} />
-                <h4>Gestor</h4>
+                <GestorIcon className={style.userIcon} />
+                <h4 onClick={goToGestor}>Gestor</h4> {/* Evento onClick para redirigir */}
               </div>
             </li>
             <li>
               <div onClick={handleLogout} className={style.containerSalir}>
-                {/* Opción de cerrar sesión */}
                 <Logout className={style.logout} />
                 <h4>Salir</h4>
               </div>

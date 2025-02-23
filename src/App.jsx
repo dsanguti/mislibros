@@ -15,6 +15,7 @@ const Comics = lazy(() => import("./assets/components/secciones/comics/Comics.js
 const Generos = lazy(() => import("./assets/components/secciones/generos/Generos.jsx"));
 const Sagas = lazy(() => import("./assets/components/secciones/sagas/Sagas.jsx"));
 const Starwars = lazy(() => import("./assets/components/secciones/starwars/Starwars.jsx"));
+const Gestor = lazy(()=> import("./assets/components/secciones/gestor/Gestor.jsx"));
 
 function App() {
   const { isAuthenticated, loading } = useAuth(); // Usa el hook de autenticación
@@ -61,6 +62,7 @@ function App() {
                   <Route path="/comics" element={<Comics />} />
                   <Route path="/generos" element={<Generos />} />
                   <Route path="/starwars" element={<Starwars />} />
+                  <Route path="/gestor" element={<Gestor />} />
                 </>
               )}
               <Route path="/*" element={<Pagina404 />} />

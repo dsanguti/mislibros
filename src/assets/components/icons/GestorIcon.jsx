@@ -1,4 +1,4 @@
-const Gestor = (props) => {
+const GestorIcon = (props) => {
   return (
     <svg
     {...props}
@@ -31,4 +31,4 @@ const Gestor = (props) => {
   );
 };
 
-export default Gestor;
+export default GestorIcon;
