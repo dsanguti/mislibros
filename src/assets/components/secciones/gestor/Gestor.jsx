@@ -15,8 +15,8 @@ const Gestor = () => {
           </p>
       
         </div>
-        <div className={style.SectionCards}>
-        <GestorCard icon={AddBook} description="Añada un nuevo libro" />
+        <div className={style.sectionCards}>
+        <GestorCard icon={AddBook} description="Añada un nuevo libro a su biblioteca" />
         <GestorCard icon={EditBook} description="Edite o elimine los libros de su biblioteca" />
        
         </div>
