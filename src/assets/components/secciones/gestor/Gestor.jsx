@@ -1,8 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import style from "../../../css/Gestor.module.css";
 import GestorCard from "./GestorCard";
 import EditBook from "../../icons/EditBook"
 import AddBook from "../../icons/AddBook"
+
 const Gestor = () => {
+
+const navigate = useNavigate();
+const handleEditBooksClick =()=>{
+  navigate("/editorlibros");
+};
+
   return (
     <>
       <div className={style.container}>
@@ -17,7 +25,8 @@ const Gestor = () => {
         </div>
         <div className={style.sectionCards}>
         <GestorCard icon={AddBook} description="Añada un nuevo libro a su biblioteca" />
-        <GestorCard icon={EditBook} description="Edite o elimine los libros de su biblioteca" />
+        <GestorCard icon={EditBook} description="Edite o elimine los libros de su biblioteca"
+        onClick={handleEditBooksClick} />
        
         </div>
       </div>

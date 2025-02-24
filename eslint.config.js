@@ -23,6 +23,7 @@ export default [
         preIndex:true,
         onBookClick:true,
         handleBookClic:true,
+        onEditClick:true
       },
       parserOptions: {
         ecmaVersion: 'latest',
