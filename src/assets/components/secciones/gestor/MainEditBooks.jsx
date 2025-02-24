@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
-import BooksListRow from "../../BooksListRow";
-import HeaderRow from "../../HeaderRow";
 import Search from "../../Search";
 import BooksListRowEdit from "../../BooksListRowEdit";
 import HeaderRowEdit from "../../HeaderRowEdit";
@@ -48,6 +46,7 @@ const MainEditBooks = ({ books, onBookClick, onEditClick, onDeleteClick }) => {
 
   return (
     <div className={style.mainSagaContainer}>
+      <h4 className={style.tittle}>Podrá editar o eliminar sus libros de la biblioteca</h4>
       <Search onSearch={handleSearch} />
       
       {books && (
