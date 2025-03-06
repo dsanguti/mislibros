@@ -1,4 +1,3 @@
-import BooksRow from "./BooksRow";
 import style from "../css/BooksListRow.module.css";
 import BooksRowEdit from "./BookRowEdit";
 
@@ -12,7 +11,7 @@ const BooksListRowEdit = ({ books = [], error, loading, onBookClick, onEditClick
     <div className={style.container}>
       {books.map((book) => (
         <div key={book.id} onClick={() => onBookClick(book)}>
-          <BooksRowEdit titulo={book.titulo} autor={book.autor} genero={book.genero} onEditClick={onEditClick(book)} onDeleteClick={onDeleteClick(book)} />
+          <BooksRowEdit titulo={book.titulo} autor={book.autor} genero={book.genero} onEditClick={() => onEditClick(book)} onDeleteClick={() => onDeleteClick(book)} />
         </div>
       ))}
     </div>

@@ -85,6 +85,43 @@
   transform: translateY(-15px);
 }
 
+/*Estilos formulario editar libros */
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formEdit {
+  display: flex;
+  flex-direction: column;
+}
+
+.labelForm {
+  font-weight: bold;
+}
+
+.inputFormEdit {
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.buttonFormEdit {
+  padding: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.buttonFormEdit:hover {
+  background: #0056b3;
+}
+
+
+
+
 /* Estilos para vista móvil */
 @media (max-width: 768px) {
   .card {

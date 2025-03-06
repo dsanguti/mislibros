@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
-import MainEditBooks from "./MainEditBooks"; // Asegúrate de que el nombre del componente sea correcto
-import Modal from "../../Modal"; // Importamos el modal
+import MainEditBooks from "./MainEditBooks";
+import Modal from "../../Modal";
+import EditBookForm from "./EditBookForm";
 
 const EditBooks = () => {
-  const [books, setBooks] = useState([]); // Cambiado de sagas a books
+  const [books, setBooks] = useState([]);
   const [selectedBook, setSelectedBook] = useState(null);
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos editando
 
   useEffect(() => {
     const handleResize = () => {
@@ -49,7 +51,7 @@ const EditBooks = () => {
 
         const data = await response.json();
         if (Array.isArray(data)) {
-          setBooks(data); // Cambiado de setSagas a setBooks
+          setBooks(data);
         } else {
           setError("Los datos no son un array válido");
           console.error("Datos inválidos:", data);
@@ -65,25 +67,26 @@ const EditBooks = () => {
 
   const handleBookClick = (book) => {
     setSelectedBook(book);
+    setIsEditing(false); // No estamos editando, solo mostrando el libro
     if (isMobile) {
-      setModalOpen(true); // Abre el modal si es vista móvil
+      setModalOpen(true);
     }
   };
 
   const handleEditClick = (book) => {
-    // Lógica para editar el libro
-    console.log("Editar libro:", book);
+    setSelectedBook(book);
+    setIsEditing(true); // Ahora sí estamos editando
+    setModalOpen(true);
   };
 
   const handleDeleteClick = (book) => {
-    // Lógica para eliminar el libro
     console.log("Eliminar libro:", book);
   };
-
 
   const closeModal = () => {
     setModalOpen(false);
     setSelectedBook(null);
+    setIsEditing(false);
   };
 
   return (
@@ -95,15 +98,21 @@ const EditBooks = () => {
           <div className={style.ContainerHeaderMain}>
             <MainEditBooks
               className={style.main}
-              books={books} // Cambiado de saga a books
+              books={books}
               onBookClick={handleBookClick}
               onEditClick={handleEditClick}
               onDeleteClick={handleDeleteClick}
             />
           </div>
+
+          {/* Modal en vista móvil */}
           {isMobile ? (
             <Modal isOpen={isModalOpen} onClose={closeModal}>
-              {selectedBook && <CardBook book={selectedBook} />}
+              {selectedBook && (isEditing ? (
+                <EditBookForm book={selectedBook} onClose={closeModal} />
+              ) : (
+                <CardBook book={selectedBook} />
+              ))}
             </Modal>
           ) : (
             <div className={style.containerCard}>
@@ -113,6 +122,13 @@ const EditBooks = () => {
                 <p>Seleccione un libro</p>
               )}
             </div>
+          )}
+
+          {/* Modal de edición en escritorio */}
+          {!isMobile && isModalOpen && selectedBook && isEditing && (
+            <Modal isOpen={isModalOpen} onClose={closeModal}>
+              <EditBookForm book={selectedBook} onClose={closeModal} />
+            </Modal>
           )}
         </>
       )}
