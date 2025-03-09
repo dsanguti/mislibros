@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
 
 const EditBookForm = ({ book, onClose, onUpdate }) => {
@@ -8,11 +10,8 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     autor: book.autor,
     genero: book.genero,
     sinopsis: book.sinopsis,
-    cover: book.cover, // URL de la imagen actual
+    cover: book.cover,
   });
-
-  console.log('book recibido:', book); // Verifica la estructura del objeto book
-
 
   const [preview, setPreview] = useState(book.cover);
   const [file, setFile] = useState(null);
@@ -33,66 +32,63 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const token = localStorage.getItem("token"); // Obtén el token del almacenamiento local
+    const token = localStorage.getItem("token");
 
     if (!token) {
-      alert("No tienes permiso para actualizar el libro. Inicia sesión nuevamente.");
+      toast.error("No tienes permiso para actualizar el libro.", { autoClose: 3000 });
       return;
     }
 
     const data = new FormData();
-    data.append("id", book.id); // El ID del libro a actualizar
+    data.append("id", book.id);
     data.append("titulo", formData.titulo);
     data.append("autor", formData.autor);
     data.append("genero", formData.genero);
     data.append("sinopsis", formData.sinopsis);
     if (file) {
-      data.append("cover", file); // Solo enviamos la imagen si se cambió
+      data.append("cover", file);
     }
 
     try {
       const response = await fetch("http://localhost:8001/api/update_book", {
         method: "PUT",
         body: data,
-        headers: {
-          Authorization: `Bearer ${token}`, 
-        },
-        credentials: "include", 
+        headers: { Authorization: `Bearer ${token}` },
+        credentials: "include",
       });
-    
+
       const result = await response.json();
-    
+
       if (!response.ok) {
-        throw new Error(result.error || "Error desconocido");
+        toast.error(result.error || "Error desconocido", { autoClose: 3000 });
+        return;
       }
-    
-      alert("Libro actualizado correctamente");
-    
+
+      toast.success("Libro actualizado correctamente.", { autoClose: 2000 });
+
       if (typeof onUpdate === "function") {
-        onUpdate(); 
+        onUpdate();
       }
-    
-      if (typeof onClose === "function") {
-        onClose(); 
-      }
-    
-    } catch (error) {
-      console.error("Error al actualizar:", error);
-      alert("Hubo un problema al actualizar el libro.");
-    }    
+
+      setTimeout(() => {
+        if (typeof onClose === "function") {
+          onClose();
+        }
+      }, 2000);
+      
+    } catch {
+      toast.error("Hubo un problema al actualizar el libro.", { autoClose: 3000 });
+    }
   };
 
   return (
     <div className={style.formContainer}>
       <h2>Editar Libro</h2>
-      <form className={style.formEdit} onSubmit={handleSubmit}>
 
+      <form className={style.formEdit} onSubmit={handleSubmit}>
         <label className={style.labelForm}>Carátula:</label>
         <div className={style.containerCoverPreview}>
-          {preview && (
-            <img src={preview} alt="Vista previa" className={style.coverPreview} />
-          )}
+          {preview && <img src={preview} alt="Vista previa" className={style.coverPreview} />}
         </div>
         <input type="file" accept="image/*" onChange={handleFileChange} />
 
@@ -115,3 +111,5 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
 };
 
 export default EditBookForm;
+
+

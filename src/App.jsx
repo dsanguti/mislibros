@@ -2,6 +2,9 @@ import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom"; // Importa Navigate
 import "./App.css";
 import "./index.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 import Loader from "./assets/components/Loader";
 import Nav from "./assets/components/Nav";
@@ -28,6 +31,7 @@ function App() {
 
   return (
     <>
+      <ToastContainer />
       <div className="container-app">
        {/* Renderiza el título solo si está autenticado */}
        {isAuthenticated && <Tittle>Mis Libros</Tittle>}
