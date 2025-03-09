@@ -13,6 +13,8 @@ const Carrusel = ({
 }) => {
 
   console.log("📌 Props en Carrusel:", { onBookClick });
+  console.log("Imágenes de géneros en carrusel:", items.map(item => item.coverGenero));
+
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleItems, setVisibleItems] = useState(3);

@@ -65,6 +65,7 @@ const Generos = () => {
     fetchGeneros();
   }, []);
 
+  
   const handleBookClick = (book) => {
     setSelectedBook(book);
     if (isMobile) {

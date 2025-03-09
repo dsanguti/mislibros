@@ -21,14 +21,7 @@ const storage = multer.diskStorage({
   },
 });
 
-
-
-
-
 const upload = multer({ storage });
-
-
-
 
 // Ruta para actualizar un libro
 router.put("/update_book", upload.single("cover"), (req, res) => {
@@ -51,7 +44,6 @@ router.put("/update_book", upload.single("cover"), (req, res) => {
     const userId = decoded.id; // ID del usuario autenticado
     console.log("✅ Token válido. Usuario autenticado:", userId);
 
-
     console.log("🔎 req.body recibido:", req.body);
 
     const id = parseInt(req.body.id, 10); // Convertir el ID a número
@@ -59,7 +51,7 @@ router.put("/update_book", upload.single("cover"), (req, res) => {
     const autor = req.body.autor;
     const sinopsis = req.body.sinopsis;
     const saga = req.body.saga || null;
-    const genero = req.body.genero;
+    const nuevoGenero = req.body.genero;
     
     console.log("📌 ID recibido después de convertir:", id);
     
@@ -69,14 +61,14 @@ router.put("/update_book", upload.single("cover"), (req, res) => {
     console.log("   - ID del libro:", id);
     console.log("   - Título:", titulo);
     console.log("   - Autor:", autor);
-    console.log("   - Género:", genero);
+    console.log("   - Género:", nuevoGenero);
     console.log("   - Saga:", saga);
     console.log("   - Sinopsis:", sinopsis);
     console.log("   - Cover:", cover);
 
     // Verificar que el libro pertenece al usuario autenticado
     db.query(
-      "SELECT cover FROM books WHERE id = ? AND user_id = ?",
+      "SELECT genero, cover, coverGenero FROM books WHERE id = ? AND user_id = ?",
       [id, userId],
       (err, results) => {
         if (err) {
@@ -91,17 +83,28 @@ router.put("/update_book", upload.single("cover"), (req, res) => {
 
         console.log("✅ Permiso concedido. El usuario puede modificar el libro.");
 
+        const generoActual = results[0].genero;
+        let coverGenero = results[0].coverGenero;
+
+        // Si el género cambió, asignar la imagen correspondiente
+        if (nuevoGenero !== generoActual) {
+          coverGenero = `http://localhost:8001/images/generos/${nuevoGenero}.jpeg`;
+
+          // Asegurarse de que la URL usa "http" en lugar de "https"
+          coverGenero = coverGenero.replace(/^https:/, "http:");
+        }
+
         // Si no se subió una nueva imagen, mantener la actual
         if (!cover) cover = results[0].cover;
 
         // Actualizar los datos del libro
         const updateQuery = `
           UPDATE books 
-          SET titulo = ?, autor = ?, sinopsis = ?, saga = ?, genero = ?, cover = ?
+          SET titulo = ?, autor = ?, sinopsis = ?, saga = ?, genero = ?, cover = ?, coverGenero = ?
           WHERE id = ? AND user_id = ?
         `;
 
-        db.query(updateQuery, [titulo, autor, sinopsis, saga || null, genero, cover, id, userId], (err, updateResult) => {
+        db.query(updateQuery, [titulo, autor, sinopsis, saga || null, nuevoGenero, cover, coverGenero, id, userId], (err, updateResult) => {
           if (err) {
             console.error("❌ Error al actualizar el libro:", err);
             return res.status(500).json({ error: "Error al actualizar el libro" });
@@ -113,13 +116,12 @@ router.put("/update_book", upload.single("cover"), (req, res) => {
             return res.status(200).json({ message: "No se realizaron cambios en el libro" });
           }
 
-          console.log("✅ Libro actualizado correctamente. Nueva cover:", cover);
-          res.json({ message: "Libro actualizado correctamente", cover });
+          console.log("✅ Libro actualizado correctamente. Nueva coverGenero:", coverGenero);
+          res.json({ message: "Libro actualizado correctamente", cover, coverGenero });
         });
       }
     );
   });
 });
-
 
 module.exports = router;
