@@ -23,7 +23,7 @@ router.get("/all_books", (req, res) => {
 
     // Consultar la base de datos para obtener todos los libros del usuario
     db.query(
-      "SELECT titulo, autor, sinopsis, saga, genero, cover FROM books WHERE user_id = ?",
+      "SELECT id, titulo, autor, sinopsis, saga, genero, cover FROM books WHERE user_id = ?",
       [userId],
       (err, results) => {
         if (err) {

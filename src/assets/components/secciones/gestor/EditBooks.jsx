@@ -12,6 +12,8 @@ const EditBooks = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos editando
+  const [updateFlag, setUpdateFlag] = useState(false);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -63,7 +65,7 @@ const EditBooks = () => {
     };
 
     fetchAllBooks();
-  }, []);
+  }, [updateFlag]);
 
   const handleBookClick = (book) => {
     setSelectedBook(book);
@@ -89,6 +91,10 @@ const EditBooks = () => {
     setIsEditing(false);
   };
 
+  const handleUpdate =()=>{
+    setUpdateFlag(prev =>!prev);
+  }
+
   return (
     <div className={style.container}>
       {error ? (
@@ -109,7 +115,7 @@ const EditBooks = () => {
           {isMobile ? (
             <Modal isOpen={isModalOpen} onClose={closeModal}>
               {selectedBook && (isEditing ? (
-                <EditBookForm book={selectedBook} onClose={closeModal} />
+                <EditBookForm book={selectedBook} onClose={closeModal} onUpdate={handleUpdate} />
               ) : (
                 <CardBook book={selectedBook} />
               ))}
@@ -127,7 +133,7 @@ const EditBooks = () => {
           {/* Modal de edición en escritorio */}
           {!isMobile && isModalOpen && selectedBook && isEditing && (
             <Modal isOpen={isModalOpen} onClose={closeModal}>
-              <EditBookForm book={selectedBook} onClose={closeModal} />
+              <EditBookForm book={selectedBook} onClose={closeModal} onUpdate={handleUpdate} />
             </Modal>
           )}
         </>

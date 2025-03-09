@@ -23,7 +23,7 @@ router.get("/generos", (req, res) => {
 
     // Consultar la base de datos para obtener las sagas del usuario
     db.query(
-      "SELECT genero, coverGenero FROM books WHERE genero IS NOT NULL AND genero != '' AND user_id = ? GROUP BY genero",
+      "SELECT id, genero, coverGenero FROM books WHERE genero IS NOT NULL AND genero != '' AND user_id = ? GROUP BY genero",
       [userId],
       (err, results) => {
         if (err) {

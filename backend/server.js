@@ -3,14 +3,14 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const mysql = require("mysql2");
 const path = require("path");
-const app = express();
 
+const app = express();
 const port = 8001;
 
-// Configuración de las Cors
+// Configuración de las CORS
 const corsOptions = {
   origin: "http://localhost:5173", // Origen de tu frontend
-  methods: ["GET", "POST"],
+  methods: ["GET", "POST", "PUT"], // Se agrega "PUT"
   credentials: true, // Permitir cookies y credenciales
 };
 
@@ -34,8 +34,9 @@ db.connect((err) => {
   }
 });
 
-// Servir archivos estáticos desde la carpeta "images"
+// Servir archivos estáticos
 app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Servir imágenes de uploads
 
 // Rutas
 const loginRoutes = require("./api/routes/login");
@@ -47,16 +48,19 @@ const generosRoutes = require("./api/routes/generos");
 const librosGeneroRoutes = require("./api/routes/librosGeneros");
 const librosStarwarsRoutes = require("./api/routes/librosStarwars");
 const comicsRoutes = require("./api/routes/librosComics");
+const updateBook = require("./api/routes/updateBook"); // Rutas de actualización de libros
 
+// Registrar rutas
 app.use("/api", loginRoutes);
 app.use("/api", apiRoutes);
 app.use("/api", sagasRoutes);
 app.use("/api", librosSagasRoutes);
-app.use("/api", all_booksRoutes); // Asegúrate de que esta línea esté presente
+app.use("/api", all_booksRoutes);
 app.use("/api", generosRoutes);
 app.use("/api", librosGeneroRoutes);
 app.use("/api", librosStarwarsRoutes);
 app.use("/api", comicsRoutes);
+app.use("/api", updateBook); // Ahora updateBook está correctamente registrado en /api/books
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

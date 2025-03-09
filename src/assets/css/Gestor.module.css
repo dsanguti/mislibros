@@ -93,6 +93,20 @@
   gap: 10px;
 }
 
+.containerCoverPreview{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+}
+.coverPreview{
+  width: 200px; /* Ajusta el tamaño según necesites */
+  height: auto;
+  display: block;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: var( --shadow-md);  
+}
 .formEdit {
   display: flex;
   flex-direction: column;
@@ -107,16 +121,23 @@
   margin-bottom: 10px;
 }
 
-.buttonFormEdit {
+.textareaFormEdit{
+  min-height: 180px;
   padding: 10px;
-  background: #007bff;
+  
+}
+
+.buttonFormEdit {
+  margin-top: 12px;
+  padding: 10px;
+  background: var(--color-primary);
   color: white;
   border: none;
   cursor: pointer;
 }
 
 .buttonFormEdit:hover {
-  background: #0056b3;
+  background: var(--color-secundary);
 }
 
 
