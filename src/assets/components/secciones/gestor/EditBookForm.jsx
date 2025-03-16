@@ -11,6 +11,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     genero: book.genero,
     sinopsis: book.sinopsis,
     cover: book.cover,
+    saga: book.saga || "", // Añadido el campo saga
   });
 
   const [preview, setPreview] = useState(book.cover);
@@ -77,6 +78,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     data.append("autor", formData.autor);
     data.append("genero", formData.genero);
     data.append("sinopsis", formData.sinopsis);
+    data.append("saga", formData.saga); // Añadido el campo saga al FormData
     if (file) {
       data.append("cover", file);
     }
@@ -96,7 +98,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
         return;
       }
 
-      toast.success("Libro actualizado correctamente.", { autoClose: 2000 });
+      toast.success("Libro actualizado correctamente.", { autoClose: 1000 });
 
       if (typeof onUpdate === "function") {
         onUpdate();
@@ -161,6 +163,16 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
             </option>
           ))}
         </select>
+
+        {/* Nuevo campo para Saga */}
+        <label className={style.labelForm}>Saga:</label>
+        <input
+          type="text"
+          name="saga"
+          value={formData.saga}
+          onChange={handleChange}
+          placeholder="Nombre de la saga (opcional)"
+        />
 
         <label className={style.labelForm}>Sinopsis:</label>
         <textarea
