@@ -1,1 +1,16 @@
 Hola mislibros
+
+******* PROMPT para inicar conversación con IA ********
+
+Estoy desarrollando una aplicación de libros digitales. Los usuarios podrán subir sus archivos de libros y podrán , y clasificarlos
+por sagas, si son comics, por géneros, si son de starwars, esas serían las secciones de la aplicación.
+
+La aplicación es web y se estoy utilizando para el frontend REACT, y para el backend node, y con base datos mysql. 
+
+Tengo ahora mismo una tabla users con los campos:id, users, password,name, lastname, mail y profile. Y una tabla books con campos: id, titulo,
+autor,sinopsis, genero, file, saga, cover, coverSaga, coverGenero, starwars, comcis, user_id.
+
+Resulta que estoy viendo que para la tabla books, los campos referentes a saga y coverSaga, a la hora de poder modificar a traves de un formulario los datos 
+de un libro, puede que sería conventiente tenerlos en una tabla aparte, con nombre "sagas" y poner ahi dichos campos, para que cuando cada usuario cree sus sagas, vaya a parar los cambios
+a dicha tabla y no a un registro de un libro en cuestión, dando lugar que si cambio la saga de un libro en dicho registro no se vería afectado otro registro de un libro con la misma saga.
+Me podrias ayudar a implementar estos cambios, en principio por phpmyadmin, y las relaciones que pudiera tener con las otras tablas (users y books) de mi base de datos mislibros.
