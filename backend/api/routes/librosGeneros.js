@@ -25,15 +25,26 @@ router.get("/libros-genero", (req, res) => {
 
     // Consulta a la base de datos para obtener los libros del género seleccionado
     db.query(
-      "SELECT id, titulo, autor, genero, sinopsis, cover FROM books WHERE genero = ? AND user_id = ?",
+      `SELECT 
+         books.id, 
+         books.titulo, 
+         books.autor, 
+         books.sinopsis, 
+         books.cover, 
+         genero.nombre AS genero 
+       FROM books 
+       INNER JOIN genero ON books.id_genero = genero.id 
+       WHERE genero.nombre = ? AND books.user_id = ?`,
       [genero, userId],
       (err, results) => {
         if (err) {
           return res.status(500).json({ error: "Error al obtener los libros" });
         }
+        
+        console.log("Libros obtenidos con el género:", results); // Verificar los datos obtenidos
         res.json(results);
       }
-    );
+    );    
   });
 });
 

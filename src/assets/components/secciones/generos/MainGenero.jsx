@@ -4,6 +4,7 @@ import BooksListRow from "../../BooksListRow";
 import HeaderRow from "../../HeaderRow";
 
 const MainGenero = ({ genero, onBookClick }) => {
+  console.log("📥 Prop recibida en MainGenero:", genero);
   const [libros, setLibros] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,7 +27,7 @@ const MainGenero = ({ genero, onBookClick }) => {
         }
 
         const response = await fetch(
-          `http://localhost:8001/api/libros-genero?genero=${encodeURIComponent(genero.genero)}`,
+          `http://localhost:8001/api/libros-genero?genero=${encodeURIComponent(genero.nombre)}`,
           {
             method: "GET",
             headers: {
@@ -68,14 +69,12 @@ const MainGenero = ({ genero, onBookClick }) => {
 
   return (
     <div className={style.mainSagaContainer}>
-      <h4>Género: {genero ? genero.genero : "Selecciona un género"}</h4>
+      <h4>Género: {genero ? genero.nombre : "Selecciona un género"}</h4>
       {genero && (
-        <>
-          <div className={style.containerListBooks}>
-            <HeaderRow />
-            <BooksListRow books={libros} error={error} loading={loading} onBookClick={onBookClick} />
-          </div>
-        </>
+        <div className={style.containerListBooks}>
+          <HeaderRow />
+          <BooksListRow books={libros} error={error} loading={loading} onBookClick={onBookClick} />
+        </div>
       )}
     </div>
   );

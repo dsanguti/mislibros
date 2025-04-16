@@ -1,6 +1,7 @@
 import style from "../css/BooksRow.module.css";
 import BookTitle from "./BookTittle";
 import BookAuthor from "./BookAuthor";
+import BookGenre from "./BookGenre";
 
 const BooksRow = ({ titulo, autor, genero}) => {
   return (
@@ -12,7 +13,7 @@ const BooksRow = ({ titulo, autor, genero}) => {
         <BookAuthor autor={autor} />
       </div>
       <div className={style.genero}>
-        <BookAuthor autor={genero} />
+        <BookGenre genero={genero} />
       </div>
     </div>
   );

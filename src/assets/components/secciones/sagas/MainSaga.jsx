@@ -25,9 +25,10 @@ const MainSaga = ({ saga, onBookClick }) => {
           setLoading(false);
           return;
         }
-
+        console.log("ID de la saga al hacer clic:", saga.id); // 
         const response = await fetch(
-          `http://localhost:8001/api/libros-sagas?saga=${saga.saga}`,
+        `http://localhost:8001/api/libros-sagas?sagaId=${saga.id}`,
+
           {
             method: "GET",
             headers: {

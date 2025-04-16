@@ -1,38 +1,39 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const db = require("../../db"); // Tu configuración de base de datos
-const router = express.Router(); // Cambiado de app a router
+const db = require("../../db");
+const router = express.Router();
 
-// Ruta para obtener las sagas
-router.get("/sagas", (req, res) => { // Cambiado de "/api/sagas" a "/sagas"
-  // Obtener el token de autorización desde los encabezados
-  const token = req.headers.authorization?.split(" ")[1]; // 'Bearer <token>'
+// Ruta para obtener las sagas asociadas a libros del usuario
+router.get("/sagas", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ error: "No token provided" });
   }
 
-  // Verificar el token JWT
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
       return res.status(403).json({ error: "Token no válido o expirado" });
     }
 
-    // Si el token es válido, obtenemos el ID del usuario decodificado
     const userId = decoded.id;
 
-    // Consultar la base de datos para obtener las sagas del usuario
-    db.query(
-      "SELECT saga, coverSaga FROM books WHERE saga IS NOT NULL AND saga != '' AND user_id = ? GROUP BY saga",
-      [userId],
-      (err, results) => {
-        if (err) {
-          return res.status(500).json({ error: "Error al obtener las sagas" });
-        }
-        res.json(results); // Enviar las sagas como respuesta
+    // Obtener las sagas que tengan al menos un libro del usuario
+    const query = `
+      SELECT DISTINCT s.id, s.nombre, s.coverSaga
+      FROM sagas s
+      JOIN books b ON s.id = b.saga_id
+      WHERE b.user_id = ?
+    `;
+
+    db.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error("Error al obtener las sagas:", err);
+        return res.status(500).json({ error: "Error al obtener las sagas" });
       }
-    );
+      res.json(results);
+    });
   });
 });
 
-module.exports = router; // Exportar el router
+module.exports = router;

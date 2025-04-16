@@ -2,9 +2,10 @@ import Carrusel from "../../Carrusel";
 
 const HeaderSaga = ({ sagas, onSagaClick }) => {
   const handleSagaClick = (saga) => {
-    console.log(`Saga seleccionada en HeaderSaga: ${saga.saga}`); // Añadido para depuración
+    console.log(`Saga seleccionada en HeaderSaga: ${saga.titulo}`); // Usar 'titulo' en lugar de 'saga'
     onSagaClick(saga);
   };
+  
 
   return (
     <div>
@@ -14,3 +15,4 @@ const HeaderSaga = ({ sagas, onSagaClick }) => {
 };
 
 export default HeaderSaga;
+

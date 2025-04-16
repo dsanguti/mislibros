@@ -8,28 +8,31 @@ const Carrusel = ({
   onItemClick,
   type,
   selectedItem,
-  onBookClick,
   disableItemClic = false,
 }) => {
 
-  console.log("📌 Props en Carrusel:", { onBookClick });
-  console.log("Imágenes de géneros en carrusel:", items.map(item => item.coverGenero));
-
+  // Para depuración, si es necesario
+  console.log("📌 Props en Carrusel:", { onItemClick });
+  console.log("Imágenes en carrusel:", items.map(item => item.coverGenero));
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleItems, setVisibleItems] = useState(3);
 
+  // Determinar qué propiedad usar según el tipo (sagas, géneros, starwars, etc.)
   const nameKey =
-    type === "sagas" ? "saga" : type === "starwars" ? "titulo" : type === "starwars" ? "titulo" : "genero";
+    type === "sagas"
+      ? "nombre"
+      : type === "starwars" || type === "comics"
+      ? "titulo"
+      : "nombre"; // Para género
   const coverKey =
     type === "sagas"
       ? "coverSaga"
-      : type === "starwars"
-      ? "cover"
-      : type === "comics"
+      : type === "starwars" || type === "comics"
       ? "cover"
       : "coverGenero";
 
+  // Funciones para controlar el desplazamiento en el carrusel
   const handlePrev = () => {
     const newIndex =
       currentIndex === 0 ? items.length - visibleItems : currentIndex - 1;
@@ -42,6 +45,7 @@ const Carrusel = ({
     setCurrentIndex(newIndex);
   };
 
+  // Actualizar la cantidad de elementos visibles según el tamaño de la ventana
   const updateVisibleItems = useCallback(() => {
     const width = window.innerWidth;
     if (width < 1060) {
@@ -61,10 +65,12 @@ const Carrusel = ({
     };
   }, [updateVisibleItems]);
 
+  // Si los items no son válidos, mostramos un error
   if (!Array.isArray(items)) {
     return <p>Error: los datos no son válidos</p>;
   }
 
+  // Comprobaciones para deshabilitar los botones de desplazamiento
   const isPrevDisabled = currentIndex === 0;
   const isNextDisabled = currentIndex >= items.length - visibleItems;
 
@@ -88,12 +94,6 @@ const Carrusel = ({
                 console.log(`${type} clickeado: ${item[nameKey]}`);
                 if (!disableItemClic) {
                   onItemClick(item);
-                }
-                if (onBookClick) {
-                  console.log("✅ onBookClick llamado con:", item);
-                  onBookClick(item);
-                } else {
-                  console.error("❌ onBookClick NO está definido en Carrusel.jsx");
                 }
               }}
             >

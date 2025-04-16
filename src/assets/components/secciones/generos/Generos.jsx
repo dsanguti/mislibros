@@ -1,80 +1,59 @@
 import { useEffect, useState } from "react";
-import style from "../../../css/Sagas.module.css";
-import CardBook from "../../CardBook";
 import HeaderGenero from "./HeaderGenero";
 import MainGenero from "./MainGenero";
-import Modal from "../../Modal"; // Importamos el modal
+import CardBook from "../../CardBook";
+import Modal from "../../Modal";
+import style from "../../../css/Genero.module.css";
 
 const Generos = () => {
   const [generos, setGeneros] = useState([]);
   const [selectedGenero, setSelectedGenero] = useState(null);
   const [selectedBook, setSelectedBook] = useState(null);
   const [error, setError] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.matchMedia("(max-width: 768px)").matches);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const isMobile = window.innerWidth <= 768;
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchGeneros = async () => {
       try {
         const authToken = localStorage.getItem("authToken");
-        if (!authToken) {
-          setError("No se encontró el token de autenticación");
-          return;
-        }
-
         const response = await fetch("http://localhost:8001/api/generos", {
-          method: "GET",
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          credentials: "include",
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          setError("Error al obtener géneros");
-          console.error("Error en la solicitud:", errorData);
-          return;
+          throw new Error("Error al obtener géneros");
         }
 
         const data = await response.json();
-        if (Array.isArray(data)) {
-          setGeneros(data);
-        } else {
-          setError("Los datos no son un array válido");
-          console.error("Datos inválidos:", data);
-        }
-      } catch (error) {
-        setError("Error al obtener géneros");
-        console.error("Error:", error);
+        console.log("🎨 Géneros cargados:", data);
+        setGeneros(data);
+      } catch (err) {
+        console.error("Error al cargar géneros:", err);
+        setError("Error al cargar géneros.");
       }
     };
 
     fetchGeneros();
   }, []);
 
-  
+  const handleGeneroClick = (genero) => {
+    console.log("🎯 Género seleccionado en Generos.jsx:", genero);
+    setSelectedGenero(genero);
+  };
+
   const handleBookClick = (book) => {
     setSelectedBook(book);
-    if (isMobile) {
-      setModalOpen(true); // Abre el modal si es vista móvil
-    }
+    if (isMobile) setIsModalOpen(true);
   };
 
   const closeModal = () => {
-    setModalOpen(false);
+    setIsModalOpen(false);
     setSelectedBook(null);
   };
 
@@ -88,7 +67,7 @@ const Generos = () => {
             <HeaderGenero
               className={style.header}
               generos={generos}
-              onGeneroClick={setSelectedGenero}
+              onGeneroClick={handleGeneroClick}
             />
             <MainGenero
               className={style.main}
@@ -96,6 +75,7 @@ const Generos = () => {
               onBookClick={handleBookClick}
             />
           </div>
+
           {isMobile ? (
             <Modal isOpen={isModalOpen} onClose={closeModal}>
               {selectedBook && <CardBook book={selectedBook} />}
