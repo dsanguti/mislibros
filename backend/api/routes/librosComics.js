@@ -26,7 +26,7 @@ router.get("/librosComics", (req, res) => {
         b.sinopsis, 
         b.cover,
         s.nombre AS nombreSaga,
-        g.nombre AS nombreGenero
+        g.nombre AS genero
       FROM books b
       LEFT JOIN sagas s ON b.saga_id = s.id
       LEFT JOIN genero g ON b.id_genero = g.id

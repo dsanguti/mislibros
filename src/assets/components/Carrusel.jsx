@@ -8,6 +8,7 @@ const Carrusel = ({
   onItemClick,
   type,
   selectedItem,
+  onBookClick,
   disableItemClic = false,
 }) => {
 
@@ -93,9 +94,13 @@ const Carrusel = ({
               onClick={() => {
                 console.log(`${type} clickeado: ${item[nameKey]}`);
                 if (!disableItemClic) {
-                  onItemClick(item);
+                  if ((type === "sagas" || type === "generos") && onItemClick) {
+                    onItemClick(item); // cargar libros de saga/género
+                  } else if ((type === "starwars" || type === "comics") && onBookClick) {
+                    onBookClick(item); // cargar libro en CardBook
+                  }
                 }
-              }}
+              }}              
             >
               <img src={item[coverKey]} alt={item[nameKey]} />
               <p>{item[nameKey]}</p>

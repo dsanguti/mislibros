@@ -1,20 +1,12 @@
 import Carrusel from "../../Carrusel";
 
-const HeaderComics = ({ comics, selectedComics, onComicsClick, onBookClick }) => {
-
-  const handleComicsClick = (comics) => {
-    onComicsClick(comics);
-  };
-
+const HeaderComics = ({ comics, onBookClick }) => {
   return (
     <div>
       <Carrusel 
-        items={comics} 
-        onItemClick={handleComicsClick} // Selecciona la saga
-        type="comics" 
-        selectedItem={selectedComics} // Pasamos el seleccionado
-        onBookClick={onBookClick}  // Pasamos el manejador de clic en libro
-        disableItemClic={true}
+        items={comics}
+        type="comics"
+        onBookClick={onBookClick}  // Manejador para mostrar el libro
       />
     </div>
   );
