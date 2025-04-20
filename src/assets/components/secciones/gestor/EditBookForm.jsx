@@ -8,34 +8,36 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     id: book.id,
     titulo: book.titulo,
     autor: book.autor,
-    genero: book.genero,
+    id_genero: "", // se establecerá después
+    saga_id: "",   // se establecerá después
     sinopsis: book.sinopsis,
     cover: book.cover,
-    saga: book.saga || "", // Añadido el campo saga
   });
 
   const [preview, setPreview] = useState(book.cover);
   const [file, setFile] = useState(null);
   const [generos, setGeneros] = useState([]);
-  
+  const [sagas, setSagas] = useState([]);
+
+  // Obtener géneros
   useEffect(() => {
     const fetchGeneros = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch("http://localhost:8001/api/generoEnum", {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) {
-          throw new Error("Error al obtener los géneros");
-        }
+        if (!response.ok) throw new Error("Error al obtener los géneros");
 
         const data = await response.json();
-        console.log("Generos obtenidos:", data); // Verifica que los géneros sean correctos
-        setGeneros(data); // Guardamos los géneros en el estado
+        setGeneros(data);
+
+        const generoMatch = data.find((g) => g.nombre === book.genero);
+        if (generoMatch) {
+          setFormData((prev) => ({ ...prev, id_genero: generoMatch.id }));
+        }
       } catch {
         toast.error("Hubo un problema al obtener los géneros.", {
           autoClose: 3000,
@@ -44,12 +46,39 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     };
 
     fetchGeneros();
-  }, []);
+  }, [book.genero]);
+
+  // Obtener sagas
+  useEffect(() => {
+    const fetchSagas = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch("http://localhost:8001/api/sagas", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) throw new Error("Error al obtener las sagas");
+
+        const data = await response.json();
+        setSagas(data);
+
+        const sagaMatch = data.find((s) => s.nombre === book.saga);
+        if (sagaMatch) {
+          setFormData((prev) => ({ ...prev, saga_id: sagaMatch.id }));
+        }
+      } catch {
+        toast.error("Hubo un problema al obtener las sagas.", {
+          autoClose: 3000,
+        });
+      }
+    };
+
+    fetchSagas();
+  }, [book.saga]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    console.log("nuevo valor seleccionado:", value);
   };
 
   const handleFileChange = (e) => {
@@ -73,21 +102,21 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     }
 
     const data = new FormData();
-    data.append("id", book.id);
+    data.append("id", Number(formData.id));
     data.append("titulo", formData.titulo);
     data.append("autor", formData.autor);
-    data.append("genero", formData.genero);
+    data.append("id_genero", Number(formData.id_genero));
+    data.append("saga_id", formData.saga_id ? Number(formData.saga_id) : "");
     data.append("sinopsis", formData.sinopsis);
-    data.append("saga", formData.saga); // Añadido el campo saga al FormData
-    if (file) {
-      data.append("cover", file);
-    }
+    if (file) data.append("cover", file);
 
     try {
       const response = await fetch("http://localhost:8001/api/update_book", {
         method: "PUT",
         body: data,
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         credentials: "include",
       });
 
@@ -100,14 +129,9 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
 
       toast.success("Libro actualizado correctamente.", { autoClose: 1000 });
 
-      if (typeof onUpdate === "function") {
-        onUpdate();
-      }
-
+      if (typeof onUpdate === "function") onUpdate();
       setTimeout(() => {
-        if (typeof onClose === "function") {
-          onClose();
-        }
+        if (typeof onClose === "function") onClose();
       }, 2000);
     } catch {
       toast.error("Hubo un problema al actualizar el libro.", {
@@ -115,11 +139,6 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
       });
     }
   };
-
-  useEffect(() => {
-    console.log("Generos en el select:", generos);
-  }, [generos]); // Este efecto se ejecutará cuando los generos cambien
-
 
   return (
     <div className={style.formContainer}>
@@ -155,24 +174,32 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
         />
 
         <label className={style.labelForm}>Género:</label>
-          <select name="genero" value={formData.genero} onChange={handleChange}>
+        <select
+          name="id_genero"
+          value={formData.id_genero}
+          onChange={handleChange}
+        >
           <option value="">Selecciona un género</option>
-          {generos.map((genero, index) => (
-            <option key={index} value={genero}>
-              {genero}
+          {generos.map((genero) => (
+            <option key={genero.id} value={genero.id}>
+              {genero.nombre}
             </option>
           ))}
         </select>
 
-        {/* Nuevo campo para Saga */}
         <label className={style.labelForm}>Saga:</label>
-        <input
-          type="text"
-          name="saga"
-          value={formData.saga}
+        <select
+          name="saga_id"
+          value={formData.saga_id}
           onChange={handleChange}
-          placeholder="Nombre de la saga (opcional)"
-        />
+        >
+          <option value="">Selecciona una saga</option>
+          {sagas.map((saga) => (
+            <option key={saga.id} value={saga.id}>
+              {saga.nombre}
+            </option>
+          ))}
+        </select>
 
         <label className={style.labelForm}>Sinopsis:</label>
         <textarea
@@ -191,3 +218,4 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
 };
 
 export default EditBookForm;
+

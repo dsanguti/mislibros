@@ -14,3 +14,5 @@ Resulta que estoy viendo que para la tabla books, los campos referentes a saga y
 de un libro, puede que sería conventiente tenerlos en una tabla aparte, con nombre "sagas" y poner ahi dichos campos, para que cuando cada usuario cree sus sagas, vaya a parar los cambios
 a dicha tabla y no a un registro de un libro en cuestión, dando lugar que si cambio la saga de un libro en dicho registro no se vería afectado otro registro de un libro con la misma saga.
 Me podrias ayudar a implementar estos cambios, en principio por phpmyadmin, y las relaciones que pudiera tener con las otras tablas (users y books) de mi base de datos mislibros.
+
+Se crea la tabla sagas con campos id, nombre, coverSaga, usar_id, y la tabla genero, id, nombre, coverGenero. Se crean las relaciones con las tablas books y users.
