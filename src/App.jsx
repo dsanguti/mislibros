@@ -20,7 +20,7 @@ const Sagas = lazy(() => import("./assets/components/secciones/sagas/Sagas.jsx")
 const Starwars = lazy(() => import("./assets/components/secciones/starwars/Starwars.jsx"));
 const Gestor = lazy(()=> import("./assets/components/secciones/gestor/Gestor.jsx"));
 const EditBooks = lazy(()=> import("./assets/components/secciones/gestor/EditBooks.jsx"));
-
+const AddBook = lazy(()=> import("./assets/components/secciones/gestor/AddBook.jsx"));
 function App() {
   const { isAuthenticated, loading } = useAuth(); // Usa el hook de autenticación
   const location = useLocation(); //obtener la ubicación actual.
@@ -69,6 +69,7 @@ function App() {
                   <Route path="/starwars" element={<Starwars />} />
                   <Route path="/gestor" element={<Gestor />} />
                   <Route path="/editorlibros" element={<EditBooks />} />
+                  <Route path="/addlibros" element={<AddBook />} />
                 </>
               )}
               <Route path="/*" element={<Pagina404 />} />
