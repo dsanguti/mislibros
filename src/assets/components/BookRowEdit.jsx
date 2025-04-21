@@ -23,9 +23,20 @@ const BooksRowEdit = ({
         <BookAuthor autor={genero} />
       </div>
       <div className={style.icons}>
-      <Edit_Icon onClick={(e) => { e.stopPropagation(); onEditClick(); }} className={style.iconEdit} />
-      {" "}
-        <Delete_Icon onClick={onDeleteClick} className={style.iconDelete} />
+        <Edit_Icon
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditClick();
+          }}
+          className={style.iconEdit}
+        />{" "}
+        <Delete_Icon
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteClick();
+          }}
+          className={style.iconDelete}
+        />
       </div>
     </div>
   );

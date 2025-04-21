@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
-import MainEditBooks from "./MainEditBooks";
 import Modal from "../../Modal";
+import DeleteBookForm from "./DeleteBookForm";
 import EditBookForm from "./EditBookForm";
+import MainEditBooks from "./MainEditBooks";
 
 const EditBooks = () => {
   const [books, setBooks] = useState([]);
@@ -12,8 +13,8 @@ const EditBooks = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos editando
+  const [isDeleting, setIsDeleting] = useState(false); // Estado para saber si estamos eliminando
   const [updateFlag, setUpdateFlag] = useState(false);
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -70,6 +71,7 @@ const EditBooks = () => {
   const handleBookClick = (book) => {
     setSelectedBook(book);
     setIsEditing(false); // No estamos editando, solo mostrando el libro
+    setIsDeleting(false); // No estamos eliminando
     if (isMobile) {
       setModalOpen(true);
     }
@@ -78,22 +80,27 @@ const EditBooks = () => {
   const handleEditClick = (book) => {
     setSelectedBook(book);
     setIsEditing(true); // Ahora sí estamos editando
+    setIsDeleting(false); // No estamos eliminando
     setModalOpen(true);
   };
 
   const handleDeleteClick = (book) => {
-    console.log("Eliminar libro:", book);
+    setSelectedBook(book);
+    setIsDeleting(true); // Ahora sí estamos eliminando
+    setIsEditing(false); // No estamos editando
+    setModalOpen(true);
   };
 
   const closeModal = () => {
     setModalOpen(false);
     setSelectedBook(null);
     setIsEditing(false);
+    setIsDeleting(false);
   };
 
-  const handleUpdate =()=>{
-    setUpdateFlag(prev =>!prev);
-  }
+  const handleUpdate = () => {
+    setUpdateFlag((prev) => !prev);
+  };
 
   return (
     <div className={style.container}>
@@ -114,11 +121,22 @@ const EditBooks = () => {
           {/* Modal en vista móvil */}
           {isMobile ? (
             <Modal isOpen={isModalOpen} onClose={closeModal}>
-              {selectedBook && (isEditing ? (
-                <EditBookForm book={selectedBook} onClose={closeModal} onUpdate={handleUpdate} />
-              ) : (
-                <CardBook book={selectedBook} />
-              ))}
+              {selectedBook &&
+                (isEditing ? (
+                  <EditBookForm
+                    book={selectedBook}
+                    onClose={closeModal}
+                    onUpdate={handleUpdate}
+                  />
+                ) : isDeleting ? (
+                  <DeleteBookForm
+                    book={selectedBook}
+                    onClose={closeModal}
+                    onDelete={handleUpdate}
+                  />
+                ) : (
+                  <CardBook book={selectedBook} />
+                ))}
             </Modal>
           ) : (
             <div className={style.containerCard}>
@@ -130,12 +148,27 @@ const EditBooks = () => {
             </div>
           )}
 
-          {/* Modal de edición en escritorio */}
-          {!isMobile && isModalOpen && selectedBook && isEditing && (
-            <Modal isOpen={isModalOpen} onClose={closeModal}>
-              <EditBookForm book={selectedBook} onClose={closeModal} onUpdate={handleUpdate} />
-            </Modal>
-          )}
+          {/* Modal de edición/eliminación en escritorio */}
+          {!isMobile &&
+            isModalOpen &&
+            selectedBook &&
+            (isEditing || isDeleting) && (
+              <Modal isOpen={isModalOpen} onClose={closeModal}>
+                {isEditing ? (
+                  <EditBookForm
+                    book={selectedBook}
+                    onClose={closeModal}
+                    onUpdate={handleUpdate}
+                  />
+                ) : (
+                  <DeleteBookForm
+                    book={selectedBook}
+                    onClose={closeModal}
+                    onDelete={handleUpdate}
+                  />
+                )}
+              </Modal>
+            )}
         </>
       )}
     </div>

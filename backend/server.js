@@ -10,7 +10,7 @@ const port = 8001;
 // Configuración de las CORS
 const corsOptions = {
   origin: "http://localhost:5173", // Origen de tu frontend
-  methods: ["GET", "POST", "PUT"], // Se agrega "PUT"
+  methods: ["GET", "POST", "PUT", "DELETE"], // Se agrega "DELETE"
   credentials: true, // Permitir cookies y credenciales
 };
 
@@ -50,6 +50,7 @@ const librosGeneroRoutes = require("./api/routes/librosGeneros");
 const librosStarwarsRoutes = require("./api/routes/librosStarwars");
 const comicsRoutes = require("./api/routes/librosComics");
 const updateBook = require("./api/routes/updateBook"); // Rutas de actualización de libros
+const deleteBook = require("./api/routes/delete_book"); // Rutas de eliminación de libros
 
 // Registrar rutas
 app.use("/api", loginRoutes);
@@ -63,6 +64,7 @@ app.use("/api", librosGeneroRoutes);
 app.use("/api", librosStarwarsRoutes);
 app.use("/api", comicsRoutes);
 app.use("/api", updateBook); // Ahora updateBook está correctamente registrado en /api/books
+app.use("/api", deleteBook); // Registrar la ruta de eliminación de libros
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

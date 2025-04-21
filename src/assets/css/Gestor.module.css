@@ -71,16 +71,15 @@
   padding: 3px;
   opacity: 0;
   transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out; /* Transición suave para la opacidad */
-  position:absolute;
+  position: absolute;
   bottom: 0;
 }
 .card:hover .icon {
-  transform: translateY(-30px) scale(0.8);/* Mueve el icono hacia arriba al hacer hover */
-  
+  transform: translateY(-30px) scale(0.8); /* Mueve el icono hacia arriba al hacer hover */
 }
 
 .card:hover p {
-  visibility:visible; /* Muestra la descripción al hacer hover */
+  visibility: visible; /* Muestra la descripción al hacer hover */
   opacity: 1;
   transform: translateY(-15px);
 }
@@ -93,19 +92,19 @@
   gap: 10px;
 }
 
-.containerCoverPreview{
+.containerCoverPreview {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 15px;
 }
-.coverPreview{
+.coverPreview {
   width: 200px; /* Ajusta el tamaño según necesites */
   height: auto;
   display: block;
   margin-bottom: 10px;
   border-radius: 5px;
-  box-shadow: var( --shadow-md);  
+  box-shadow: var(--shadow-md);
 }
 .formEdit {
   display: flex;
@@ -121,10 +120,9 @@
   margin-bottom: 10px;
 }
 
-.textareaFormEdit{
+.textareaFormEdit {
   min-height: 180px;
   padding: 10px;
-  
 }
 
 .buttonFormEdit {
@@ -140,7 +138,7 @@
   background: var(--color-secundary);
 }
 
-.alert{
+.alert {
   padding: 10px;
   margin: 10px 0;
   border-radius: 5px;
@@ -170,7 +168,6 @@
 
   .icon {
     transform: translateY(-20px) scale(0.8);
-   
   }
 
   .card p {
@@ -178,4 +175,67 @@
     opacity: 1;
     transform: translateY(-20px);
   }
+}
+
+/* Estilos para el formulario de eliminación */
+.deleteConfirmation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.bookTitle {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--color-primary);
+  text-align: center;
+  margin: 10px 0;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.buttonFormDelete {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.buttonFormDelete:hover {
+  background-color: #c82333;
+}
+
+.buttonFormDelete.disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.buttonFormCancel {
+  padding: 10px 20px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.buttonFormCancel:hover {
+  background-color: #5a6268;
+}
+
+.buttonFormCancel:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
