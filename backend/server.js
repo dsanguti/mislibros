@@ -51,6 +51,7 @@ const librosStarwarsRoutes = require("./api/routes/librosStarwars");
 const comicsRoutes = require("./api/routes/librosComics");
 const updateBook = require("./api/routes/updateBook"); // Rutas de actualización de libros
 const deleteBook = require("./api/routes/delete_book"); // Rutas de eliminación de libros
+const addBook = require("./api/routes/add_book"); // Nueva ruta para añadir libros
 
 // Registrar rutas
 app.use("/api", loginRoutes);
@@ -65,6 +66,7 @@ app.use("/api", librosStarwarsRoutes);
 app.use("/api", comicsRoutes);
 app.use("/api", updateBook); // Ahora updateBook está correctamente registrado en /api/books
 app.use("/api", deleteBook); // Registrar la ruta de eliminación de libros
+app.use("/api", addBook); // Registrar la nueva ruta para añadir libros
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

@@ -4,15 +4,32 @@ import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
 
 const EditBookForm = ({ book, onClose, onUpdate }) => {
+  console.log("Libro completo recibido:", book);
+
+  // Asegurarnos de que los valores sean números o booleanos
+  const starwarsValue = book.starwars !== undefined ? Number(book.starwars) : 0;
+  const comicsValue = book.comics !== undefined ? Number(book.comics) : 0;
+
+  console.log("Valores procesados:", {
+    starwarsValue,
+    comicsValue,
+    starwarsType: typeof starwarsValue,
+    comicsType: typeof comicsValue,
+  });
+
   const [formData, setFormData] = useState({
     id: book.id,
     titulo: book.titulo,
     autor: book.autor,
     id_genero: "", // se establecerá después
-    saga_id: "",   // se establecerá después
+    saga_id: "", // se establecerá después
     sinopsis: book.sinopsis,
     cover: book.cover,
+    starwars: starwarsValue === 1,
+    comics: comicsValue === 1,
   });
+
+  console.log("Estado inicial del formulario:", formData);
 
   const [preview, setPreview] = useState(book.cover);
   const [file, setFile] = useState(null);
@@ -77,8 +94,12 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
   }, [book.saga]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const { name, value, type, checked } = e.target;
+    console.log("Cambio en checkbox:", { name, value, type, checked });
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
   };
 
   const handleFileChange = (e) => {
@@ -101,6 +122,11 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
       return;
     }
 
+    console.log("Enviando datos:", {
+      starwars: formData.starwars,
+      comics: formData.comics,
+    });
+
     const data = new FormData();
     data.append("id", Number(formData.id));
     data.append("titulo", formData.titulo);
@@ -108,6 +134,8 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     data.append("id_genero", Number(formData.id_genero));
     data.append("saga_id", formData.saga_id ? Number(formData.saga_id) : "");
     data.append("sinopsis", formData.sinopsis);
+    data.append("starwars", formData.starwars ? "1" : "0");
+    data.append("comics", formData.comics ? "1" : "0");
     if (file) data.append("cover", file);
 
     try {
@@ -188,11 +216,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
         </select>
 
         <label className={style.labelForm}>Saga:</label>
-        <select
-          name="saga_id"
-          value={formData.saga_id}
-          onChange={handleChange}
-        >
+        <select name="saga_id" value={formData.saga_id} onChange={handleChange}>
           <option value="">Selecciona una saga</option>
           {sagas.map((saga) => (
             <option key={saga.id} value={saga.id}>
@@ -209,6 +233,28 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
           rows="5"
         />
 
+        <div className={style.checkboxGroup}>
+          <label className={style.checkboxLabel}>
+            <input
+              type="checkbox"
+              name="starwars"
+              checked={formData.starwars}
+              onChange={handleChange}
+            />
+            ¿Es un libro de Star Wars?
+          </label>
+
+          <label className={style.checkboxLabel}>
+            <input
+              type="checkbox"
+              name="comics"
+              checked={formData.comics}
+              onChange={handleChange}
+            />
+            ¿Es un cómic?
+          </label>
+        </div>
+
         <button className={style.buttonFormEdit} type="submit">
           Guardar Cambios
         </button>
@@ -218,4 +264,3 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
 };
 
 export default EditBookForm;
-
