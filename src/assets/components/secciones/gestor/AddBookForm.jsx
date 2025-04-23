@@ -184,7 +184,6 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
           throw new Error(data.error || "Error al añadir el libro");
         }
 
-        toast.success("Libro añadido correctamente");
         if (onSuccess) onSuccess();
       } else {
         // Si no es JSON, obtener el texto de la respuesta
