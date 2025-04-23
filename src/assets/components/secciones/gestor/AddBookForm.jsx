@@ -7,16 +7,17 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
   const [formData, setFormData] = useState({
     title: metadata?.title || "",
     author: metadata?.author || "",
-    description: metadata?.description || "",
-    isbn: metadata?.isbn || "",
-    publisher: metadata?.publisher || "",
-    publicationYear: metadata?.publicationYear || "",
+    description: metadata?.sinopsis || "",
     genre: "",
     saga: "",
-    coverFile: null,
+    coverFile: metadata?.cover || null,
+    starwars: false,
+    comics: false,
   });
 
-  const [coverPreview, setCoverPreview] = useState(null);
+  const [coverPreview, setCoverPreview] = useState(
+    metadata?.cover ? URL.createObjectURL(metadata.cover) : null
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [genres, setGenres] = useState([]);
@@ -41,6 +42,15 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
           }
         );
 
+        if (genresResponse.status === 403) {
+          // Token expirado o inválido
+          console.error("Token expirado o inválido");
+          toast.error("Sesión expirada. Por favor, inicie sesión nuevamente");
+          // Redirigir al login
+          window.location.href = "/login";
+          return;
+        }
+
         if (!genresResponse.ok) {
           throw new Error("Error al obtener los géneros");
         }
@@ -54,6 +64,15 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        if (sagasResponse.status === 403) {
+          // Token expirado o inválido
+          console.error("Token expirado o inválido");
+          toast.error("Sesión expirada. Por favor, inicie sesión nuevamente");
+          // Redirigir al login
+          window.location.href = "/login";
+          return;
+        }
 
         if (!sagasResponse.ok) {
           throw new Error("Error al obtener las sagas");
@@ -73,10 +92,10 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
 
   // Manejar cambios en el formulario
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -114,16 +133,39 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
       formDataToSend.append("titulo", formData.title);
       formDataToSend.append("autor", formData.author);
       formDataToSend.append("sinopsis", formData.description);
-      formDataToSend.append("isbn", formData.isbn);
-      formDataToSend.append("editorial", formData.publisher);
-      formDataToSend.append("año_publicacion", formData.publicationYear);
       formDataToSend.append("id_genero", formData.genre);
       formDataToSend.append("saga_id", formData.saga || "");
-      formDataToSend.append("archivo", file);
+      formDataToSend.append("starwars", formData.starwars ? "1" : "0");
+      formDataToSend.append("comics", formData.comics ? "1" : "0");
+      formDataToSend.append("file", file);
 
+      // Verificar si hay una carátula extraída o seleccionada
       if (formData.coverFile) {
-        formDataToSend.append("cover", formData.coverFile);
+        console.log("Enviando carátula:", formData.coverFile);
+        // Si es un Blob (carátula extraída), convertirlo a File
+        if (
+          formData.coverFile instanceof Blob &&
+          !(formData.coverFile instanceof File)
+        ) {
+          const coverFile = new File([formData.coverFile], "cover.jpg", {
+            type: "image/jpeg",
+          });
+          formDataToSend.append("cover", coverFile);
+        } else {
+          formDataToSend.append("cover", formData.coverFile);
+        }
       }
+
+      console.log("Enviando formulario con los siguientes datos:");
+      console.log("Título:", formData.title);
+      console.log("Autor:", formData.author);
+      console.log("Sinopsis:", formData.description);
+      console.log("Género:", formData.genre);
+      console.log("Saga:", formData.saga);
+      console.log("Star Wars:", formData.starwars);
+      console.log("Comics:", formData.comics);
+      console.log("Archivo:", file);
+      console.log("Carátula:", formData.coverFile);
 
       const response = await fetch("http://localhost:8001/api/add_book", {
         method: "POST",
@@ -133,14 +175,23 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
         body: formDataToSend,
       });
 
-      const data = await response.json();
+      // Verificar si la respuesta es JSON
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || "Error al añadir el libro");
+        if (!response.ok) {
+          throw new Error(data.error || "Error al añadir el libro");
+        }
+
+        toast.success("Libro añadido correctamente");
+        if (onSuccess) onSuccess();
+      } else {
+        // Si no es JSON, obtener el texto de la respuesta
+        const text = await response.text();
+        console.error("Respuesta no JSON del servidor:", text);
+        throw new Error("Error del servidor: Respuesta no válida");
       }
-
-      toast.success("Libro añadido correctamente");
-      if (onSuccess) onSuccess();
     } catch (error) {
       console.error("Error al enviar los datos:", error);
       setError(error.message);
@@ -156,6 +207,41 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
       <h2>Añadir Nuevo Libro</h2>
 
       <form className={style.formEdit} onSubmit={handleSubmit}>
+        <div className={style.coverSection}>
+          <label className={style.labelForm}>Carátula:</label>
+          <div className={style.coverContainer}>
+            {coverPreview && (
+              <div className={style.coverPreviewContainer}>
+                <img
+                  src={coverPreview}
+                  alt="Vista previa de la carátula"
+                  className={style.coverPreview}
+                />
+                <p className={style.coverSource}>
+                  {metadata?.cover
+                    ? "Carátula extraída del EPUB"
+                    : "Carátula seleccionada"}
+                </p>
+              </div>
+            )}
+            <div className={style.coverInputContainer}>
+              <input
+                type="file"
+                name="cover"
+                accept="image/*"
+                onChange={handleCoverChange}
+                className={style.coverInput}
+              />
+              <p className={style.coverHelp}>
+                {metadata?.cover
+                  ? "Puedes subir una nueva imagen para reemplazar la carátula extraída"
+                  : "Selecciona una imagen para la carátula"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {error && <p className={style.error}>{error}</p>}
         <label className={style.labelForm}>Título:</label>
         <input
           type="text"
@@ -182,37 +268,12 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
           rows="4"
         />
 
-        <label className={style.labelForm}>ISBN:</label>
-        <input
-          type="text"
-          name="isbn"
-          value={formData.isbn}
-          onChange={handleInputChange}
-        />
-
-        <label className={style.labelForm}>Editorial:</label>
-        <input
-          type="text"
-          name="publisher"
-          value={formData.publisher}
-          onChange={handleInputChange}
-        />
-
-        <label className={style.labelForm}>Año de publicación:</label>
-        <input
-          type="number"
-          name="publicationYear"
-          value={formData.publicationYear}
-          onChange={handleInputChange}
-          min="1000"
-          max={new Date().getFullYear()}
-        />
-
         <label className={style.labelForm}>Género:</label>
         <select
           name="genre"
           value={formData.genre}
           onChange={handleInputChange}
+          required
         >
           <option value="">Seleccionar género</option>
           {genres.map((genre) => (
@@ -232,24 +293,29 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
           ))}
         </select>
 
-        <label className={style.labelForm}>Carátula:</label>
-        <input
-          type="file"
-          name="cover"
-          accept="image/*"
-          onChange={handleCoverChange}
-        />
-        {coverPreview && (
-          <div className={style.containerCoverPreview}>
-            <img
-              src={coverPreview}
-              alt="Vista previa"
-              className={style.coverPreview}
+        <div className={style.checkboxContainer}>
+          <label className={style.checkboxLabel}>
+            <input
+              type="checkbox"
+              name="starwars"
+              checked={formData.starwars}
+              onChange={handleInputChange}
             />
-          </div>
-        )}
+            Es un libro de Star Wars
+          </label>
+        </div>
 
-        {error && <p className={style.error}>{error}</p>}
+        <div className={style.checkboxContainer}>
+          <label className={style.checkboxLabel}>
+            <input
+              type="checkbox"
+              name="comics"
+              checked={formData.comics}
+              onChange={handleInputChange}
+            />
+            Es un cómic
+          </label>
+        </div>
 
         <div className={style.formActions}>
           <button

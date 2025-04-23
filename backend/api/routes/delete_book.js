@@ -1,6 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const db = require("../../db");
+const fs = require("fs");
+const path = require("path");
 const router = express.Router();
 
 router.delete("/delete_book/:id", (req, res) => {
@@ -43,7 +45,7 @@ router.delete("/delete_book/:id", (req, res) => {
 
     // Primero verificar que el libro existe y pertenece al usuario
     db.query(
-      "SELECT id, cover, user_id FROM books WHERE id = ?",
+      "SELECT id, file, cover, user_id FROM books WHERE id = ?",
       [bookId],
       (err, results) => {
         if (err) {
@@ -73,7 +75,42 @@ router.delete("/delete_book/:id", (req, res) => {
             .json({ error: "No tienes permiso para eliminar este libro" });
         }
 
-        // Proceder con la eliminación
+        // Obtener las rutas de los archivos
+        const bookFile = results[0].file;
+        const coverFile = results[0].cover;
+
+        // Función para eliminar un archivo
+        const deleteFile = (filePath) => {
+          if (!filePath) return;
+
+          // Extraer el nombre del archivo de la URL
+          const fileName = path.basename(filePath);
+          let fullPath;
+
+          if (filePath.includes("/images/cover/")) {
+            fullPath = path.join(__dirname, "../../images/cover", fileName);
+          } else if (filePath.includes("/uploads/books/")) {
+            fullPath = path.join(__dirname, "../../uploads/books", fileName);
+          }
+
+          if (fullPath && fs.existsSync(fullPath)) {
+            try {
+              fs.unlinkSync(fullPath);
+              console.log(`✅ Archivo eliminado: ${fullPath}`);
+            } catch (error) {
+              console.error(
+                `❌ Error al eliminar el archivo ${fullPath}:`,
+                error
+              );
+            }
+          }
+        };
+
+        // Eliminar los archivos físicos
+        deleteFile(bookFile);
+        deleteFile(coverFile);
+
+        // Proceder con la eliminación del registro en la base de datos
         db.query(
           "DELETE FROM books WHERE id = ? AND user_id = ?",
           [bookId, userIdNum],

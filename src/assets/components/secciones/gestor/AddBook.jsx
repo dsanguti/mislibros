@@ -50,19 +50,187 @@ const AddBook = () => {
                 setProgress(20);
                 const arrayBuffer = await file.arrayBuffer();
                 setProgress(40);
-                const book = epubjs.Book(arrayBuffer);
+                const book = new epubjs.Book(arrayBuffer);
+                await book.ready;
                 setProgress(60);
-                const metadata = await book.loaded.metadata;
+
+                // Obtener los metadatos de manera más robusta
+                const metadata = {
+                  title: "",
+                  author: "",
+                  sinopsis: "",
+                };
+
+                try {
+                  // Intentar obtener los metadatos de diferentes maneras
+                  console.log("Objeto book completo:", book);
+
+                  // Método 1: Usar book.metadata
+                  const bookMetadata = await book.metadata;
+                  console.log("Método 1 - book.metadata:", bookMetadata);
+
+                  // Método 2: Usar book.package.metadata
+                  const packageMetadata = book.package?.metadata;
+                  console.log(
+                    "Método 2 - book.package.metadata:",
+                    packageMetadata
+                  );
+
+                  // Método 3: Intentar extraer sinopsis del primer capítulo
+                  let chapterContent = "";
+                  try {
+                    console.log(
+                      "Intentando extraer sinopsis del primer capítulo..."
+                    );
+
+                    // Esperar a que el libro esté completamente cargado
+                    await book.ready;
+                    console.log("Libro listo para extraer contenido");
+
+                    // Obtener la navegación
+                    const navigation = await book.navigation;
+                    console.log("Navegación del libro:", navigation);
+
+                    if (navigation && navigation.toc) {
+                      // Buscar el primer elemento que no sea la portada o página de título
+                      const firstContentChapter = navigation.toc.find(
+                        (item) =>
+                          item.href &&
+                          !item.href.includes("cover") &&
+                          !item.href.includes("titlepage")
+                      );
+
+                      if (firstContentChapter) {
+                        console.log(
+                          "Primer capítulo de contenido encontrado:",
+                          firstContentChapter
+                        );
+
+                        // Intentar obtener el contenido usando el método spine
+                        const spineItem = book.spine.get(
+                          firstContentChapter.href
+                        );
+                        console.log(
+                          "Elemento del spine encontrado:",
+                          spineItem
+                        );
+
+                        if (spineItem) {
+                          try {
+                            // Cargar el contenido del capítulo
+                            const content = await spineItem.load();
+                            console.log("Contenido cargado:", content);
+
+                            if (content && content.document) {
+                              // Obtener el texto del documento
+                              const textContent =
+                                content.document.body.textContent;
+                              console.log(
+                                "Texto extraído (primeros 200 caracteres):",
+                                textContent.substring(0, 200)
+                              );
+
+                              // Limpiar el texto
+                              chapterContent = textContent
+                                .replace(/\s+/g, " ")
+                                .trim();
+
+                              // Tomar los primeros 500 caracteres como sinopsis
+                              chapterContent =
+                                chapterContent.substring(0, 500) + "...";
+                              console.log("Sinopsis final:", chapterContent);
+                            }
+                          } catch (loadError) {
+                            console.warn(
+                              "Error al cargar el contenido del capítulo:",
+                              loadError
+                            );
+                          }
+                        }
+                      }
+                    }
+                  } catch (chapterError) {
+                    console.warn(
+                      "Error al extraer contenido del primer capítulo:",
+                      chapterError
+                    );
+                  }
+
+                  // Intentar extraer información de todas las fuentes posibles
+                  if (bookMetadata) {
+                    metadata.title =
+                      bookMetadata.title || bookMetadata["dc:title"] || "";
+                    metadata.author =
+                      bookMetadata.creator ||
+                      bookMetadata["dc:creator"] ||
+                      bookMetadata.author ||
+                      "";
+                    metadata.sinopsis =
+                      bookMetadata.description ||
+                      bookMetadata["dc:description"] ||
+                      bookMetadata.summary ||
+                      "";
+                  }
+
+                  if (packageMetadata) {
+                    metadata.title =
+                      metadata.title ||
+                      packageMetadata.title ||
+                      packageMetadata["dc:title"] ||
+                      "";
+                    metadata.author =
+                      metadata.author ||
+                      packageMetadata.creator ||
+                      packageMetadata["dc:creator"] ||
+                      packageMetadata.author ||
+                      "";
+                    metadata.sinopsis =
+                      metadata.sinopsis ||
+                      packageMetadata.description ||
+                      packageMetadata["dc:description"] ||
+                      packageMetadata.summary ||
+                      "";
+                  }
+
+                  // Si aún no tenemos sinopsis, añadir un mensaje informativo
+                  if (!metadata.sinopsis) {
+                    metadata.sinopsis =
+                      "No se pudo extraer la sinopsis del archivo EPUB. Por favor, añade una descripción manualmente.";
+                    console.log("No se encontró sinopsis en los metadatos");
+                  }
+
+                  // Si aún no tenemos título, usar el nombre del archivo
+                  if (!metadata.title) {
+                    metadata.title = file.name.replace(/\.[^/.]+$/, "");
+                  }
+
+                  // Si aún no tenemos autor, usar un valor por defecto
+                  if (!metadata.author) {
+                    metadata.author = "Autor desconocido";
+                  }
+
+                  console.log("Metadatos procesados:", metadata);
+                } catch (metadataError) {
+                  console.warn("Error al obtener metadatos:", metadataError);
+                }
+
                 setProgress(80);
 
                 // Extraer la carátula
                 let coverImage = null;
                 try {
+                  console.log("Intentando extraer carátula...");
                   const cover = await book.coverUrl();
+                  console.log("URL de la carátula:", cover);
+
                   if (cover) {
+                    console.log("Descargando imagen de la carátula...");
                     const response = await fetch(cover);
                     const coverBuffer = await response.arrayBuffer();
                     coverImage = arrayBufferToBlob(coverBuffer, "image/jpeg");
+                    console.log("Carátula extraída correctamente");
+                  } else {
+                    console.log("No se encontró URL de carátula");
                   }
                 } catch (coverError) {
                   console.warn(
@@ -72,9 +240,9 @@ const AddBook = () => {
                 }
 
                 return {
-                  title: metadata.title || file.name.replace(/\.[^/.]+$/, ""),
-                  author: metadata.creator || "Autor desconocido",
-                  sinopsis: metadata.description || "",
+                  title: metadata.title,
+                  author: metadata.author,
+                  sinopsis: metadata.sinopsis,
                   cover: coverImage,
                 };
               } catch (error) {
