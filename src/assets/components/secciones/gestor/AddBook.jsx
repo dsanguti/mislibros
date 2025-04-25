@@ -122,22 +122,59 @@ const AddBook = () => {
                             console.log("Contenido cargado:", content);
 
                             if (content && content.document) {
-                              // Obtener el texto del documento
-                              const textContent =
-                                content.document.body.textContent;
-                              console.log(
-                                "Texto extraído (primeros 200 caracteres):",
-                                textContent.substring(0, 200)
-                              );
+                              // Obtener el texto directamente del documento
+                              let text = "";
+
+                              // Intentar obtener el texto de diferentes maneras
+                              try {
+                                // Método 1: Usar textContent directamente
+                                text = content.document.body.textContent;
+                              } catch (e) {
+                                console.warn(
+                                  "Error al obtener textContent:",
+                                  e
+                                );
+
+                                try {
+                                  // Método 2: Usar innerText
+                                  text = content.document.body.innerText;
+                                } catch (e) {
+                                  console.warn(
+                                    "Error al obtener innerText:",
+                                    e
+                                  );
+
+                                  // Método 3: Extraer texto de nodos de texto
+                                  const textNodes = [];
+                                  const walk = document.createTreeWalker(
+                                    content.document.body,
+                                    NodeFilter.SHOW_TEXT,
+                                    null,
+                                    false
+                                  );
+
+                                  let node;
+                                  while ((node = walk.nextNode())) {
+                                    textNodes.push(node.textContent);
+                                  }
+
+                                  text = textNodes.join(" ");
+                                }
+                              }
 
                               // Limpiar el texto
-                              chapterContent = textContent
+                              text = text
                                 .replace(/\s+/g, " ")
-                                .trim();
+                                .trim()
+                                .replace(/v\s*\d+\.\d+/gi, "");
+
+                              console.log(
+                                "Texto extraído (primeros 200 caracteres):",
+                                text.substring(0, 200)
+                              );
 
                               // Tomar los primeros 500 caracteres como sinopsis
-                              chapterContent =
-                                chapterContent.substring(0, 500) + "...";
+                              chapterContent = text.substring(0, 500) + "...";
                               console.log("Sinopsis final:", chapterContent);
                             }
                           } catch (loadError) {

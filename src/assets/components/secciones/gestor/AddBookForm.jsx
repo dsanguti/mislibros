@@ -129,10 +129,25 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
         throw new Error("No hay token de autenticación");
       }
 
+      // Función para limpiar texto HTML
+      const cleanHtmlText = (text) => {
+        if (!text) return "";
+
+        // Crear un elemento temporal
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = text;
+
+        // Obtener solo el texto
+        const cleanText = tempDiv.textContent || tempDiv.innerText;
+
+        // Limpiar espacios extra
+        return cleanText.replace(/\s+/g, " ").trim();
+      };
+
       const formDataToSend = new FormData();
       formDataToSend.append("titulo", formData.title);
       formDataToSend.append("autor", formData.author);
-      formDataToSend.append("sinopsis", formData.description);
+      formDataToSend.append("sinopsis", cleanHtmlText(formData.description));
       formDataToSend.append("id_genero", formData.genre);
       formDataToSend.append("saga_id", formData.saga || "");
       formDataToSend.append("starwars", formData.starwars ? "1" : "0");
