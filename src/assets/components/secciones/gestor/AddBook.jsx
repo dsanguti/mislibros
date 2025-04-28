@@ -17,13 +17,6 @@ const AddBook = () => {
   const [showForm, setShowForm] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // Configuración de los tipos de archivo permitidos
-  const acceptedFileTypes = {
-    "application/epub+zip": [".epub"],
-    "application/pdf": [".pdf"],
-    "application/x-mobipocket-ebook": [".mobi"],
-  };
-
   // Función que se ejecuta cuando se suelta un archivo
   const onDrop = useCallback(
     async (acceptedFiles) => {
@@ -292,80 +285,138 @@ const AddBook = () => {
 
             extractedMetadata = await extractEpubMetadata(file);
           } else if (file.type === "application/pdf") {
-            // Función para extraer metadatos de un archivo PDF
-            const extractPdfMetadata = async (file) => {
-              try {
-                setProgress(20);
-                const arrayBuffer = await file.arrayBuffer();
-                setProgress(40);
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer })
-                  .promise;
-                setProgress(60);
-                const metadata = await pdf.getMetadata();
-                setProgress(80);
+            // Para archivos PDF, usar la ruta del backend
+            try {
+              setProgress(20);
+              const formData = new FormData();
+              formData.append("file", file);
 
-                // Extraer la carátula (primera página como imagen)
-                let coverImage = null;
-                try {
-                  const page = await pdf.getPage(1);
-                  const viewport = page.getViewport({ scale: 1.0 });
-                  const canvas = document.createElement("canvas");
-                  const context = canvas.getContext("2d");
-                  canvas.height = viewport.height;
-                  canvas.width = viewport.width;
-
-                  await page.render({
-                    canvasContext: context,
-                    viewport: viewport,
-                  }).promise;
-
-                  // Convertir canvas a blob
-                  coverImage = await new Promise((resolve) => {
-                    canvas.toBlob(resolve, "image/jpeg", 0.95);
-                  });
-                } catch (coverError) {
-                  console.warn(
-                    "No se pudo extraer la carátula del PDF:",
-                    coverError
-                  );
+              const response = await fetch(
+                "http://localhost:8001/api/extract_metadata",
+                {
+                  method: "POST",
+                  body: formData,
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
                 }
+              );
 
-                return {
-                  title:
-                    metadata.info?.Title || file.name.replace(/\.[^/.]+$/, ""),
-                  author: metadata.info?.Author || "Autor desconocido",
-                  sinopsis: metadata.info?.Subject || "",
-                  cover: coverImage,
-                };
-              } catch (error) {
-                console.error("Error al extraer metadatos del PDF:", error);
+              if (!response.ok) {
+                const errorData = await response.json();
                 throw new Error(
-                  "No se pudieron extraer los metadatos del archivo PDF"
+                  errorData.message ||
+                    "Error al extraer metadatos del archivo PDF"
                 );
               }
-            };
 
-            extractedMetadata = await extractPdfMetadata(file);
-          } else if (file.type === "application/x-mobipocket-ebook") {
-            // Función para extraer metadatos de un archivo MOBI
-            const extractMobiMetadata = async (file) => {
-              setProgress(50);
-              // Para MOBI, por ahora solo extraemos información básica
-              // La extracción de carátula de MOBI requeriría una librería específica
-              return {
-                title: file.name.replace(/\.[^/.]+$/, ""),
-                author: "Autor desconocido",
-                sinopsis: "",
-                cover: null,
+              const metadata = await response.json();
+              console.log("Metadatos extraídos del PDF:", metadata);
+
+              // Convertir la URL de la portada a Blob si existe
+              let coverImage = null;
+              if (metadata.cover) {
+                try {
+                  const coverResponse = await fetch(
+                    `http://localhost:8001${metadata.cover}`
+                  );
+                  const coverBuffer = await coverResponse.arrayBuffer();
+                  coverImage = arrayBufferToBlob(coverBuffer, "image/png");
+                } catch (coverError) {
+                  console.warn("Error al cargar la portada:", coverError);
+                }
+              }
+
+              extractedMetadata = {
+                title: metadata.title || file.name.replace(/\.[^/.]+$/, ""),
+                author: metadata.author || "Autor desconocido",
+                sinopsis:
+                  metadata.sinopsis ||
+                  "No se pudo extraer la sinopsis del archivo PDF.",
+                cover: coverImage,
               };
-            };
 
-            extractedMetadata = await extractMobiMetadata(file);
+              setProgress(100);
+
+              // Limpiar archivos temporales después de procesarlos
+              try {
+                await fetch("http://localhost:8001/api/cleanup", {
+                  method: "DELETE",
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                });
+              } catch (cleanupError) {
+                console.warn(
+                  "Error al limpiar archivos temporales:",
+                  cleanupError
+                );
+              }
+            } catch (error) {
+              console.error("Error al procesar el archivo PDF:", error);
+              throw new Error(
+                "No se pudieron extraer los metadatos del archivo PDF"
+              );
+            }
+          } else if (file.type === "application/x-mobipocket-ebook") {
+            // Para archivos MOBI, usar la ruta del backend
+            try {
+              setProgress(20);
+              const formData = new FormData();
+              formData.append("file", file);
+
+              const response = await fetch(
+                "http://localhost:8001/api/extract_mobi_metadata",
+                {
+                  method: "POST",
+                  body: formData,
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                }
+              );
+
+              if (!response.ok) {
+                throw new Error("Error al extraer metadatos del archivo MOBI");
+              }
+
+              const metadata = await response.json();
+              console.log("Metadatos extraídos del MOBI:", metadata);
+
+              // Convertir la URL de la portada a Blob si existe
+              let coverImage = null;
+              if (metadata.cover) {
+                try {
+                  const coverResponse = await fetch(
+                    `http://localhost:8001${metadata.cover}`
+                  );
+                  const coverBuffer = await coverResponse.arrayBuffer();
+                  coverImage = arrayBufferToBlob(coverBuffer, "image/jpeg");
+                } catch (coverError) {
+                  console.warn("Error al cargar la portada:", coverError);
+                }
+              }
+
+              extractedMetadata = {
+                title: metadata.title || file.name.replace(/\.[^/.]+$/, ""),
+                author: metadata.author || "Autor desconocido",
+                sinopsis:
+                  metadata.sinopsis ||
+                  "No se pudo extraer la sinopsis del archivo MOBI.",
+                cover: coverImage,
+              };
+
+              setProgress(100);
+            } catch (error) {
+              console.error("Error al procesar el archivo MOBI:", error);
+              throw new Error(
+                "No se pudieron extraer los metadatos del archivo MOBI"
+              );
+            }
           } else {
             throw new Error("Formato de archivo no soportado");
           }
 
-          setProgress(100);
           setMetadata(extractedMetadata);
           setShowForm(true);
           toast.success("Metadatos extraídos correctamente");
@@ -385,7 +436,10 @@ const AddBook = () => {
   // Configuración de react-dropzone
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: acceptedFileTypes,
+    accept: {
+      "application/epub+zip": [".epub"],
+      "application/pdf": [".pdf"],
+    },
     multiple: false,
   });
 
@@ -428,9 +482,7 @@ const AddBook = () => {
                 seleccionar
               </p>
             )}
-            <p className={style.fileTypes}>
-              Formatos aceptados: EPUB, PDF, MOBI
-            </p>
+            <p className={style.fileTypes}>Formatos aceptados: EPUB y PDF</p>
           </div>
         </div>
       )}
