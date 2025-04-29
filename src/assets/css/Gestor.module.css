@@ -237,11 +237,13 @@
 
 .labelForm {
   font-weight: bold;
+
 }
 
 .inputFormEdit {
   padding: 5px;
   margin-bottom: 10px;
+  margin-left: 10px;
 }
 
 .textareaFormEdit {

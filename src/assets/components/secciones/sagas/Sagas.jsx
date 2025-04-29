@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
+import Modal from "../../Modal"; // Importamos el modal
 import HeaderSaga from "./HeaderSaga";
 import MainSaga from "./MainSaga";
-import Modal from "../../Modal"; // Importamos el modal
 
 const Sagas = () => {
   const [sagas, setSagas] = useState([]);
@@ -12,6 +12,45 @@ const Sagas = () => {
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal
+
+  // Función para obtener las sagas
+  const fetchSagas = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("No se encontró el token de autenticación");
+        return;
+      }
+
+      const response = await fetch("http://localhost:8001/api/sagas", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError("Error al obtener sagas");
+        console.error("Error en la solicitud:", errorData);
+        return;
+      }
+
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setSagas(data);
+      } else {
+        setError("Los datos no son un array válido");
+        console.error("Datos inválidos:", data);
+      }
+    } catch (error) {
+      setError("Error al obtener sagas");
+      console.error("Error:", error);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -24,46 +63,22 @@ const Sagas = () => {
   }, []);
 
   useEffect(() => {
-    const fetchSagas = async () => {
-      try {
-        const authToken = localStorage.getItem("authToken");
-        if (!authToken) {
-          setError("No se encontró el token de autenticación");
-          return;
-        }
+    // Cargar las sagas al montar el componente
+    fetchSagas();
 
-        const response = await fetch("http://localhost:8001/api/sagas", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          setError("Error al obtener sagas");
-          console.error("Error en la solicitud:", errorData);
-          return;
-        }
-
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setSagas(data);
-        } else {
-          setError("Los datos no son un array válido");
-          console.error("Datos inválidos:", data);
-        }
-      } catch (error) {
-        setError("Error al obtener sagas");
-        console.error("Error:", error);
-      }
+    // Escuchar el evento sagaUpdated para actualizar la lista cuando se crea, edita o elimina una saga
+    const handleSagaUpdated = () => {
+      console.log("Evento sagaUpdated recibido, actualizando lista de sagas");
+      fetchSagas();
     };
 
-    fetchSagas();
-  }, []);
+    window.addEventListener("sagaUpdated", handleSagaUpdated);
+
+    // Limpiar el event listener cuando el componente se desmonte
+    return () => {
+      window.removeEventListener("sagaUpdated", handleSagaUpdated);
+    };
+  }, []); // No incluimos fetchSagas en las dependencias para evitar bucles infinitos
 
   const handleBookClick = (book) => {
     setSelectedBook(book);

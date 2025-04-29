@@ -57,7 +57,7 @@ const Comics = () => {
           console.error("Datos inválidos:", data);
         }
       } catch (error) {
-        setError("Error al obtener libros de Star Wars");
+        setError("Error al obtener los comics");
         console.error("Error:", error);
       }
     };
@@ -82,7 +82,7 @@ const Comics = () => {
   };
 
   const handleBookClick = (book) => {
-    console.log("Libro seleccionado en StarWars.jsx:", book);
+    console.log("Libro seleccionado en Comics.jsx:", book);
 
     if (!book || !book.id) {
       console.error("❌ Error: el libro no tiene un ID válido", book);
@@ -115,7 +115,7 @@ const Comics = () => {
             />
             <MainComics
               className={style.main}
-              comics={comics} // Pasamos los libros a MainStarwars
+              comics={comics} // Pasamos los libros a MainComics
               selectedComics={selectedComics}
               onBookClick={handleBookClick}
             />

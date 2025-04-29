@@ -35,6 +35,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
   const [file, setFile] = useState(null);
   const [generos, setGeneros] = useState([]);
   const [sagas, setSagas] = useState([]);
+  const [sagasVersion, setSagasVersion] = useState(0); // Contador para forzar la recarga
 
   // Obtener géneros
   useEffect(() => {
@@ -91,7 +92,24 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     };
 
     fetchSagas();
-  }, [book.saga]);
+  }, [book.saga, sagasVersion]); // Añadimos sagasVersion como dependencia
+
+  // Función para recargar las sagas
+  const reloadSagas = () => {
+    setSagasVersion((prev) => prev + 1);
+  };
+
+  // Escuchar eventos de actualización de sagas
+  useEffect(() => {
+    const handleSagaUpdate = () => {
+      reloadSagas();
+    };
+
+    window.addEventListener("sagaUpdated", handleSagaUpdate);
+    return () => {
+      window.removeEventListener("sagaUpdated", handleSagaUpdate);
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

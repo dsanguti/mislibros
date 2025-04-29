@@ -18,12 +18,11 @@ router.get("/sagas", (req, res) => {
 
     const userId = decoded.id;
 
-    // Obtener las sagas que tengan al menos un libro del usuario
+    // Obtener todas las sagas del usuario, independientemente de si tienen libros asociados
     const query = `
-      SELECT DISTINCT s.id, s.nombre, s.coverSaga
+      SELECT s.id, s.nombre, s.coverSaga
       FROM sagas s
-      JOIN books b ON s.id = b.saga_id
-      WHERE b.user_id = ?
+      WHERE s.user_id = ?
     `;
 
     db.query(query, [userId], (err, results) => {

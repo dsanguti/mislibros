@@ -54,6 +54,7 @@ const deleteBook = require("./api/routes/delete_book"); // Rutas de eliminación
 const addBook = require("./api/routes/add_book"); // Nueva ruta para añadir libros
 const extractMetadata = require("./api/routes/extract_mobi_metadata"); // Ruta para extraer metadatos de PDF y EPUB
 const updateSaga = require("./api/routes/update_saga"); // Nueva ruta para actualizar sagas
+const createSaga = require("./api/routes/create_saga"); // Nueva ruta para crear sagas
 
 // Registrar rutas
 app.use("/api", loginRoutes);
@@ -71,6 +72,7 @@ app.use("/api", deleteBook); // Registrar la ruta de eliminación de libros
 app.use("/api", addBook); // Registrar la nueva ruta para añadir libros
 app.use("/api", extractMetadata); // Registrar la ruta para extraer metadatos
 app.use("/api", updateSaga); // Registrar la ruta para actualizar sagas
+app.use("/api", createSaga); // Registrar la ruta para crear sagas
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

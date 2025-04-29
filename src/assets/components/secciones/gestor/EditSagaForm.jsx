@@ -47,25 +47,40 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
     if (file) data.append("coverSaga", file);
 
     try {
-      const response = await fetch("http://localhost:8001/api/update_saga", {
-        method: "PUT",
-        body: data,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: "include",
-      });
-
-      const result = await response.json();
+      const response = await fetch(
+        `http://localhost:8001/api/update_saga/${formData.id}`,
+        {
+          method: "PUT",
+          body: data,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
-        toast.error(result.error || "Error desconocido", { autoClose: 3000 });
-        return;
+        throw new Error("Error al actualizar la saga");
       }
 
-      toast.success("Saga actualizada correctamente.", { autoClose: 1000 });
+      const data = await response.json();
+      const updatedSaga = {
+        id: data.id,
+        nombre: data.nombre,
+        coverSaga: data.coverSaga,
+      };
 
-      if (typeof onUpdate === "function") onUpdate();
+      // Disparar evento de actualización
+      window.dispatchEvent(new Event("sagaUpdated"));
+
+      onUpdate(updatedSaga);
+      setFormData({
+        id: data.id,
+        nombre: data.nombre,
+        coverSaga: data.coverSaga,
+      });
+      setPreview(data.coverSaga);
+      setFile(null);
+      toast.success("Saga actualizada correctamente", { autoClose: 2000 });
       setTimeout(() => {
         if (typeof onClose === "function") onClose();
       }, 2000);

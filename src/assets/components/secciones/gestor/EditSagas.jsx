@@ -63,6 +63,19 @@ const EditSagas = () => {
         { id: 2, nombre: "Saga de prueba 2" },
       ]);
     });
+
+    // Escuchar el evento sagaUpdated
+    const handleSagaUpdated = () => {
+      console.log("Evento sagaUpdated recibido, actualizando lista de sagas");
+      fetchSagas();
+    };
+
+    window.addEventListener("sagaUpdated", handleSagaUpdated);
+
+    // Limpiar el event listener cuando el componente se desmonte
+    return () => {
+      window.removeEventListener("sagaUpdated", handleSagaUpdated);
+    };
   }, [fetchSagas]);
 
   const handleEditClick = (saga) => {
@@ -92,9 +105,11 @@ const EditSagas = () => {
   const handleUpdate = (updatedSaga) => {
     // Implementa la lógica para actualizar la saga en el estado
     console.log("Actualizando saga:", updatedSaga);
-    setSagas((prevSagas) =>
-      prevSagas.map((saga) => (saga.id === updatedSaga.id ? updatedSaga : saga))
-    );
+
+    // Recargar las sagas para asegurarnos de tener los datos más recientes
+    fetchSagas();
+
+    // Cerrar el modal después de actualizar
     handleCloseModal();
   };
 
@@ -102,7 +117,7 @@ const EditSagas = () => {
     <div className={styles.container}>
       <div className={styles.tittle}>
         <h3>Gestionar Sagas</h3>
-        <p>Añadiendo funcionalidad paso a paso. Ahora con iconos.</p>
+        <p>Puede añadir, editar o eliminar sagas</p>
       </div>
 
       <div className={styles.AddSagaIcon} onClick={handleAddClick}>
@@ -110,46 +125,50 @@ const EditSagas = () => {
       </div>
 
       <div className={styles.sectionCards}>
-        {sagas.map((saga) => (
-          <div
-            key={saga.id}
-            className={`${styles.card} ${styles.sagaCard}`}
-            style={{
-              backgroundImage: saga.coverSaga
-                ? `url(${saga.coverSaga})`
-                : "none",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-              position: "relative",
-            }}
-          >
-            {!saga.coverSaga && (
-              <div className={styles.iconPlaceholder}>
-                {saga.nombre.charAt(0).toUpperCase()}
-              </div>
-            )}
-            <div className={styles.cardOverlay}>
-              <p className={styles.generoText}>{saga.nombre}</p>
-              <div className={styles.cardActions}>
-                <button
-                  className={styles.actionButtonEdit}
-                  onClick={() => handleEditClick(saga)}
-                  title="Editar saga"
-                >
-                  <EditIcon />
-                </button>
-                <button
-                  className={styles.actionButtonDelete}
-                  onClick={() => handleDeleteClick(saga)}
-                  title="Eliminar saga"
-                >
-                  <DeleteIcon />
-                </button>
+        {sagas && sagas.length > 0 ? (
+          sagas.map((saga, index) => (
+            <div
+              key={saga.id || index}
+              className={`${styles.card} ${styles.sagaCard}`}
+              style={{
+                backgroundImage: saga.coverSaga
+                  ? `url(${saga.coverSaga})`
+                  : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                position: "relative",
+              }}
+            >
+              {!saga.coverSaga && (
+                <div className={styles.iconPlaceholder}>
+                  {saga.nombre.charAt(0).toUpperCase()}
+                </div>
+              )}
+              <div className={styles.cardOverlay}>
+                <p className={styles.generoText}>{saga.nombre}</p>
+                <div className={styles.cardActions}>
+                  <button
+                    className={styles.actionButtonEdit}
+                    onClick={() => handleEditClick(saga)}
+                    title="Editar saga"
+                  >
+                    <EditIcon />
+                  </button>
+                  <button
+                    className={styles.actionButtonDelete}
+                    onClick={() => handleDeleteClick(saga)}
+                    title="Eliminar saga"
+                  >
+                    <DeleteIcon />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No hay sagas disponibles</p>
+        )}
       </div>
 
       {error && (
