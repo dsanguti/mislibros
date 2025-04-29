@@ -9,6 +9,8 @@
   width: 100%;
   height: 100%;
   margin-top: 18px;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 .tittle {
   display: flex;
@@ -47,16 +49,137 @@
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
   transition: all ease-in-out 0.3s;
   position: relative;
+  overflow: hidden;
+  cursor: pointer; /* Cursor pointer por defecto para todos los .card */
 }
 
-.card:hover {
-  cursor: pointer;
+/* Quitar cursor pointer para las tarjetas de sagas */
+.sagaCard {
+  cursor: default;
+}
+
+/* Estilos de hover para tarjetas normales (no sagas) */
+.card:hover:not(.sagaCard) {
+  transform: translateY(-5px);
   background-color: var(--color-secundary);
   color: white;
   box-shadow: rgba(0, 0, 0, 0.09) 2px 2px 1px, rgba(0, 0, 0, 0.09) 4px 4px 2px,
     rgba(0, 0, 0, 0.09) 8px 8px 4px, rgba(0, 0, 0, 0.09) 16px 16px 8px,
     rgba(0, 0, 0, 0.09) 32px 32px 16px;
 }
+
+/* Estilos de hover para tarjetas de sagas */
+.sagaCard:hover {
+  transform: translateY(-5px);
+  box-shadow: rgba(0, 0, 0, 0.09) 2px 2px 1px, rgba(0, 0, 0, 0.09) 4px 4px 2px,
+    rgba(0, 0, 0, 0.09) 8px 8px 4px, rgba(0, 0, 0, 0.09) 16px 16px 8px,
+    rgba(0, 0, 0, 0.09) 32px 32px 16px;
+}
+
+/* Restaurar cursor pointer para los botones en las tarjetas de sagas */
+.sagaCard .actionButtonEdit,
+.sagaCard .actionButtonDelete {
+  cursor: pointer;
+}
+
+.cardOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.card:hover .cardOverlay {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9),
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.2)
+  );
+}
+
+.generoText {
+  color: white;
+  font-weight: bold;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  margin-bottom: 10px;
+  text-align: center;
+  z-index: 2;
+}
+
+.iconPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-primary);
+  color: white;
+  font-size: 3rem;
+  font-weight: bold;
+  border-radius: 1rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+}
+
+.card:hover .cardActions {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.actionButtonEdit,
+.actionButtonDelete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.actionButtonEdit {
+  color: #4caf50;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.actionButtonDelete {
+  color: #f44336;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.actionButtonEdit:hover,
+.actionButtonDelete:hover {
+  transform: scale(1.1);
+}
+
+.actionButtonEdit:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
+.actionButtonDelete:hover {
+  background-color: #f44336;
+  color: white;
+}
+
 .icon {
   width: 150px; /* Ajusta el tamaño del icono */
   height: 150px;
@@ -74,6 +197,7 @@
   position: absolute;
   bottom: 0;
 }
+
 .card:hover .icon {
   transform: translateY(-30px) scale(0.8); /* Mueve el icono hacia arriba al hacer hover */
 }
@@ -81,7 +205,7 @@
 .card:hover p {
   visibility: visible; /* Muestra la descripción al hacer hover */
   opacity: 1;
-  transform: translateY(-15px);
+  transform: translateY(-45px);
 }
 
 /*Estilos formulario editar libros */
@@ -173,7 +297,19 @@
   .card p {
     visibility: visible;
     opacity: 1;
-    transform: translateY(-20px);
+    bottom: -13px;
+  }
+
+  .generoText {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(-55px);
+    position: relative;
+    bottom: auto;
+  }
+
+  .card:hover .generoText {
+    transform: translateY(-55px);
   }
 }
 
@@ -289,4 +425,67 @@
   font-size: 0.875rem;
   color: #666;
   text-align: center;
+}
+
+/* Estilos para el modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 5px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: #333;
+}
+
+/* Estilos para el icono de añadir saga */
+.AddSagaIcon {
+  width: 50px;
+  height: 50px;
+  margin: 5px 0;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.AddSagaIcon:hover {
+  cursor: pointer;
+  color: white;
+  background-color: var(--color-primary);
+  transform: scale(1.1);
 }

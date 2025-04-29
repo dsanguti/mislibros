@@ -1,10 +1,9 @@
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom"; // Importa Navigate
-import "./App.css";
-import "./index.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import "./App.css";
+import "./index.css";
 
 import Loader from "./assets/components/Loader";
 import Nav from "./assets/components/Nav";
@@ -14,18 +13,36 @@ import Login from "./assets/components/autenticacion/Login.jsx"; // Asegúrate d
 import { useAuth } from "./assets/components/autenticacion/UseAuth.jsx"; // Importa el hook de autenticación
 
 const Home = lazy(() => import("./assets/components/secciones/home/Home.jsx"));
-const Comics = lazy(() => import("./assets/components/secciones/comics/Comics.jsx"));
-const Generos = lazy(() => import("./assets/components/secciones/generos/Generos.jsx"));
-const Sagas = lazy(() => import("./assets/components/secciones/sagas/Sagas.jsx"));
-const Starwars = lazy(() => import("./assets/components/secciones/starwars/Starwars.jsx"));
-const Gestor = lazy(()=> import("./assets/components/secciones/gestor/Gestor.jsx"));
-const EditBooks = lazy(()=> import("./assets/components/secciones/gestor/EditBooks.jsx"));
-const AddBook = lazy(()=> import("./assets/components/secciones/gestor/AddBook.jsx"));
+const Comics = lazy(() =>
+  import("./assets/components/secciones/comics/Comics.jsx")
+);
+const Generos = lazy(() =>
+  import("./assets/components/secciones/generos/Generos.jsx")
+);
+const Sagas = lazy(() =>
+  import("./assets/components/secciones/sagas/Sagas.jsx")
+);
+const Starwars = lazy(() =>
+  import("./assets/components/secciones/starwars/Starwars.jsx")
+);
+const Gestor = lazy(() =>
+  import("./assets/components/secciones/gestor/Gestor.jsx")
+);
+const EditBooks = lazy(() =>
+  import("./assets/components/secciones/gestor/EditBooks.jsx")
+);
+const AddBook = lazy(() =>
+  import("./assets/components/secciones/gestor/AddBook.jsx")
+);
+const EditSagas = lazy(() =>
+  import("./assets/components/secciones/gestor/EditSagas.jsx")
+);
+
 function App() {
   const { isAuthenticated, loading } = useAuth(); // Usa el hook de autenticación
   const location = useLocation(); //obtener la ubicación actual.
 
-  if(loading){
+  if (loading) {
     return <Loader />;
   }
 
@@ -33,8 +50,8 @@ function App() {
     <>
       <ToastContainer />
       <div className="container-app">
-       {/* Renderiza el título solo si está autenticado */}
-       {isAuthenticated && <Tittle>Mis Libros</Tittle>}
+        {/* Renderiza el título solo si está autenticado */}
+        {isAuthenticated && <Tittle>Mis Libros</Tittle>}
 
         <div className="container-nav">
           {isAuthenticated && <Nav />}{" "}
@@ -70,6 +87,7 @@ function App() {
                   <Route path="/gestor" element={<Gestor />} />
                   <Route path="/editorlibros" element={<EditBooks />} />
                   <Route path="/addlibros" element={<AddBook />} />
+                  <Route path="/editsagas" element={<EditSagas />} />
                 </>
               )}
               <Route path="/*" element={<Pagina404 />} />
