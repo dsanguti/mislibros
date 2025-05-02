@@ -7,7 +7,6 @@ const MainSaga = ({ saga, onBookClick }) => {
   const [libros, setLibros] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
 
   useEffect(() => {
     if (!saga) return;
@@ -25,9 +24,9 @@ const MainSaga = ({ saga, onBookClick }) => {
           setLoading(false);
           return;
         }
-        console.log("ID de la saga al hacer clic:", saga.id); // 
+        console.log("ID de la saga al hacer clic:", saga.id); //
         const response = await fetch(
-        `http://localhost:8001/api/libros-sagas?sagaId=${saga.id}`,
+          `http://localhost:8001/api/libros-sagas?sagaId=${saga.id}`,
 
           {
             method: "GET",
@@ -70,12 +69,19 @@ const MainSaga = ({ saga, onBookClick }) => {
 
   return (
     <div className={style.mainSagaContainer}>
-      <h4>Saga: {saga ? saga.saga : "Selecciona una saga"}</h4>
+      <h4 className={style.tittle}>
+        Saga: {saga ? saga.nombre : "Selecciona una saga"}
+      </h4>
       {saga && (
         <>
           <div className={style.containerListBooks}>
             <HeaderRow />
-            <BooksListRow books={libros} error={error} loading={loading} onBookClick={onBookClick} />
+            <BooksListRow
+              books={libros}
+              error={error}
+              loading={loading}
+              onBookClick={onBookClick}
+            />
           </div>
         </>
       )}

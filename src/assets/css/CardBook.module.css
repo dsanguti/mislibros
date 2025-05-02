@@ -29,10 +29,18 @@
 .title {
   font-size: 1.3em; /* Aumenta el tamaño de la fuente */
   margin-bottom: 8px;
+  font-family: "Merienda", cursive;
+font-optical-sizing: auto;
+font-weight: 900;
+font-style: normal;
 }
 
 .genre {
   margin: 8px 0;
+  font-family: "Merienda", cursive;
+font-optical-sizing: auto;
+font-weight: 900;
+font-style: normal;
 }
 
 .synopsis {
@@ -43,4 +51,5 @@
   padding-right: 10px; /* Añadir espacio para el scroll */
   font-size: 1rem; /* Aumenta el tamaño de la fuente */
   line-height: 1.9;
+  
 }

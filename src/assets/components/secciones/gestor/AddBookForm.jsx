@@ -217,7 +217,7 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
   };
 
   return (
-    <div className={style.formContainer}>
+    <div className={`${style.formContainer} ${style.bookFormContainer}`}>
       <h2>Añadir Nuevo Libro</h2>
 
       <form className={style.formEdit} onSubmit={handleSubmit}>

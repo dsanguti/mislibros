@@ -95,7 +95,7 @@ const AddSagaForm = ({ onClose, onUpdate }) => {
 
   return (
     <div className={styles.formContainer}>
-      <h2>Añadir Nueva Saga</h2>
+      <h2 className={styles.myTittleForm}>Añadir Nueva Saga</h2>
       {error && <div className={styles.error}>{error}</div>}
 
       <form onSubmit={handleSubmit} className={styles.formEdit}>

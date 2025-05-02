@@ -56,7 +56,7 @@ const DeleteBookForm = ({ book, onClose, onDelete }) => {
 
   return (
     <div className={style.formContainer}>
-      <h2>Eliminar Libro</h2>
+      <h2 className={style.myTittleFormDelete}>Eliminar Libro</h2>
 
       <div className={style.deleteConfirmation}>
         <div className={style.containerCoverPreview}>

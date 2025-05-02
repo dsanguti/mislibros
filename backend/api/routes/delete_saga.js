@@ -100,32 +100,54 @@ router.delete("/delete_saga", (req, res) => {
             const bookCount = bookResults[0].count;
             console.log("📚 Libros asociados a la saga:", bookCount);
 
+            // Si hay libros asociados, actualizar sus referencias a NULL
             if (bookCount > 0) {
-              return res.status(400).json({
-                error:
-                  "No se puede eliminar la saga porque tiene libros asociados. Primero debes eliminar o cambiar la saga de esos libros.",
-              });
+              db.query(
+                "UPDATE books SET saga_id = NULL WHERE saga_id = ?",
+                [sagaId],
+                (err, updateResult) => {
+                  if (err) {
+                    console.error("❌ Error al actualizar libros:", err);
+                    return res
+                      .status(500)
+                      .json({ error: "Error al actualizar libros asociados" });
+                  }
+
+                  console.log("✅ Libros actualizados:", updateResult);
+
+                  // Continuar con la eliminación de la saga
+                  deleteSaga();
+                }
+              );
+            } else {
+              // No hay libros asociados, eliminar directamente
+              deleteSaga();
             }
 
-            // Si no hay libros asociados, proceder a eliminar la saga
-            db.query(
-              "DELETE FROM sagas WHERE id = ? AND user_id = ?",
-              [sagaId, userIdNum],
-              (err, deleteResult) => {
-                if (err) {
-                  console.error("❌ Error al eliminar la saga:", err);
-                  return res
-                    .status(500)
-                    .json({ error: "Error al eliminar la saga" });
+            // Función para eliminar la saga
+            function deleteSaga() {
+              db.query(
+                "DELETE FROM sagas WHERE id = ? AND user_id = ?",
+                [sagaId, userIdNum],
+                (err, deleteResult) => {
+                  if (err) {
+                    console.error("❌ Error al eliminar la saga:", err);
+                    return res
+                      .status(500)
+                      .json({ error: "Error al eliminar la saga" });
+                  }
+
+                  console.log("✅ Resultado de la eliminación:", deleteResult);
+
+                  res.json({
+                    message:
+                      bookCount > 0
+                        ? `Saga eliminada correctamente. Se han actualizado ${bookCount} libro(s) asociado(s).`
+                        : "Saga eliminada correctamente",
+                  });
                 }
-
-                console.log("✅ Resultado de la eliminación:", deleteResult);
-
-                res.json({
-                  message: "Saga eliminada correctamente",
-                });
-              }
-            );
+              );
+            }
           }
         );
       }

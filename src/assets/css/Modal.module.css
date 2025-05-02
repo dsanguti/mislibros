@@ -23,6 +23,16 @@
   overflow-y: auto; /* Habilita el scroll vertical si el contenido excede la altura del modal */
 }
 
+/* Estilo para el modal de edición de libros - más horizontal */
+.modalContentWide {
+  max-width: 1000px;
+  width: 90%;
+  max-height: 80%;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
 .closeButton {
   position: absolute;
   top: 10px;
@@ -38,5 +48,12 @@
   .modalContent {
     width: 95%; /* Aumenta el ancho del modal en vista móvil */
     max-height: 95%; /* Asegura que el contenido del modal no exceda el 95% de la altura de la pantalla */
+  }
+
+  /* Incluso en móviles, el modal de edición de libros debe ser diferente */
+  .modalContentWide {
+    width: 95%;
+    max-height: 95%;
+    padding: 20px 15px;
   }
 }

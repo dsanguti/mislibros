@@ -93,7 +93,7 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
 
   return (
     <div className={style.formContainer}>
-      <h2>Editar Saga</h2>
+      <h2 className={style.myTittleForm}>Editar Saga</h2>
 
       <form className={style.formEdit} onSubmit={handleSubmit}>
         <label className={style.labelForm}>Carátula:</label>
@@ -115,10 +115,12 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
           value={formData.nombre}
           onChange={handleChange}
         />
-
+        <div className={style.buttonContainerEditSaga}>
         <button className={style.buttonFormEdit} type="submit">
           Guardar Cambios
         </button>
+</div>
+        
       </form>
     </div>
   );

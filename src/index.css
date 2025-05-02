@@ -1,11 +1,7 @@
-@import "./assets/css/fonts.css";
-@import "./assets/css/reset.css";
-@import "./assets/css/themes.css";
-
-
+@import "./assets/css/Fonts.css";
+@import "./assets/css/Reset.css";
+@import "./assets/css/Themes.css";
 
 nav a {
   text-decoration: none;
 }
-
-

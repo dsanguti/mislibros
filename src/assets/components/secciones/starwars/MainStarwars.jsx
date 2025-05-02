@@ -32,7 +32,7 @@ const MainStarwars = ({ starwars, selectedStarwars, onBookClick }) => {
 
   return (
     <div className={style.mainSagaContainer}>
-      <h4>Libros de Star Wars: {selectedStarwars?.title || "Todos los libros"}</h4>
+      <h4 className={style.tittle}>Libros de Star Wars: {selectedStarwars?.title || "Todos los libros"}</h4>
       <div className={style.containerListBooks}>
         <HeaderRow />
         <BooksListRow books={books} error={error} loading={loading} onBookClick={onBookClick} />

@@ -32,7 +32,7 @@ const MainComics = ({ comics, selectedComics, onBookClick }) => {
 
   return (
     <div className={style.mainSagaContainer}>
-      <h4>Sus comics: {selectedComics?.title || "Todos los Comics"}</h4>
+      <h4 className={style.tittle}>Sus comics: {selectedComics?.title || "Todos los Comics"}</h4>
       <div className={style.containerListBooks}>
         <HeaderRow />
         <BooksListRow books={books} error={error} loading={loading} onBookClick={onBookClick} />

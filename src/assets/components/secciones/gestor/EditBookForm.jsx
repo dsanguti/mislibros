@@ -187,95 +187,103 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
   };
 
   return (
-    <div className={style.formContainer}>
-      <h2>Editar Libro</h2>
+    <div className={`${style.formContainer} ${style.bookFormContainer}`}>
+      <h2 className={style.myTittleForm}>Editar Libro</h2>
 
       <form className={style.formEdit} onSubmit={handleSubmit}>
-        <label className={style.labelForm}>Carátula:</label>
-        <div className={style.containerCoverPreview}>
-          {preview && (
-            <img
-              src={preview}
-              alt="Vista previa"
-              className={style.coverPreview}
-            />
-          )}
-        </div>
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-
-        <label className={style.labelForm}>Título:</label>
-        <input
-          type="text"
-          name="titulo"
-          value={formData.titulo}
-          onChange={handleChange}
-        />
-
-        <label className={style.labelForm}>Autor:</label>
-        <input
-          type="text"
-          name="autor"
-          value={formData.autor}
-          onChange={handleChange}
-        />
-
-        <label className={style.labelForm}>Género:</label>
-        <select
-          name="id_genero"
-          value={formData.id_genero}
-          onChange={handleChange}
-        >
-          <option value="">Selecciona un género</option>
-          {generos.map((genero) => (
-            <option key={genero.id} value={genero.id}>
-              {genero.nombre}
-            </option>
-          ))}
-        </select>
-
-        <label className={style.labelForm}>Saga:</label>
-        <select name="saga_id" value={formData.saga_id} onChange={handleChange}>
-          <option value="">Selecciona una saga</option>
-          {sagas.map((saga) => (
-            <option key={saga.id} value={saga.id}>
-              {saga.nombre}
-            </option>
-          ))}
-        </select>
-
-        <label className={style.labelForm}>Sinopsis:</label>
-        <textarea
-          name="sinopsis"
-          value={formData.sinopsis}
-          onChange={handleChange}
-          rows="5"
-        />
-
-        <div className={style.checkboxGroup}>
-          <label className={style.checkboxLabel}>
-            <input
-              type="checkbox"
-              name="starwars"
-              checked={formData.starwars}
-              onChange={handleChange}
-            />
-            ¿Es un libro de Star Wars?
-          </label>
-
-          <label className={style.checkboxLabel}>
-            <input
-              type="checkbox"
-              name="comics"
-              checked={formData.comics}
-              onChange={handleChange}
-            />
-            ¿Es un cómic?
-          </label>
+        <div className={style.formLeftColumn}>
+          <label className={style.labelForm}>Carátula:</label>
+          <div className={style.containerCoverPreview}>
+            {preview && (
+              <img
+                src={preview}
+                alt="Vista previa"
+                className={style.coverPreview}
+              />
+            )}
+          </div>
+          <input type="file" accept="image/*" onChange={handleFileChange} />
         </div>
 
-        <button className={style.buttonFormEdit} type="submit">
-          Guardar Cambios
-        </button>
+        <div className={style.formRightColumn}>
+          <label className={style.labelForm}>Título:</label>
+          <input
+            type="text"
+            name="titulo"
+            value={formData.titulo}
+            onChange={handleChange}
+          />
+
+          <label className={style.labelForm}>Autor:</label>
+          <input
+            type="text"
+            name="autor"
+            value={formData.autor}
+            onChange={handleChange}
+          />
+
+          <label className={style.labelForm}>Género:</label>
+          <select
+            name="id_genero"
+            value={formData.id_genero}
+            onChange={handleChange}
+          >
+            <option value="">Selecciona un género</option>
+            {generos.map((genero) => (
+              <option key={genero.id} value={genero.id}>
+                {genero.nombre}
+              </option>
+            ))}
+          </select>
+
+          <label className={style.labelForm}>Saga:</label>
+          <select
+            name="saga_id"
+            value={formData.saga_id}
+            onChange={handleChange}
+          >
+            <option value="">Selecciona una saga</option>
+            {sagas.map((saga) => (
+              <option key={saga.id} value={saga.id}>
+                {saga.nombre}
+              </option>
+            ))}
+          </select>
+
+          <label className={style.labelForm}>Sinopsis:</label>
+          <textarea
+            name="sinopsis"
+            value={formData.sinopsis}
+            onChange={handleChange}
+            rows="5"
+          />
+
+          <div className={style.checkboxGroup}>
+            <label className={style.checkboxLabel}>
+              ¿Es un libro de Star Wars?
+              <input
+                type="checkbox"
+                name="starwars"
+                checked={formData.starwars}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label className={style.checkboxLabel}>
+              ¿Es un cómic?
+              <input
+                type="checkbox"
+                name="comics"
+                checked={formData.comics}
+                onChange={handleChange}
+              />
+            </label>
+          </div>
+
+          <button className={style.buttonFormEdit} type="submit">
+            Guardar Cambios
+          </button>
+        </div>
       </form>
     </div>
   );

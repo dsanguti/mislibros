@@ -75,5 +75,9 @@
 .tittle{
 margin-top: 55px;
 padding-left: 30px;
-font-size: small;
-font-weight: 500;}
+font-family: "Merienda", cursive;
+font-optical-sizing: auto;
+font-weight: 900;
+font-style: normal;
+}
+

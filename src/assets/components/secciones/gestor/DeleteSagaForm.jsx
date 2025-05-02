@@ -51,23 +51,23 @@ const DeleteSagaForm = ({ saga, onClose, onUpdate }) => {
 
   return (
     <div className={style.formContainer}>
-      <h2>Eliminar Saga</h2>
+      <h2 className={style.myTittleFormDelete}>Eliminar Saga</h2>
       <p>
-        ¿Estás seguro de que deseas eliminar la saga &ldquo;{saga.nombre}
-        &rdquo;?
+        ¿Estás seguro de que deseas eliminar la saga &ldquo;
+        <strong>{saga.nombre}</strong>&rdquo;?
       </p>
       <p>Esta acción no se puede deshacer.</p>
 
       <div className={style.buttonContainer}>
+        <button className={style.buttonFormCancel} onClick={onClose}>
+          Cancelar
+        </button>
         <button
           className={style.buttonFormDelete}
           onClick={handleDelete}
           disabled={isDeleting}
         >
           {isDeleting ? "Eliminando..." : "Eliminar"}
-        </button>
-        <button className={style.buttonFormCancel} onClick={onClose}>
-          Cancelar
         </button>
       </div>
     </div>

@@ -120,7 +120,11 @@ const EditBooks = () => {
 
           {/* Modal en vista móvil */}
           {isMobile ? (
-            <Modal isOpen={isModalOpen} onClose={closeModal}>
+            <Modal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              modalType={isEditing ? "editBook" : undefined}
+            >
               {selectedBook &&
                 (isEditing ? (
                   <EditBookForm
@@ -153,7 +157,11 @@ const EditBooks = () => {
             isModalOpen &&
             selectedBook &&
             (isEditing || isDeleting) && (
-              <Modal isOpen={isModalOpen} onClose={closeModal}>
+              <Modal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                modalType={isEditing ? "editBook" : undefined}
+              >
                 {isEditing ? (
                   <EditBookForm
                     book={selectedBook}

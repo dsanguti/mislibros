@@ -69,7 +69,7 @@ const MainGenero = ({ genero, onBookClick }) => {
 
   return (
     <div className={style.mainSagaContainer}>
-      <h4>Género: {genero ? genero.nombre : "Selecciona un género"}</h4>
+      <h4 className={style.tittle}>Género: {genero ? genero.nombre : "Selecciona un género"}</h4>
       {genero && (
         <div className={style.containerListBooks}>
           <HeaderRow />

@@ -25,6 +25,10 @@
 .headerTitulo, .headerAutor, .headerGenero, .headerEdit{
   flex: 1;
   text-align: center; /* Centra el texto */
+  font-family: "Merienda", cursive;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
 }
 
 /* Asegúrate de que los BooksRow también estén centrados */

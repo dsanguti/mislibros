@@ -6,7 +6,12 @@
   max-width: 800px;
   margin: 0 auto;
 }
-
+.container h2{
+  font-family: "Merienda", cursive;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
+}
 .dropzoneContainer {
   width: 100%;
   margin: 20px 0;
