@@ -465,7 +465,7 @@ const AddBook = () => {
 
   return (
     <div className={style.container}>
-      <h2>Añadir nuevo libro</h2>
+      {!showForm && <h2>Añadir nuevo libro</h2>}
 
       {!showForm && (
         <div className={style.dropzoneContainer}>

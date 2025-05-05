@@ -20,27 +20,36 @@
 }
 
 .details {
-  margin-top: 2px;
+  margin-top: 20px;
   text-align: center;
   width: 100%;
   overflow: hidden; /* Ocultar el desbordamiento */
 }
 
+.titleWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 5px 0;
+}
+
 .title {
-  font-size: 1.3em; /* Aumenta el tamaño de la fuente */
-  margin-bottom: 8px;
+  font-size: 1.3em;
+  margin: 0 auto;
   font-family: "Merienda", cursive;
-font-optical-sizing: auto;
-font-weight: 900;
-font-style: normal;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
+  text-align: center;
+  width: 80%;
 }
 
 .genre {
   margin: 8px 0;
   font-family: "Merienda", cursive;
-font-optical-sizing: auto;
-font-weight: 900;
-font-style: normal;
+  font-optical-sizing: auto;
+  font-weight: 900;
+  font-style: normal;
 }
 
 .synopsis {
@@ -51,5 +60,27 @@ font-style: normal;
   padding-right: 10px; /* Añadir espacio para el scroll */
   font-size: 1rem; /* Aumenta el tamaño de la fuente */
   line-height: 1.9;
-  
+}
+
+.epubIconContainer {
+  position: absolute;
+  top: 50%;
+  right: 15%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.epubIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary); /* Color verde */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.epubIcon:hover {
+  transform: scale(1.2);
+  color: var(--color-secundary); /* Color azul al pasar el ratón */
+  cursor: pointer;
 }

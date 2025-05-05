@@ -218,135 +218,132 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
 
   return (
     <div className={`${style.formContainer} ${style.bookFormContainer}`}>
-      <h2>Añadir Nuevo Libro</h2>
+      <h2 className={style.myTittleForm}>Añadir Nuevo Libro</h2>
 
       <form className={style.formEdit} onSubmit={handleSubmit}>
-        <div className={style.coverSection}>
+        <div className={style.formLeftColumn}>
           <label className={style.labelForm}>Carátula:</label>
-          <div className={style.coverContainer}>
+          <div className={style.containerCoverPreview}>
             {coverPreview && (
-              <div className={style.coverPreviewContainer}>
-                <img
-                  src={coverPreview}
-                  alt="Vista previa de la carátula"
-                  className={style.coverPreview}
-                />
-                <p className={style.coverSource}>
-                  {metadata?.cover
-                    ? "Carátula extraída del EPUB"
-                    : "Carátula seleccionada"}
-                </p>
-              </div>
-            )}
-            <div className={style.coverInputContainer}>
-              <input
-                type="file"
-                name="cover"
-                accept="image/*"
-                onChange={handleCoverChange}
-                className={style.coverInput}
+              <img
+                src={coverPreview}
+                alt="Vista previa de la carátula"
+                className={style.coverPreview}
               />
-              <p className={style.coverHelp}>
-                {metadata?.cover
-                  ? "Puedes subir una nueva imagen para reemplazar la carátula extraída"
-                  : "Selecciona una imagen para la carátula"}
-              </p>
-            </div>
+            )}
           </div>
+          <input
+            type="file"
+            name="cover"
+            accept="image/*"
+            onChange={handleCoverChange}
+            className={style.coverInput}
+          />
+          {metadata?.cover && (
+            <p className={style.coverHelp}>
+              Carátula extraída del archivo. Puedes seleccionar otra si lo
+              deseas.
+            </p>
+          )}
         </div>
 
-        {error && <p className={style.error}>{error}</p>}
-        <label className={style.labelForm}>Título:</label>
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          required
-        />
+        <div className={style.formRightColumn}>
+          {error && <p className={style.error}>{error}</p>}
 
-        <label className={style.labelForm}>Autor:</label>
-        <input
-          type="text"
-          name="author"
-          value={formData.author}
-          onChange={handleInputChange}
-          required
-        />
+          <label className={style.labelForm}>Título:</label>
+          <input
+            type="text"
+            name="title"
+            value={formData.title}
+            onChange={handleInputChange}
+            required
+          />
 
-        <label className={style.labelForm}>Descripción:</label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          rows="4"
-        />
+          <label className={style.labelForm}>Autor:</label>
+          <input
+            type="text"
+            name="author"
+            value={formData.author}
+            onChange={handleInputChange}
+            required
+          />
 
-        <label className={style.labelForm}>Género:</label>
-        <select
-          name="genre"
-          value={formData.genre}
-          onChange={handleInputChange}
-          required
-        >
-          <option value="">Seleccionar género</option>
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.id}>
-              {genre.nombre}
-            </option>
-          ))}
-        </select>
+          <label className={style.labelForm}>Descripción:</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            rows="4"
+          />
 
-        <label className={style.labelForm}>Saga:</label>
-        <select name="saga" value={formData.saga} onChange={handleInputChange}>
-          <option value="">Seleccionar saga</option>
-          {sagas.map((saga) => (
-            <option key={saga.id} value={saga.id}>
-              {saga.nombre}
-            </option>
-          ))}
-        </select>
-
-        <div className={style.checkboxContainer}>
-          <label className={style.checkboxLabel}>
-            <input
-              type="checkbox"
-              name="starwars"
-              checked={formData.starwars}
-              onChange={handleInputChange}
-            />
-            Es un libro de Star Wars
-          </label>
-        </div>
-
-        <div className={style.checkboxContainer}>
-          <label className={style.checkboxLabel}>
-            <input
-              type="checkbox"
-              name="comics"
-              checked={formData.comics}
-              onChange={handleInputChange}
-            />
-            Es un cómic
-          </label>
-        </div>
-
-        <div className={style.formActions}>
-          <button
-            type="button"
-            className={style.cancelButton}
-            onClick={onClose}
-            disabled={loading}
+          <label className={style.labelForm}>Género:</label>
+          <select
+            name="genre"
+            value={formData.genre}
+            onChange={handleInputChange}
+            required
           >
-            Cancelar
-          </button>
-          <button
-            className={style.buttonFormEdit}
-            type="submit"
-            disabled={loading}
+            <option value="">Seleccionar género</option>
+            {genres.map((genre) => (
+              <option key={genre.id} value={genre.id}>
+                {genre.nombre}
+              </option>
+            ))}
+          </select>
+
+          <label className={style.labelForm}>Saga:</label>
+          <select
+            name="saga"
+            value={formData.saga}
+            onChange={handleInputChange}
           >
-            {loading ? "Guardando..." : "Guardar Libro"}
-          </button>
+            <option value="">Seleccionar saga</option>
+            {sagas.map((saga) => (
+              <option key={saga.id} value={saga.id}>
+                {saga.nombre}
+              </option>
+            ))}
+          </select>
+
+          <div className={style.checkboxGroup}>
+            <label className={style.checkboxLabel}>
+              ¿Es un libro de Star Wars?
+              <input
+                type="checkbox"
+                name="starwars"
+                checked={formData.starwars}
+                onChange={handleInputChange}
+              />
+            </label>
+
+            <label className={style.checkboxLabel}>
+              ¿Es un cómic?
+              <input
+                type="checkbox"
+                name="comics"
+                checked={formData.comics}
+                onChange={handleInputChange}
+              />
+            </label>
+          </div>
+
+          <div className={style.buttonContainerEditSaga}>
+            <button
+              type="button"
+              className={style.buttonFormCancel}
+              onClick={onClose}
+              disabled={loading}
+            >
+              Cancelar
+            </button>
+            <button
+              className={style.buttonFormEdit}
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? "Guardando..." : "Guardar Libro"}
+            </button>
+          </div>
         </div>
       </form>
     </div>

@@ -29,6 +29,7 @@ router.get("/all_books", (req, res) => {
         b.autor, 
         b.sinopsis, 
         b.cover, 
+        b.file,
         b.starwars,
         b.comics,
         s.nombre AS saga, 

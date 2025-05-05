@@ -132,8 +132,22 @@ router.post(
         }
 
         // Obtener rutas de los archivos
-        const filePath = req.files.file[0].path;
+        let filePath = null;
         let coverPath = null;
+
+        if (req.files.file) {
+          // Obtener el nombre real del archivo guardado
+          const fileFileName = path.basename(req.files.file[0].path);
+          // Crear la URL para la base de datos
+          filePath = `http://localhost:8001/uploads/books/${fileFileName}`;
+
+          console.log("Rutas de archivo:", {
+            originalName: req.files.file[0].originalname,
+            savedFileName: fileFileName,
+            dbPath: filePath,
+            physicalPath: req.files.file[0].path,
+          });
+        }
 
         if (req.files.cover) {
           // Obtener el nombre real del archivo guardado
@@ -152,6 +166,8 @@ router.post(
         console.log("Rutas de archivos:", {
           filePath,
           coverPath,
+          fileUrl: filePath,
+          coverUrl: coverPath,
         });
 
         // Convertir valores booleanos
