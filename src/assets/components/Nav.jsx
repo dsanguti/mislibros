@@ -3,9 +3,10 @@ import { NavLink, useNavigate } from "react-router-dom"; // Importa useNavigate
 import Ham from "../components/icons/Ham";
 import style from "../css/Nav.module.css";
 import { useAuth } from "./autenticacion/UseAuth"; // Importa el hook de autenticación
+import GestorIcon from "./icons/GestorIcon";
+import Key_Icon from "./icons/Key_Icon";
 import Logout from "./icons/Logout";
 import User from "./icons/User";
-import GestorIcon from "./icons/GestorIcon";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +39,12 @@ const Nav = () => {
   const goToGestor = () => {
     navigate("/gestor"); // Navega a la ruta /gestor
     toggleMenu(); // Cierra el manú despues de navegar
+  };
+
+  // Función para navegar a la sección de "Admin"
+  const goToAdmin = () => {
+    navigate("/admin"); // Navega a la ruta /admin
+    toggleMenu(); // Cierra el menú después de navegar
   };
 
   return (
@@ -96,9 +103,16 @@ const Nav = () => {
           {/* Submenú desplegable */}
           <ul className={style.submenuUser}>
             <li>
+              <div className={style.containerKey}>
+                <Key_Icon className={style.keyIcon} />
+                <h4 onClick={goToAdmin}>Admin</h4>
+              </div>
+            </li>
+            <li>
               <div className={style.containerGestor}>
                 <GestorIcon className={style.userIcon} />
-                <h4 onClick={goToGestor}>Gestor</h4> {/* Evento onClick para redirigir */}
+                <h4 onClick={goToGestor}>Gestor</h4>{" "}
+                {/* Evento onClick para redirigir */}
               </div>
             </li>
             <li>
