@@ -6,7 +6,11 @@ const db = require("./db"); // Asegúrate de que la ruta sea correcta
 
 // Función para generar el token JWT
 const generateToken = (user) => {
-  const payload = { id: user.id, user: user.user };
+  const payload = {
+    id: user.id,
+    user: user.user,
+    profile: user.profile, // Incluir el perfil del usuario
+  };
   const secretKey = process.env.JWT_SECRET; // Usamos la clave secreta de .env
   const options = { expiresIn: "1h" }; // El token expirará en 1 hora
 
@@ -19,7 +23,9 @@ const login = (req, res) => {
 
   // Validar que los datos necesarios estén presentes
   if (!user || !password) {
-    return res.status(400).json({ error: "Faltan datos de usuario o contraseña" });
+    return res
+      .status(400)
+      .json({ error: "Faltan datos de usuario o contraseña" });
   }
 
   // Consulta SQL para buscar al usuario

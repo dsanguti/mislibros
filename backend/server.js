@@ -44,6 +44,7 @@ const apiRoutes = require("./api/routes/routes");
 const sagasRoutes = require("./api/routes/sagas");
 const librosSagasRoutes = require("./api/routes/librosSagas");
 const all_booksRoutes = require("./api/routes/all_books");
+const all_usersRoutes = require("./api/routes/all_users"); // Nueva ruta para obtener usuarios
 const generosRoutes = require("./api/routes/generos");
 const generosEnumRoutes = require("./api/routes/generoEnum");
 const librosGeneroRoutes = require("./api/routes/librosGeneros");
@@ -62,6 +63,7 @@ app.use("/api", apiRoutes);
 app.use("/api", sagasRoutes);
 app.use("/api", librosSagasRoutes);
 app.use("/api", all_booksRoutes);
+app.use("/api", all_usersRoutes); // Registrar la ruta para obtener usuarios
 app.use("/api", generosRoutes);
 app.use("/api", generosEnumRoutes);
 app.use("/api", librosGeneroRoutes);
