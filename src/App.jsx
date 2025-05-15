@@ -38,6 +38,10 @@ const EditSagas = lazy(() =>
   import("./assets/components/secciones/gestor/EditSagas.jsx")
 );
 
+const Admin = lazy(() =>
+  import("./assets/components/secciones/admin/Admin.jsx")
+);
+
 function App() {
   const { isAuthenticated, loading } = useAuth(); // Usa el hook de autenticación
   const location = useLocation(); //obtener la ubicación actual.
@@ -88,6 +92,7 @@ function App() {
                   <Route path="/editorlibros" element={<EditBooks />} />
                   <Route path="/addlibros" element={<AddBook />} />
                   <Route path="/editsagas" element={<EditSagas />} />
+                  <Route path="/admin" element={<Admin />} />
                 </>
               )}
               <Route path="/*" element={<Pagina404 />} />

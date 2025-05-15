@@ -208,7 +208,11 @@ nav a {
   width: 1.7rem;
   height: 1.7rem;
   margin-right: 5px;
-  transition: transform 0.4s ease;
+  transition: transform 0.4s ease, color 0.2s ease;
+}
+
+.containerKey:hover .keyIcon {
+  transform: scale(1.1);
 }
 
 .containerKey {
@@ -222,7 +226,7 @@ nav a {
 
 .containerKey:hover h4,
 .containerKey:hover .keyIcon {
-  color: var(--color-gestor);
+  color: rgb(255, 140, 0);
 }
 
 .containerKey:hover .keyIcon {
