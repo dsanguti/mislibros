@@ -57,6 +57,10 @@ const extractMetadata = require("./api/routes/extract_mobi_metadata"); // Ruta p
 const updateSaga = require("./api/routes/update_saga"); // Nueva ruta para actualizar sagas
 const createSaga = require("./api/routes/create_saga"); // Nueva ruta para crear sagas
 const deleteSaga = require("./api/routes/delete_saga"); // Nueva ruta para eliminar sagas
+const updateUser = require("./api/routes/update_user"); // Nueva ruta para actualizar usuarios
+const deleteUser = require("./api/routes/delete_user"); // Nueva ruta para eliminar usuarios
+const addUser = require("./api/routes/add_user"); // Nueva ruta para añadir usuarios
+
 // Registrar rutas
 app.use("/api", loginRoutes);
 app.use("/api", apiRoutes);
@@ -76,6 +80,9 @@ app.use("/api", extractMetadata); // Registrar la ruta para extraer metadatos
 app.use("/api", updateSaga); // Registrar la ruta para actualizar sagas
 app.use("/api", createSaga); // Registrar la ruta para crear sagas
 app.use("/api", deleteSaga); // Registrar la ruta para eliminar sagas
+app.use("/api", updateUser); // Registrar la ruta para actualizar usuarios
+app.use("/api", deleteUser); // Registrar la ruta para eliminar usuarios
+app.use("/api", addUser); // Registrar la ruta para añadir usuarios
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

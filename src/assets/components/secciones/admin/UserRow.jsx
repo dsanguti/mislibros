@@ -1,4 +1,6 @@
 import style from "../../../css/Admin.module.css";
+import Delete_Icon from "../../icons/Delete_Icon";
+import Edit_Icon from "../../icons/Edit_Icon";
 import EmailUser from "./EmailUser";
 import LastnameUser from "./LastnameUser";
 import NameUser from "./NameUser";
@@ -14,6 +16,8 @@ const UserRow = ({
   mail,
   profile,
   onClick,
+  onEditClick,
+  onDeleteClick,
 }) => {
   return (
     <div className={style.containerUserRow} onClick={onClick}>
@@ -37,8 +41,20 @@ const UserRow = ({
       </div>
       <div className={style.actions}>
         {/* Aquí irían los iconos de editar y eliminar */}
-        <span className={style.iconEdit}>✏️</span>
-        <span className={style.iconDelete}>🗑️</span>
+          <Edit_Icon
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditClick();
+            }}
+            className={style.iconEdit}
+          />{" "}
+        <Delete_Icon
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteClick();
+          }}
+          className={style.iconDelete}
+        />
       </div>
     </div>
   );

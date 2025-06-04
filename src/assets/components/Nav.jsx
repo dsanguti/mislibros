@@ -10,7 +10,7 @@ import User from "./icons/User";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { logout } = useAuth(); // Desestructura el método de logout desde el contexto de autenticación
+  const { logout, user } = useAuth(); // Desestructura el método de logout y el usuario desde el contexto de autenticación
   const navigate = useNavigate(); // Instancia de useNavigate para navegación programática
 
   const toggleMenu = () => {
@@ -102,12 +102,14 @@ const Nav = () => {
           </div>
           {/* Submenú desplegable */}
           <ul className={style.submenuUser}>
-            <li>
-              <div className={style.containerKey}>
-                <Key_Icon className={style.keyIcon} />
-                <h4 onClick={goToAdmin}>Admin</h4>
-              </div>
-            </li>
+            {user?.profile === "Admin" && (
+              <li>
+                <div className={style.containerKey}>
+                  <Key_Icon className={style.keyIcon} />
+                  <h4 onClick={goToAdmin}>Admin</h4>
+                </div>
+              </li>
+            )}
             <li>
               <div className={style.containerGestor}>
                 <GestorIcon className={style.userIcon} />
