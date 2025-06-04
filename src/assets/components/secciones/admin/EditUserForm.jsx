@@ -2,6 +2,8 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Admin.module.css";
+import EyesOpen from "../../icons/EyesOpen";
+import EyesClosed from "../../icons/EyesClosed";
 
 const EditUserForm = ({ user, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
@@ -141,7 +143,7 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
               onClick={togglePasswordVisibility}
               className={style.togglePasswordButton}
             >
-              {showPassword ? "👁️" : "👁️‍🗨️"}
+              {showPassword ? <EyesOpen /> : <EyesClosed />}
             </button>
           </div>
           {formData.password && passwordError && (

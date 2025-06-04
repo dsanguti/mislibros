@@ -13,6 +13,12 @@ const Nav = () => {
   const { logout, user } = useAuth(); // Desestructura el método de logout y el usuario desde el contexto de autenticación
   const navigate = useNavigate(); // Instancia de useNavigate para navegación programática
 
+  // Log temporal para depuración
+  useEffect(() => {
+    console.log("Usuario en Nav:", user);
+    console.log("Perfil del usuario:", user?.profile);
+  }, [user]);
+
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };

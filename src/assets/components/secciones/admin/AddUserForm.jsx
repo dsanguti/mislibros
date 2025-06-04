@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import EyesClosed from "../../icons/EyesClosed.jsx";
+import EyesOpen from "../../icons/EyesOpen.jsx";
 import style from "../../../css/Admin.module.css";
 
 const AddUserForm = ({ onClose, onAdd }) => {
@@ -129,7 +131,7 @@ const AddUserForm = ({ onClose, onAdd }) => {
               onClick={togglePasswordVisibility}
               className={style.togglePasswordButton}
             >
-              {showPassword ? "👁️" : "👁️‍🗨️"}
+              {showPassword ? <EyesOpen /> : <EyesClosed />}
             </button>
           </div>
           {formData.password && passwordError && (
