@@ -6,4 +6,3 @@ const { login } = require("../../auth"); // Importar la función de login desde 
 router.post("/login", login); // Usamos la función login que ya está definida en auth.js
 
 module.exports = router;
-

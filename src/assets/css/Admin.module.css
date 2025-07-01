@@ -56,7 +56,6 @@
 }
 
 .headerUser,
-.headerPassword,
 .headerName,
 .headerLastname,
 .headerEmail,
@@ -73,7 +72,7 @@
 /* Anchos específicos para cada columna */
 .headerUser,
 .user {
-  width: 12%;
+  width: 15%;
 }
 .headerPassword,
 .password {
@@ -81,15 +80,15 @@
 }
 .headerName,
 .name {
-  width: 12%;
+  width: 15%;
 }
 .headerLastname,
 .lastname {
-  width: 15%;
+  width: 18%;
 }
 .headerEmail,
 .email {
-  width: 22%;
+  width: 25%;
 }
 .headerProfile,
 .profile {
@@ -124,7 +123,6 @@
 }
 
 .user,
-.password,
 .name,
 .lastname,
 .email,
@@ -190,8 +188,6 @@
   /* Anulamos los anchos fijos para el responsive */
   .headerUser,
   .user,
-  .headerPassword,
-  .password,
   .headerName,
   .name,
   .headerLastname,
@@ -207,11 +203,6 @@
 
   .headerUser,
   .user {
-    min-width: 100px;
-  }
-
-  .headerPassword,
-  .password {
     min-width: 100px;
   }
 

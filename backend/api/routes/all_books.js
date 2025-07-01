@@ -19,7 +19,7 @@ router.get("/all_books", (req, res) => {
     }
 
     // Obtener el ID del usuario decodificado desde el token
-    const userId = decoded.id;
+    const userId = decoded.userId;
 
     // Consulta SQL para obtener todos los libros del usuario con datos de saga y género
     const query = `

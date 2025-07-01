@@ -16,7 +16,7 @@ router.get("/librosStarwars", (req, res) => {
       return res.status(403).json({ error: "Token no válido o expirado" });
     }
 
-    const userId = decoded.id;
+    const userId = decoded.userId;
 
     const sql = `
       SELECT 
@@ -36,7 +36,9 @@ router.get("/librosStarwars", (req, res) => {
     db.query(sql, [userId], (err, results) => {
       if (err) {
         console.error("Error al obtener los libros de Star Wars:", err);
-        return res.status(500).json({ error: "Error al obtener los libros de Star Wars" });
+        return res
+          .status(500)
+          .json({ error: "Error al obtener los libros de Star Wars" });
       }
       res.json(results);
     });
@@ -44,4 +46,3 @@ router.get("/librosStarwars", (req, res) => {
 });
 
 module.exports = router;
-

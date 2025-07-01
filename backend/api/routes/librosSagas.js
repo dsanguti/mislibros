@@ -16,11 +16,13 @@ router.get("/libros-sagas", (req, res) => {
       return res.status(403).json({ error: "Token no válido o expirado" });
     }
 
-    const userId = decoded.id;
+    const userId = decoded.userId;
     const sagaId = req.query.sagaId;
 
     if (!sagaId) {
-      return res.status(400).json({ error: "No se ha proporcionado el ID de la saga" });
+      return res
+        .status(400)
+        .json({ error: "No se ha proporcionado el ID de la saga" });
     }
 
     // Obtener los libros que pertenecen a la saga para el usuario autenticado
@@ -42,7 +44,9 @@ router.get("/libros-sagas", (req, res) => {
     db.query(query, [sagaId, userId], (err, results) => {
       if (err) {
         console.error("Error al obtener los libros de la saga:", err);
-        return res.status(500).json({ error: "Error al obtener los libros de la saga" });
+        return res
+          .status(500)
+          .json({ error: "Error al obtener los libros de la saga" });
       }
       res.json(results);
     });

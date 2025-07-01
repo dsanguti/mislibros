@@ -2,14 +2,14 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Admin.module.css";
-import EyesOpen from "../../icons/EyesOpen";
 import EyesClosed from "../../icons/EyesClosed";
+import EyesOpen from "../../icons/EyesOpen";
 
 const EditUserForm = ({ user, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
     id: user.id,
     user: user.user,
-    password: user.password,
+    password: "", // Inicializar vacío para no mostrar la contraseña hasheada
     name: user.name,
     lastname: user.lastname,
     mail: user.mail,
@@ -18,6 +18,7 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
 
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isPasswordChanged, setIsPasswordChanged] = useState(false);
 
   const validatePassword = (password) => {
     if (!password) return []; // Si no hay contraseña, no mostrar errores
@@ -51,6 +52,7 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
     });
 
     if (name === "password") {
+      setIsPasswordChanged(true);
       const errors = validatePassword(value);
       setPasswordError(errors.length > 0 ? errors.join(", ") : "");
     }
@@ -64,11 +66,13 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
-    // Validar la contraseña antes de enviar
-    const passwordErrors = validatePassword(formData.password);
-    if (passwordErrors.length > 0) {
-      toast.error("La contraseña no cumple con los requisitos de seguridad");
-      return;
+    // Solo validar la contraseña si se ha cambiado
+    if (isPasswordChanged) {
+      const passwordErrors = validatePassword(formData.password);
+      if (passwordErrors.length > 0) {
+        toast.error("La contraseña no cumple con los requisitos de seguridad");
+        return;
+      }
     }
 
     if (!token) {
@@ -79,13 +83,28 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
     }
 
     try {
+      // Preparar los datos para enviar
+      const dataToSend = {
+        id: formData.id,
+        user: formData.user,
+        name: formData.name,
+        lastname: formData.lastname,
+        mail: formData.mail,
+        profile: formData.profile,
+      };
+
+      // Solo incluir la contraseña si se ha cambiado
+      if (isPasswordChanged && formData.password) {
+        dataToSend.password = formData.password;
+      }
+
       const response = await fetch("http://localhost:8001/api/update_user", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
         credentials: "include",
       });
 
@@ -136,7 +155,7 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required
+              placeholder="Dejar vacío para mantener la contraseña actual"
             />
             <button
               type="button"
@@ -205,7 +224,7 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
           <button
             className={style.buttonFormEdit}
             type="submit"
-            disabled={passwordError !== ""}
+            disabled={isPasswordChanged && passwordError !== ""}
           >
             Guardar Cambios
           </button>

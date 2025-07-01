@@ -4,13 +4,11 @@ import Edit_Icon from "../../icons/Edit_Icon";
 import EmailUser from "./EmailUser";
 import LastnameUser from "./LastnameUser";
 import NameUser from "./NameUser";
-import PasswordUser from "./PasswordUser";
 import ProfileUser from "./ProfileUser";
 import UserUser from "./UserUser";
 
 const UserRow = ({
   user,
-  password,
   name,
   lastname,
   mail,
@@ -23,9 +21,6 @@ const UserRow = ({
     <div className={style.containerUserRow} onClick={onClick}>
       <div className={style.user}>
         <UserUser user={user} />
-      </div>
-      <div className={style.password}>
-        <PasswordUser password={password} />
       </div>
       <div className={style.name}>
         <NameUser name={name} />
@@ -40,14 +35,13 @@ const UserRow = ({
         <ProfileUser profile={profile} />
       </div>
       <div className={style.actions}>
-        {/* Aquí irían los iconos de editar y eliminar */}
-          <Edit_Icon
-            onClick={(e) => {
-              e.stopPropagation();
-              onEditClick();
-            }}
-            className={style.iconEdit}
-          />{" "}
+        <Edit_Icon
+          onClick={(e) => {
+            e.stopPropagation();
+            onEditClick();
+          }}
+          className={style.iconEdit}
+        />
         <Delete_Icon
           onClick={(e) => {
             e.stopPropagation();

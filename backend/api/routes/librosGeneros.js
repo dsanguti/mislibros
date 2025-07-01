@@ -16,7 +16,7 @@ router.get("/libros-genero", (req, res) => {
       return res.status(403).json({ error: "Token no válido o expirado" });
     }
 
-    const userId = decoded.id;
+    const userId = decoded.userId;
     const { genero } = req.query; // Obtener el género desde la query
 
     if (!genero) {
@@ -40,11 +40,11 @@ router.get("/libros-genero", (req, res) => {
         if (err) {
           return res.status(500).json({ error: "Error al obtener los libros" });
         }
-        
+
         console.log("Libros obtenidos con el género:", results); // Verificar los datos obtenidos
         res.json(results);
       }
-    );    
+    );
   });
 });
 

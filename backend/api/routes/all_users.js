@@ -47,7 +47,6 @@ router.get("/all_users", (req, res) => {
       SELECT 
         id, 
         user,
-        password,
         name, 
         lastname, 
         mail, 

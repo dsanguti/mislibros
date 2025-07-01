@@ -1,6 +1,12 @@
 const express = require("express");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 const db = require("../../db");
+
+// Convertir las funciones de callback a promesas
+const query = promisify(db.query).bind(db);
+
 const router = express.Router();
 
 // Ruta para añadir un nuevo usuario (sólo para administradores)
@@ -9,111 +15,61 @@ router.post("/add_user", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Formato: 'Bearer <token>'
 
   if (!token) {
-    return res.status(401).json({ error: "No token provided" });
+    return res.status(401).json({ error: "Token no proporcionado" });
   }
 
-  // Verificar el token JWT
-  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ error: "Token no válido o expirado" });
+  try {
+    // Verificar el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Verificar que el usuario existe y es admin
+    const userRows = await query("SELECT profile FROM users WHERE id = ?", [
+      decoded.userId,
+    ]);
+
+    if (userRows.length === 0) {
+      return res.status(401).json({ error: "Usuario no encontrado" });
     }
 
-    // Obtener el perfil del usuario del token
-    const userProfile = decoded.profile;
-
-    // Verificar si el perfil está presente en el token
-    if (userProfile === undefined) {
+    if (userRows[0].profile !== "Admin") {
       return res.status(403).json({
-        error:
-          "Tu sesión no incluye información de perfil. Por favor, cierra sesión y vuelve a iniciar sesión.",
-      });
-    }
-
-    // Verificar si el usuario es administrador
-    if (userProfile.toLowerCase() !== "admin") {
-      return res.status(403).json({
-        error: "Acceso denegado. Se requieren permisos de administrador",
+        error: "Acceso denegado. Se requieren permisos de administrador.",
       });
     }
 
     const { user, password, name, lastname, mail, profile } = req.body;
 
-    try {
-      // Verificar si el nombre de usuario ya existe
-      db.query(
-        "SELECT * FROM users WHERE user = ?",
-        [user],
-        async (err, results) => {
-          if (err) {
-            console.error("Error al verificar nombre de usuario:", err);
-            return res
-              .status(500)
-              .json({ error: "Error al verificar el nombre de usuario" });
-          }
+    // Verificar si el usuario ya existe
+    const existingUser = await query(
+      "SELECT id FROM users WHERE user = ? OR mail = ?",
+      [user, mail]
+    );
 
-          if (results.length > 0) {
-            return res
-              .status(400)
-              .json({ error: "El nombre de usuario ya existe" });
-          }
-
-          // Verificar si el email ya existe
-          db.query(
-            "SELECT * FROM users WHERE mail = ?",
-            [mail],
-            async (err, emailResults) => {
-              if (err) {
-                console.error("Error al verificar email:", err);
-                return res
-                  .status(500)
-                  .json({ error: "Error al verificar el email" });
-              }
-
-              if (emailResults.length > 0) {
-                return res
-                  .status(400)
-                  .json({ error: "El email ya está registrado" });
-              }
-
-              // Insertar el nuevo usuario
-              const insertQuery = `
-                INSERT INTO users (user, password, name, lastname, mail, profile)
-                VALUES (?, ?, ?, ?, ?, ?)
-              `;
-
-              db.query(
-                insertQuery,
-                [user, password, name, lastname, mail, profile],
-                (err, results) => {
-                  if (err) {
-                    console.error("Error al crear usuario:", err);
-                    return res
-                      .status(500)
-                      .json({ error: "Error al crear el usuario" });
-                  }
-
-                  res.status(201).json({
-                    message: "Usuario creado correctamente",
-                    user: {
-                      id: results.insertId,
-                      user,
-                      name,
-                      lastname,
-                      mail,
-                      profile,
-                    },
-                  });
-                }
-              );
-            }
-          );
-        }
-      );
-    } catch (error) {
-      console.error("Error en la creación:", error);
-      res.status(500).json({ error: "Error al crear el usuario" });
+    if (existingUser.length > 0) {
+      return res.status(400).json({ error: "El usuario o email ya existe" });
     }
-  });
+
+    // Hashear la contraseña antes de guardarla
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Insertar el nuevo usuario con la contraseña hasheada
+    const result = await query(
+      "INSERT INTO users (user, password, name, lastname, mail, profile) VALUES (?, ?, ?, ?, ?, ?)",
+      [user, hashedPassword, name, lastname, mail, profile]
+    );
+
+    res.status(201).json({
+      message: "Usuario creado correctamente",
+      userId: result.insertId,
+    });
+  } catch (error) {
+    console.error("Error al crear usuario:", error);
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({ error: "Token inválido" });
+    }
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 });
 
 module.exports = router;

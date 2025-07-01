@@ -16,7 +16,7 @@ router.get("/librosComics", (req, res) => {
       return res.status(403).json({ error: "Token no válido o expirado" });
     }
 
-    const userId = decoded.id;
+    const userId = decoded.userId;
 
     const sql = `
       SELECT 

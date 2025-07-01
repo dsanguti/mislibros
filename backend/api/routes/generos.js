@@ -16,7 +16,7 @@ router.get("/generos", (req, res) => {
       return res.status(403).json({ error: "Token no válido o expirado" });
     }
 
-    const userId = decoded.id;
+    const userId = decoded.userId;
 
     // Nueva consulta para obtener géneros únicos usados por el usuario
     const query = `

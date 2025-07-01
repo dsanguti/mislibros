@@ -98,7 +98,7 @@ router.post(
           return res.status(403).json({ error: "Token inválido" });
         }
 
-        const userId = decoded.id;
+        const userId = decoded.userId;
 
         // Obtener datos del formulario
         const {

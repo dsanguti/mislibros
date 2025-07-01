@@ -56,7 +56,7 @@ router.post("/create_saga", upload.single("cover"), (req, res) => {
         return res.status(403).json({ error: "Token inválido" });
       }
 
-      const userId = decoded.id;
+      const userId = decoded.userId;
       const { nombre } = req.body;
       let coverPath = null;
 
