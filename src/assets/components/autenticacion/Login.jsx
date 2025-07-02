@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Para redirigir al inicio después del login
 import styles from "../../css/Login.module.css"; // Importa el CSS módulo
 import { useAuth } from "../autenticacion/UseAuth"; // Hook de autenticación
 import CargaApp from "../CargaApp";
-import { useNavigate } from "react-router-dom"; // Para redirigir al inicio después del login
+import ForgotPasswordForm from "./ForgotPasswordForm";
+import RegisterForm from "./RegisterForm";
 
 const Login = () => {
   const { login } = useAuth(); // Usar el hook de autenticación
@@ -12,6 +14,8 @@ const Login = () => {
   const [containerHeight, setContainerHeight] = useState("240px"); // Altura por defecto
   const [loading, setLoading] = useState(false); // Estado de carga
   const [isVisible, setIsVisible] = useState(true); // Estado de visibilidad del contenedor
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
+  const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const navigate = useNavigate(); // Hook para redirigir
 
   const handleSubmit = async (e) => {
@@ -53,7 +57,7 @@ const Login = () => {
         localStorage.setItem("token", data.token); // Guardamos el token
 
         setTimeout(() => {
-          login(data.token); // Llamar al hook login
+          login(data.token, data.user); // Pasar tanto el token como los datos del usuario
           navigate("/"); // Redirigir al inicio después de mostrar CargaApp
         }, 970); // Tiempo que CargaApp estará visible
       } else {
@@ -66,6 +70,11 @@ const Login = () => {
       console.error("Error en el login:", error);
       setContainerHeight("280px");
     }
+  };
+
+  const handleRegisterSuccess = () => {
+    setError("");
+    setContainerHeight("240px");
   };
 
   return (
@@ -110,9 +119,40 @@ const Login = () => {
                 Iniciar Sesión
               </button>
             </form>
+
+            {/* Enlaces adicionales */}
+            <div className={styles.additionalLinks}>
+              <button
+                type="button"
+                onClick={() => setShowRegisterForm(true)}
+                className={styles.linkButton}
+              >
+                Crear nuevo usuario
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowForgotPasswordForm(true)}
+                className={styles.linkButton}
+              >
+                ¿Olvidaste tu contraseña?
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Modal de registro */}
+      {showRegisterForm && (
+        <RegisterForm
+          onClose={() => setShowRegisterForm(false)}
+          onSuccess={handleRegisterSuccess}
+        />
+      )}
+
+      {/* Modal de recuperación de contraseña */}
+      {showForgotPasswordForm && (
+        <ForgotPasswordForm onClose={() => setShowForgotPasswordForm(false)} />
+      )}
     </>
   );
 };

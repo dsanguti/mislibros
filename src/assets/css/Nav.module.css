@@ -73,13 +73,27 @@ nav a {
   align-items: center;
   padding: 10px;
   position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
 }
+
+.containeruser:hover {
+  background-color: var(--color-secundary);
+}
+
 .user {
   color: white;
   display: block;
   width: 1.8rem;
   height: 1.8rem;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.containeruser:hover .user {
+  transform: scale(1.1);
+  color: rgb(216, 232, 98);
 }
 
 .ul li:hover {

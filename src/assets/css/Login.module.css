@@ -1,6 +1,6 @@
 /* Login.module.css */
 
-.containerLogin{
+.containerLogin {
   display: flex;
   width: 100vw;
   align-items: start;
@@ -25,7 +25,8 @@
 }
 
 .container.error {
-height: 280px;}
+  height: 280px;
+}
 
 .logo {
   position: absolute; /* Posiciona el logo absolutamente */
@@ -77,8 +78,9 @@ height: 280px;}
   transition: opacity 2s ease; /* transición para que aparezca*/
 }
 
-.show{
-opacity: 1;}
+.show {
+  opacity: 1;
+}
 
 .spinnerContainer {
   position: absolute; /* O fija según tus necesidades */
@@ -89,12 +91,192 @@ opacity: 1;}
   display: flex; /* Centrar el spinner */
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente, opcional */
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.8
+  ); /* Fondo semitransparente, opcional */
 }
-.hidden{
-display: none !important;}
+.hidden {
+  display: none !important;
+}
+
+/* Estilos para enlaces adicionales */
+.additionalLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.linkButton {
+  background: none;
+  border: none;
+  color: #004445;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 5px 0;
+  transition: color 0.3s ease;
+}
+
+.linkButton:hover {
+  color: #2c7873;
+}
+
+/* Estilos para modales */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  color: #004445;
+  font-size: 1.5rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.closeButton:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.forgotPasswordContent {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.forgotPasswordContent p {
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.buttonCancel {
+  padding: 8px 16px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.buttonCancel:hover {
+  background-color: #5a6268;
+}
+
+/* Estilos para el contenedor de contraseña */
+.passwordInputContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordInputContainer input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.togglePasswordButton {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 1.2rem;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.togglePasswordButton:hover {
+  color: #004445;
+}
+
+.errorMessage {
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem;
+  background-color: rgba(220, 53, 69, 0.1);
+  border-radius: 4px;
+  border-left: 3px solid #dc3545;
+}
 
 @media (max-width: 768px) {
- .container{
-width: 300px;}
+  .container {
+    width: 300px;
+  }
+
+  .modalContent {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .buttonContainer {
+    flex-direction: column;
+  }
+
+  .buttonCancel,
+  .button {
+    width: 100%;
+  }
 }

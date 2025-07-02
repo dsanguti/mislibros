@@ -16,7 +16,7 @@ router.get("/sagas", (req, res) => {
       return res.status(403).json({ error: "Token no válido o expirado" });
     }
 
-    const userId = decoded.id;
+    const userId = decoded.userId;
 
     // Obtener todas las sagas del usuario, independientemente de si tienen libros asociados
     const query = `

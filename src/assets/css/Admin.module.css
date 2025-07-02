@@ -117,7 +117,7 @@
 }
 
 .containerUserRow:hover {
-  cursor: pointer;
+ 
   background-color: var(--color-secundary);
   color: white;
 }

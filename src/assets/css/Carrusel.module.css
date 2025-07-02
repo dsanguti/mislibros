@@ -46,13 +46,11 @@
 }
 
 .arrow:hover {
-  outline: 2px solid var(--color-primary); /* Usar outline en lugar de border */
-  border-radius: 50%; /* Mantener el borde redondeado */
-  background-color: var(--color-secundary); /* Cambiar el color de fondo */
+  cursor: pointer;
 }
 
 .arrow:hover path {
-  stroke: white; /* Cambiar el color de la flecha a blanco */
+  stroke: var(--color-primary); /* Cambiar el color de la flecha a blanco */
 }
 
 .disabled {

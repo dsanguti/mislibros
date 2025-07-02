@@ -133,7 +133,7 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
 
   return (
     <div className={style.formContainer}>
-      <h2 className={style.myTittleForm}>Editar Usuario</h2>
+      <h2 className={style.myTittleForm}>Editar Mi Perfil</h2>
 
       <form className={style.formEdit} onSubmit={handleSubmit}>
         <div className={style.formGroup}>

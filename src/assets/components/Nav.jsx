@@ -7,9 +7,11 @@ import GestorIcon from "./icons/GestorIcon";
 import Key_Icon from "./icons/Key_Icon";
 import Logout from "./icons/Logout";
 import User from "./icons/User";
+import ProfileModal from "./ProfileModal";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { logout, user } = useAuth(); // Desestructura el método de logout y el usuario desde el contexto de autenticación
   const navigate = useNavigate(); // Instancia de useNavigate para navegación programática
 
@@ -21,6 +23,15 @@ const Nav = () => {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+  };
+
+  const openProfileModal = () => {
+    setIsProfileModalOpen(true);
+    setIsOpen(false); // Cerrar el menú móvil si está abierto
+  };
+
+  const closeProfileModal = () => {
+    setIsProfileModalOpen(false);
   };
 
   useEffect(() => {
@@ -54,85 +65,90 @@ const Nav = () => {
   };
 
   return (
-    <nav className={style.navbar}>
-      <Ham isOpen={isOpen} toggleMenu={toggleMenu} />
-      <ul className={`${style.ul} ${isOpen ? style.open : ""}`}>
-        <li>
-          <NavLink
-            to="/"
-            onClick={toggleMenu}
-            className={({ isActive }) => (isActive ? style.isActive : "")}
-          >
-            Inicio
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/sagas"
-            onClick={toggleMenu}
-            className={({ isActive }) => (isActive ? style.isActive : "")}
-          >
-            Sagas
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/generos"
-            onClick={toggleMenu}
-            className={({ isActive }) => (isActive ? style.isActive : "")}
-          >
-            Géneros
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/starwars"
-            onClick={toggleMenu}
-            className={({ isActive }) => (isActive ? style.isActive : "")}
-          >
-            StarWars
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to="/comics"
-            onClick={toggleMenu}
-            className={({ isActive }) => (isActive ? style.isActive : "")}
-          >
-            Comics
-          </NavLink>
-        </li>
-        <li className={style.userMenu}>
-          <div className={style.containeruser}>
-            <User className={style.user} />
-          </div>
-          {/* Submenú desplegable */}
-          <ul className={style.submenuUser}>
-            {user?.profile === "Admin" && (
+    <>
+      <nav className={style.navbar}>
+        <Ham isOpen={isOpen} toggleMenu={toggleMenu} />
+        <ul className={`${style.ul} ${isOpen ? style.open : ""}`}>
+          <li>
+            <NavLink
+              to="/"
+              onClick={toggleMenu}
+              className={({ isActive }) => (isActive ? style.isActive : "")}
+            >
+              Inicio
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/sagas"
+              onClick={toggleMenu}
+              className={({ isActive }) => (isActive ? style.isActive : "")}
+            >
+              Sagas
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/generos"
+              onClick={toggleMenu}
+              className={({ isActive }) => (isActive ? style.isActive : "")}
+            >
+              Géneros
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/starwars"
+              onClick={toggleMenu}
+              className={({ isActive }) => (isActive ? style.isActive : "")}
+            >
+              StarWars
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/comics"
+              onClick={toggleMenu}
+              className={({ isActive }) => (isActive ? style.isActive : "")}
+            >
+              Comics
+            </NavLink>
+          </li>
+          <li className={style.userMenu}>
+            <div className={style.containeruser} onClick={openProfileModal}>
+              <User className={style.user} />
+            </div>
+            {/* Submenú desplegable */}
+            <ul className={style.submenuUser}>
+              {user?.profile === "Admin" && (
+                <li>
+                  <div className={style.containerKey}>
+                    <Key_Icon className={style.keyIcon} />
+                    <h4 onClick={goToAdmin}>Admin</h4>
+                  </div>
+                </li>
+              )}
               <li>
-                <div className={style.containerKey}>
-                  <Key_Icon className={style.keyIcon} />
-                  <h4 onClick={goToAdmin}>Admin</h4>
+                <div className={style.containerGestor}>
+                  <GestorIcon className={style.userIcon} />
+                  <h4 onClick={goToGestor}>Gestor</h4>{" "}
+                  {/* Evento onClick para redirigir */}
                 </div>
               </li>
-            )}
-            <li>
-              <div className={style.containerGestor}>
-                <GestorIcon className={style.userIcon} />
-                <h4 onClick={goToGestor}>Gestor</h4>{" "}
-                {/* Evento onClick para redirigir */}
-              </div>
-            </li>
-            <li>
-              <div onClick={handleLogout} className={style.containerSalir}>
-                <Logout className={style.logout} />
-                <h4>Salir</h4>
-              </div>
-            </li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
+              <li>
+                <div onClick={handleLogout} className={style.containerSalir}>
+                  <Logout className={style.logout} />
+                  <h4>Salir</h4>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+
+      {/* Modal del perfil de usuario */}
+      <ProfileModal isOpen={isProfileModalOpen} onClose={closeProfileModal} />
+    </>
   );
 };
 

@@ -40,49 +40,49 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Servir 
 
 // Rutas
 const loginRoutes = require("./api/routes/login");
-const apiRoutes = require("./api/routes/routes");
+const registerRoutes = require("./api/routes/register");
 const sagasRoutes = require("./api/routes/sagas");
 const librosSagasRoutes = require("./api/routes/librosSagas");
-const all_booksRoutes = require("./api/routes/all_books");
-const all_usersRoutes = require("./api/routes/all_users"); // Nueva ruta para obtener usuarios
+const allBooksRoutes = require("./api/routes/all_books");
+const allUsersRoutes = require("./api/routes/all_users");
 const generosRoutes = require("./api/routes/generos");
-const generosEnumRoutes = require("./api/routes/generoEnum");
+const generoEnumRoutes = require("./api/routes/generoEnum");
 const librosGeneroRoutes = require("./api/routes/librosGeneros");
 const librosStarwarsRoutes = require("./api/routes/librosStarwars");
-const comicsRoutes = require("./api/routes/librosComics");
-const updateBook = require("./api/routes/updateBook"); // Rutas de actualización de libros
-const deleteBook = require("./api/routes/delete_book"); // Rutas de eliminación de libros
-const addBook = require("./api/routes/add_book"); // Nueva ruta para añadir libros
-const extractMetadata = require("./api/routes/extract_mobi_metadata"); // Ruta para extraer metadatos de PDF y EPUB
-const updateSaga = require("./api/routes/update_saga"); // Nueva ruta para actualizar sagas
-const createSaga = require("./api/routes/create_saga"); // Nueva ruta para crear sagas
-const deleteSaga = require("./api/routes/delete_saga"); // Nueva ruta para eliminar sagas
-const updateUser = require("./api/routes/update_user"); // Nueva ruta para actualizar usuarios
-const deleteUser = require("./api/routes/delete_user"); // Nueva ruta para eliminar usuarios
-const addUser = require("./api/routes/add_user"); // Nueva ruta para añadir usuarios
+const librosComicsRoutes = require("./api/routes/librosComics");
+const updateBookRoutes = require("./api/routes/updateBook");
+const deleteBookRoutes = require("./api/routes/delete_book");
+const addBookRoutes = require("./api/routes/add_book");
+const extractMetadataRoutes = require("./api/routes/extract_mobi_metadata");
+const updateSagaRoutes = require("./api/routes/update_saga");
+const createSagaRoutes = require("./api/routes/create_saga");
+const deleteSagaRoutes = require("./api/routes/delete_saga");
+const updateUserRoutes = require("./api/routes/update_user");
+const deleteUserRoutes = require("./api/routes/delete_user");
+const addUserRoutes = require("./api/routes/add_user");
 
 // Registrar rutas
 app.use("/api", loginRoutes);
-app.use("/api", apiRoutes);
+app.use("/api", registerRoutes);
 app.use("/api", sagasRoutes);
 app.use("/api", librosSagasRoutes);
-app.use("/api", all_booksRoutes);
-app.use("/api", all_usersRoutes); // Registrar la ruta para obtener usuarios
+app.use("/api", allBooksRoutes);
+app.use("/api", allUsersRoutes);
 app.use("/api", generosRoutes);
-app.use("/api", generosEnumRoutes);
+app.use("/api", generoEnumRoutes);
 app.use("/api", librosGeneroRoutes);
 app.use("/api", librosStarwarsRoutes);
-app.use("/api", comicsRoutes);
-app.use("/api", updateBook); // Ahora updateBook está correctamente registrado en /api/books
-app.use("/api", deleteBook); // Registrar la ruta de eliminación de libros
-app.use("/api", addBook); // Registrar la nueva ruta para añadir libros
-app.use("/api", extractMetadata); // Registrar la ruta para extraer metadatos
-app.use("/api", updateSaga); // Registrar la ruta para actualizar sagas
-app.use("/api", createSaga); // Registrar la ruta para crear sagas
-app.use("/api", deleteSaga); // Registrar la ruta para eliminar sagas
-app.use("/api", updateUser); // Registrar la ruta para actualizar usuarios
-app.use("/api", deleteUser); // Registrar la ruta para eliminar usuarios
-app.use("/api", addUser); // Registrar la ruta para añadir usuarios
+app.use("/api", librosComicsRoutes);
+app.use("/api", updateBookRoutes);
+app.use("/api", deleteBookRoutes);
+app.use("/api", addBookRoutes);
+app.use("/api", extractMetadataRoutes);
+app.use("/api", updateSagaRoutes);
+app.use("/api", createSagaRoutes);
+app.use("/api", deleteSagaRoutes);
+app.use("/api", updateUserRoutes);
+app.use("/api", deleteUserRoutes);
+app.use("/api", addUserRoutes);
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

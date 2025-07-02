@@ -32,19 +32,33 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem("authToken");
-    if (storedToken) {
-      const userData = decodeToken(storedToken);
-      if (userData) {
-        setIsAuthenticated(true);
-        setToken(storedToken);
-        setUser(userData);
-        console.log("Usuario decodificado:", userData); // Para depuración
-      } else {
-        // Si el token no se puede decodificar, limpiar todo
+    const storedUser = localStorage.getItem("userData");
+
+    if (storedToken && storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        const tokenData = decodeToken(storedToken);
+
+        if (tokenData && userData) {
+          setIsAuthenticated(true);
+          setToken(storedToken);
+          setUser(userData);
+          console.log("Usuario cargado desde localStorage:", userData);
+        } else {
+          // Si el token no se puede decodificar, limpiar todo
+          setIsAuthenticated(false);
+          setToken("");
+          setUser(null);
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("userData");
+        }
+      } catch (error) {
+        console.error("Error al cargar datos del usuario:", error);
         setIsAuthenticated(false);
         setToken("");
         setUser(null);
         localStorage.removeItem("authToken");
+        localStorage.removeItem("userData");
       }
     } else {
       setIsAuthenticated(false);
@@ -53,14 +67,15 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (token) => {
-    const userData = decodeToken(token);
-    if (userData) {
+  const login = (token, userData) => {
+    const tokenData = decodeToken(token);
+    if (tokenData && userData) {
       setIsAuthenticated(true);
       setToken(token);
       setUser(userData);
       localStorage.setItem("authToken", token);
-      console.log("Usuario logueado:", userData); // Para depuración
+      localStorage.setItem("userData", JSON.stringify(userData));
+      console.log("Usuario logueado:", userData);
       navigate("/");
     } else {
       console.error("Error al decodificar el token durante el login");
@@ -72,6 +87,7 @@ export const AuthProvider = ({ children }) => {
     setToken("");
     setUser(null);
     localStorage.removeItem("authToken");
+    localStorage.removeItem("userData");
     navigate("/login");
   };
 
