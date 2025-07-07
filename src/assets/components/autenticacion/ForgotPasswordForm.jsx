@@ -18,19 +18,32 @@ const ForgotPasswordForm = ({ onClose }) => {
     setIsSubmitting(true);
 
     try {
-      // Por ahora, solo mostraremos un mensaje informativo
-      // En el futuro, aquí se implementaría la lógica de recuperación de contraseña
-      toast.info(
-        "Función de recuperación de contraseña en desarrollo. Contacta al administrador."
+      const response = await fetch(
+        "http://localhost:8001/api/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
       );
 
-      // Simular un delay para mostrar el estado de carga
-      setTimeout(() => {
-        onClose();
-      }, 2000);
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success(
+          "Se ha enviado un email con instrucciones para recuperar tu contraseña"
+        );
+        setTimeout(() => {
+          onClose();
+        }, 2000);
+      } else {
+        toast.error(data.error || "Error al enviar el email de recuperación");
+      }
     } catch (error) {
       console.error("Error en recuperación de contraseña:", error);
-      toast.error("Hubo un problema al procesar la solicitud.");
+      toast.error("Error de conexión. Inténtalo de nuevo.");
     } finally {
       setIsSubmitting(false);
     }
@@ -76,7 +89,7 @@ const ForgotPasswordForm = ({ onClose }) => {
               className={styles.button}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Enviando..." : "Enviar Instrucciones"}
+              {isSubmitting ? "Enviando..." : "Enviar"}
             </button>
           </div>
         </form>

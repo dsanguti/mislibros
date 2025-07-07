@@ -66,7 +66,19 @@ const Login = () => {
         setContainerHeight("280px");
       }
     } catch (error) {
-      setError("Error en la autenticación. Inténtalo de nuevo más tarde.");
+      // Intentar parsear el error para ver si es un usuario no verificado
+      try {
+        const errorResponse = await error.response?.json();
+        if (errorResponse?.needsVerification) {
+          setError(
+            "Cuenta no verificada. Por favor, verifica tu email antes de iniciar sesión."
+          );
+        } else {
+          setError("Error en la autenticación. Inténtalo de nuevo más tarde.");
+        }
+      } catch {
+        setError("Error en la autenticación. Inténtalo de nuevo más tarde.");
+      }
       console.error("Error en el login:", error);
       setContainerHeight("280px");
     }

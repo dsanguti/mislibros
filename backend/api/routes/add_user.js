@@ -11,6 +11,9 @@ const router = express.Router();
 
 // Ruta para añadir un nuevo usuario (sólo para administradores)
 router.post("/add_user", async (req, res) => {
+  console.log("=== INICIO CREACIÓN USUARIO (ADMIN) ===");
+  console.log("Datos recibidos:", req.body);
+
   // Obtener el token de autorización desde los encabezados
   const token = req.headers.authorization?.split(" ")[1]; // Formato: 'Bearer <token>'
 
@@ -53,18 +56,25 @@ router.post("/add_user", async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insertar el nuevo usuario con la contraseña hasheada
+    // Insertar el nuevo usuario directamente (sin verificación por email)
     const result = await query(
-      "INSERT INTO users (user, password, name, lastname, mail, profile) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO users (user, password, name, lastname, mail, profile, is_verified) VALUES (?, ?, ?, ?, ?, ?, TRUE)",
       [user, hashedPassword, name, lastname, mail, profile]
     );
 
+    console.log(
+      `Usuario ${user} creado exitosamente por administrador (verificado automáticamente)`
+    );
+    console.log("=== FIN CREACIÓN USUARIO (ADMIN) ===");
+
     res.status(201).json({
-      message: "Usuario creado correctamente",
+      message:
+        "Usuario creado correctamente. El usuario ya puede iniciar sesión.",
       userId: result.insertId,
     });
   } catch (error) {
     console.error("Error al crear usuario:", error);
+    console.log("=== FIN CREACIÓN USUARIO (ADMIN) - ERROR ===");
     if (error.name === "JsonWebTokenError") {
       return res.status(401).json({ error: "Token inválido" });
     }

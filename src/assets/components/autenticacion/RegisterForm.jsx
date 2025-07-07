@@ -86,7 +86,9 @@ const RegisterForm = ({ onClose, onSuccess }) => {
         return;
       }
 
-      toast.success("Usuario creado correctamente. Ya puedes iniciar sesión.");
+      toast.success(
+        "Usuario registrado correctamente. Revisa tu email para verificar tu cuenta."
+      );
       onSuccess();
       onClose();
     } catch (error) {

@@ -1,3 +1,4 @@
+require("dotenv").config(); // Cargar variables de entorno
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -17,6 +18,17 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.json());
+
+// Middleware para interceptar todas las peticiones
+app.use((req, res, next) => {
+  console.log(`=== PETICIÓN RECIBIDA ===`);
+  console.log(`Método: ${req.method}`);
+  console.log(`URL: ${req.url}`);
+  console.log(`Body:`, req.body);
+  console.log(`Headers:`, req.headers);
+  console.log(`=======================`);
+  next();
+});
 
 // Configuración de la base de datos
 const db = mysql.createConnection({
@@ -60,6 +72,9 @@ const deleteSagaRoutes = require("./api/routes/delete_saga");
 const updateUserRoutes = require("./api/routes/update_user");
 const deleteUserRoutes = require("./api/routes/delete_user");
 const addUserRoutes = require("./api/routes/add_user");
+const verifyEmailRoutes = require("./api/routes/verify_email");
+const forgotPasswordRoutes = require("./api/routes/forgot_password");
+const resetPasswordRoutes = require("./api/routes/reset_password");
 
 // Registrar rutas
 app.use("/api", loginRoutes);
@@ -83,6 +98,9 @@ app.use("/api", deleteSagaRoutes);
 app.use("/api", updateUserRoutes);
 app.use("/api", deleteUserRoutes);
 app.use("/api", addUserRoutes);
+app.use("/api", verifyEmailRoutes);
+app.use("/api", forgotPasswordRoutes);
+app.use("/api", resetPasswordRoutes);
 
 // Middleware para listar todas las rutas registradas
 app._router.stack.forEach((middleware) => {

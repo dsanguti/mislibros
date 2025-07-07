@@ -117,7 +117,6 @@
 }
 
 .containerUserRow:hover {
- 
   background-color: var(--color-secundary);
   color: white;
 }
@@ -401,5 +400,26 @@
 }
 
 .togglePasswordButton:hover {
-  color: var(--color-primary);
+  background-color: #e0e0e0;
+}
+
+.disabledField {
+  background-color: #f5f5f5;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.disabledField:focus {
+  outline: none;
+  border-color: #ccc;
+}
+
+.disabledNote {
+  display: block;
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+  margin-top: 5px;
+  text-align: center;
 }

@@ -26,7 +26,12 @@ const ProfileModal = ({ isOpen, onClose }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <EditUserForm user={user} onClose={handleClose} onUpdate={handleUpdate} />
+      <EditUserForm
+        user={user}
+        onClose={handleClose}
+        onUpdate={handleUpdate}
+        canEditProfile={false}
+      />
     </Modal>
   );
 };

@@ -15,6 +15,7 @@
   height: 240px;
   transition: height 0.3s ease; /*  se agrega transición para el cambio de altura cuando salga el error*/
   margin: auto;
+  margin-bottom: 15px;
   padding: 20px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -107,7 +108,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 30px;
   padding-top: 15px;
   border-top: 1px solid #ddd;
 }
@@ -279,4 +280,54 @@
   .button {
     width: 100%;
   }
+}
+
+/* Estilos para el contenedor de contraseña */
+.passwordContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+}
+
+.passwordContainer label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+}
+
+.passwordContainer input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  padding-right: 40px; /* Espacio para el botón de mostrar/ocultar */
+}
+
+.passwordToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  font-size: 16px;
+  color: #666;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  position: absolute;
+  right: 10px;
+  top: 63%;
+  transform: translateY(-50%);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+
+.passwordToggle:hover {
+  background-color: #f0f0f0;
+  color: #333;
 }

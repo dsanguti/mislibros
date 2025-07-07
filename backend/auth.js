@@ -45,6 +45,15 @@ const login = async (req, res) => {
 
     const userData = results[0];
 
+    // Verificar si el usuario está verificado
+    if (!userData.is_verified) {
+      return res.status(401).json({
+        error:
+          "Cuenta no verificada. Por favor, verifica tu email antes de iniciar sesión.",
+        needsVerification: true,
+      });
+    }
+
     // Verificar si la contraseña está hasheada o es texto plano (para compatibilidad)
     let isPasswordValid = false;
 

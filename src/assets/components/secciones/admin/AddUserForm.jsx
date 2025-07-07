@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
+import style from "../../../css/Admin.module.css";
 import EyesClosed from "../../icons/EyesClosed.jsx";
 import EyesOpen from "../../icons/EyesOpen.jsx";
-import style from "../../../css/Admin.module.css";
 
 const AddUserForm = ({ onClose, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -90,7 +90,9 @@ const AddUserForm = ({ onClose, onAdd }) => {
       }
 
       await response.json();
-      toast.success("Usuario creado correctamente");
+      toast.success(
+        "Usuario creado correctamente. El usuario ya puede iniciar sesión."
+      );
       onAdd();
       onClose();
     } catch (error) {

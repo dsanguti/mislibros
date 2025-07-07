@@ -11,6 +11,7 @@ import Pagina404 from "./assets/components/Pagina404";
 import Tittle from "./assets/components/Tittle";
 import Login from "./assets/components/autenticacion/Login.jsx"; // Asegúrate de que esta ruta sea correcta
 import { useAuth } from "./assets/components/autenticacion/UseAuth.jsx"; // Importa el hook de autenticación
+import ResetPasswordForm from "./assets/components/autenticacion/ResetPasswordForm.jsx";
 
 const Home = lazy(() => import("./assets/components/secciones/home/Home.jsx"));
 const Comics = lazy(() =>
@@ -68,6 +69,11 @@ function App() {
                 <>
                   <Route path="/login" element={<Login />} />{" "}
                   {/* Ruta explícita al login*/}
+                  <Route
+                    path="/reset-password"
+                    element={<ResetPasswordForm />}
+                  />{" "}
+                  {/* Ruta para cambiar contraseña*/}
                   <Route
                     path="*"
                     element={

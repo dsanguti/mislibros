@@ -5,7 +5,7 @@ import style from "../../../css/Admin.module.css";
 import EyesClosed from "../../icons/EyesClosed";
 import EyesOpen from "../../icons/EyesOpen";
 
-const EditUserForm = ({ user, onClose, onUpdate }) => {
+const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
   const [formData, setFormData] = useState({
     id: user.id,
     user: user.user,
@@ -210,11 +210,18 @@ const EditUserForm = ({ user, onClose, onUpdate }) => {
             value={formData.profile}
             onChange={handleChange}
             required
+            disabled={!canEditProfile}
+            className={!canEditProfile ? style.disabledField : ""}
           >
             <option value="Consulta">Consulta</option>
             <option value="Editar">Editar</option>
             <option value="Admin">Admin</option>
           </select>
+          {!canEditProfile && (
+            <small className={style.disabledNote}>
+              El perfil solo puede ser modificado por un administrador
+            </small>
+          )}
         </div>
 
         <div className={style.buttonContainer}>
