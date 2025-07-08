@@ -1,99 +1,188 @@
 // AuthProvider.js
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState("");
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+// Singleton para el estado de autenticación
+class AuthStateManager {
+  constructor() {
+    this.state = {
+      isAuthenticated: false,
+      token: "",
+      user: null,
+      loading: true,
+    };
+    this.listeners = [];
+    this.initialized = false;
+  }
 
-  const decodeToken = (token) => {
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
+  getState() {
+    return { ...this.state };
+  }
+
+  setState(newState) {
+    this.state = { ...this.state, ...newState };
+    console.log("AuthStateManager - Estado actualizado:", this.state);
+    this.notifyListeners();
+  }
+
+  subscribe(listener) {
+    this.listeners.push(listener);
+    return () => {
+      this.listeners = this.listeners.filter((l) => l !== listener);
+    };
+  }
+
+  notifyListeners() {
+    this.listeners.forEach((listener) => listener(this.state));
+  }
+
+  // Cargar desde localStorage
+  loadFromStorage() {
+    if (this.initialized) {
+      console.log(
+        "AuthStateManager - Ya inicializado, retornando estado actual"
       );
-      return JSON.parse(jsonPayload);
-    } catch (error) {
-      console.error("Error al decodificar el token:", error);
-      return null;
+      return this.state;
     }
-  };
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("authToken");
-    const storedUser = localStorage.getItem("userData");
+    const storedToken = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("user");
+
+    console.log("AuthStateManager - Cargando desde localStorage");
+    console.log("Token:", storedToken ? "PRESENTE" : "AUSENTE");
+    console.log("User:", storedUser ? "PRESENTE" : "AUSENTE");
 
     if (storedToken && storedUser) {
       try {
         const userData = JSON.parse(storedUser);
-        const tokenData = decodeToken(storedToken);
-
-        if (tokenData && userData) {
-          setIsAuthenticated(true);
-          setToken(storedToken);
-          setUser(userData);
-          console.log("Usuario cargado desde localStorage:", userData);
-        } else {
-          // Si el token no se puede decodificar, limpiar todo
-          setIsAuthenticated(false);
-          setToken("");
-          setUser(null);
-          localStorage.removeItem("authToken");
-          localStorage.removeItem("userData");
-        }
+        this.setState({
+          isAuthenticated: true,
+          token: storedToken,
+          user: userData,
+          loading: false,
+        });
+        console.log("AuthStateManager - Datos cargados exitosamente");
+        this.initialized = true;
+        return this.state;
       } catch (error) {
-        console.error("Error al cargar datos del usuario:", error);
-        setIsAuthenticated(false);
-        setToken("");
-        setUser(null);
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("userData");
+        console.error("AuthStateManager - Error al cargar datos:", error);
       }
-    } else {
-      setIsAuthenticated(false);
-      setUser(null);
     }
-    setLoading(false);
+
+    this.setState({
+      isAuthenticated: false,
+      token: "",
+      user: null,
+      loading: false,
+    });
+    this.initialized = true;
+    return this.state;
+  }
+
+  // Actualizar usuario
+  updateUser(newUserData) {
+    console.log("AuthStateManager - Actualizando usuario:", newUserData);
+    this.setState({
+      user: newUserData,
+      isAuthenticated: true, // Asegurar que permanezca autenticado
+    });
+    localStorage.setItem("user", JSON.stringify(newUserData));
+  }
+
+  // Login
+  login(token, userData) {
+    console.log("AuthStateManager - Login:", userData);
+    this.setState({
+      isAuthenticated: true,
+      token,
+      user: userData,
+      loading: false,
+    });
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
+  }
+
+  // Logout
+  logout() {
+    console.log("AuthStateManager - Logout");
+    this.setState({
+      isAuthenticated: false,
+      token: "",
+      user: null,
+      loading: false,
+    });
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  }
+}
+
+// Instancia global
+const authStateManager = new AuthStateManager();
+
+export const AuthProvider = ({ children }) => {
+  const [authState, setAuthState] = useState(() => {
+    // Inicializar con el estado del singleton
+    const initialState = authStateManager.loadFromStorage();
+    console.log("AuthProvider - Estado inicial:", initialState);
+    return initialState;
+  });
+
+  const navigate = useNavigate();
+  const instanceId = useRef(Math.random().toString(36).substr(2, 9));
+
+  console.log("AuthProvider instancia:", instanceId.current);
+
+  // Suscribirse a cambios del singleton
+  useEffect(() => {
+    console.log("AuthProvider - Suscribiéndose a cambios");
+    const unsubscribe = authStateManager.subscribe((newState) => {
+      console.log(
+        "AuthProvider - Estado actualizado desde singleton:",
+        newState
+      );
+      setAuthState(newState);
+    });
+
+    return unsubscribe;
   }, []);
 
   const login = (token, userData) => {
-    const tokenData = decodeToken(token);
-    if (tokenData && userData) {
-      setIsAuthenticated(true);
-      setToken(token);
-      setUser(userData);
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userData", JSON.stringify(userData));
-      console.log("Usuario logueado:", userData);
-      navigate("/");
-    } else {
-      console.error("Error al decodificar el token durante el login");
-    }
+    console.log("AuthProvider - Login llamado");
+    authStateManager.login(token, userData);
+    navigate("/");
   };
 
   const logout = () => {
-    setIsAuthenticated(false);
-    setToken("");
-    setUser(null);
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
+    console.log("AuthProvider - Logout llamado");
+    authStateManager.logout();
     navigate("/login");
   };
 
+  const updateUser = (newUserData) => {
+    console.log("AuthProvider - UpdateUser llamado:", newUserData);
+    authStateManager.updateUser(newUserData);
+  };
+
+  console.log("=== AuthProvider render ===");
+  console.log("Estado actual:", {
+    isAuthenticated: authState.isAuthenticated,
+    loading: authState.loading,
+    user: authState.user ? "PRESENTE" : "AUSENTE",
+  });
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, token, loading, user }}
+      value={{
+        isAuthenticated: authState.isAuthenticated,
+        login,
+        logout,
+        token: authState.token,
+        loading: authState.loading,
+        user: authState.user,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

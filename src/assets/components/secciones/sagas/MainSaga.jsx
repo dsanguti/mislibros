@@ -16,7 +16,7 @@ const MainSaga = ({ saga, onBookClick }) => {
       setError(null);
 
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("token");
         console.log("Token de autenticación:", authToken);
 
         if (!authToken) {

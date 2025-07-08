@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import HeaderGenero from "./HeaderGenero";
-import MainGenero from "./MainGenero";
+import style from "../../../css/Genero.module.css";
 import CardBook from "../../CardBook";
 import Modal from "../../Modal";
-import style from "../../../css/Genero.module.css";
+import HeaderGenero from "./HeaderGenero";
+import MainGenero from "./MainGenero";
 
 const Generos = () => {
   const [generos, setGeneros] = useState([]);
@@ -17,7 +17,7 @@ const Generos = () => {
   useEffect(() => {
     const fetchGeneros = async () => {
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("token");
         const response = await fetch("http://localhost:8001/api/generos", {
           headers: {
             Authorization: `Bearer ${authToken}`,

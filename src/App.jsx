@@ -10,8 +10,8 @@ import Nav from "./assets/components/Nav";
 import Pagina404 from "./assets/components/Pagina404";
 import Tittle from "./assets/components/Tittle";
 import Login from "./assets/components/autenticacion/Login.jsx"; // Asegúrate de que esta ruta sea correcta
-import { useAuth } from "./assets/components/autenticacion/UseAuth.jsx"; // Importa el hook de autenticación
 import ResetPasswordForm from "./assets/components/autenticacion/ResetPasswordForm.jsx";
+import { useAuth } from "./assets/components/autenticacion/UseAuth.jsx"; // Importa el hook de autenticación
 
 const Home = lazy(() => import("./assets/components/secciones/home/Home.jsx"));
 const Comics = lazy(() =>
@@ -47,7 +47,13 @@ function App() {
   const { isAuthenticated, loading } = useAuth(); // Usa el hook de autenticación
   const location = useLocation(); //obtener la ubicación actual.
 
+  console.log("=== App.jsx - Estado de autenticación ===");
+  console.log("isAuthenticated:", isAuthenticated);
+  console.log("loading:", loading);
+  console.log("location:", location.pathname);
+
   if (loading) {
+    console.log("Mostrando Loader...");
     return <Loader />;
   }
 

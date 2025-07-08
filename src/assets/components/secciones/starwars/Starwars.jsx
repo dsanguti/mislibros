@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
-import MainStarwars from "./MainStarwars";
-import Modal from "../../Modal"; 
+import Modal from "../../Modal";
 import HeaderStarwars from "./HeaderStarwars";
+import MainStarwars from "./MainStarwars";
 
 const StarWars = () => {
   const [starwars, setStarwars] = useState([]);
@@ -26,21 +26,24 @@ const StarWars = () => {
   useEffect(() => {
     const fetchStarwars = async () => {
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("token");
         if (!authToken) {
           setError("No se encontró el token de autenticación");
           return;
         }
 
-        const response = await fetch("http://localhost:8001/api/librosStarwars", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://localhost:8001/api/librosStarwars",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -69,16 +72,17 @@ const StarWars = () => {
   useEffect(() => {
     console.log("🎯 Estado actualizado de selectedBook:", selectedBook);
   }, [selectedBook]);
-  
 
   const handleStarwarsClick = (selected) => {
     console.log("Elemento seleccionado en StarWars.jsx:", selected);
     if (!selected || !selected.id) {
-      console.error("Error: el elemento seleccionado no tiene ID válido", selected);
+      console.error(
+        "Error: el elemento seleccionado no tiene ID válido",
+        selected
+      );
       return;
     }
     setSelectedStarwars(selected);
-   
   };
 
   const handleBookClick = (book) => {
@@ -90,7 +94,7 @@ const StarWars = () => {
     }
     setSelectedBook(book);
     if (isMobile) {
-      setModalOpen(true); 
+      setModalOpen(true);
     }
   };
 
@@ -126,7 +130,11 @@ const StarWars = () => {
             </Modal>
           ) : (
             <div className={style.containerCard}>
-              {selectedBook ? <CardBook book={selectedBook} /> : <p>Seleccione un libro</p>}
+              {selectedBook ? (
+                <CardBook book={selectedBook} />
+              ) : (
+                <p>Seleccione un libro</p>
+              )}
             </div>
           )}
         </>

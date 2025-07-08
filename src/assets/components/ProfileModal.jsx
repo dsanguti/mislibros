@@ -1,17 +1,16 @@
-import { toast } from "react-toastify";
+
 import { useAuth } from "./autenticacion/UseAuth";
 import Modal from "./Modal";
 import EditUserForm from "./secciones/admin/EditUserForm";
 
 const ProfileModal = ({ isOpen, onClose }) => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
 
   const handleUpdate = () => {
-    toast.success("Perfil actualizado correctamente");
+    
 
-    // Si el usuario cambió su propio perfil, cerrar sesión para que se actualice el contexto
+    // Cerrar el modal después de un breve delay
     setTimeout(() => {
-      logout();
       onClose();
     }, 2000);
   };

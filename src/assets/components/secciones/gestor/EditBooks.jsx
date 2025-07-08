@@ -29,7 +29,7 @@ const EditBooks = () => {
   useEffect(() => {
     const fetchAllBooks = async () => {
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("token");
         if (!authToken) {
           setError("No se encontró el token de autenticación");
           return;

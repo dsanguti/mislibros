@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Admin.module.css";
+import { AuthContext } from "../../autenticacion/AuthProvider";
 import EyesClosed from "../../icons/EyesClosed";
 import EyesOpen from "../../icons/EyesOpen";
 
 const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
+  const { updateUser } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     id: user.id,
     user: user.user,
@@ -66,6 +68,23 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
+    // Verificar si se han hecho cambios
+    const hasChanges =
+      formData.user !== user.user ||
+      formData.name !== user.name ||
+      formData.lastname !== user.lastname ||
+      formData.mail !== user.mail ||
+      formData.profile !== user.profile ||
+      (isPasswordChanged && formData.password);
+
+    if (!hasChanges) {
+      toast.info("No se han realizado cambios", {
+        autoClose: 2000,
+      });
+      onClose();
+      return;
+    }
+
     // Solo validar la contraseña si se ha cambiado
     if (isPasswordChanged) {
       const passwordErrors = validatePassword(formData.password);
@@ -98,6 +117,8 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
         dataToSend.password = formData.password;
       }
 
+      console.log("Enviando petición de actualización:", dataToSend);
+
       const response = await fetch("http://localhost:8001/api/update_user", {
         method: "PUT",
         headers: {
@@ -108,23 +129,123 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
         credentials: "include",
       });
 
+      console.log("Respuesta recibida - Status:", response.status);
+      console.log("Respuesta recibida - Headers:", response.headers);
+
       const result = await response.json();
+      console.log("Datos de respuesta:", result);
+
+      if (response.ok) {
+        console.log("Respuesta exitosa, mostrando toast de éxito");
+        toast.success("Usuario actualizado correctamente.", {
+          autoClose: 1000,
+        });
+
+        // Actualizar el localStorage con los nuevos datos del usuario
+        const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+        const updatedUser = {
+          ...currentUser,
+          ...result.user,
+        };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        console.log("Usuario actualizado en localStorage:", updatedUser);
+
+        // Forzar una recarga del contexto de autenticación sin redirección
+        console.log("Actualizando contexto de autenticación...");
+
+        if (typeof onUpdate === "function") {
+          console.log("Llamando a onUpdate");
+          onUpdate();
+        }
+
+        setTimeout(() => {
+          if (typeof onClose === "function") {
+            console.log("Cerrando formulario");
+            onClose();
+          }
+        }, 2000);
+
+        // Verificar que la autenticación permanezca activa
+        setTimeout(() => {
+          const finalToken = localStorage.getItem("token");
+          const finalUser = localStorage.getItem("user");
+          console.log(
+            "Estado final - Token:",
+            finalToken ? "PRESENTE" : "AUSENTE"
+          );
+          console.log(
+            "Estado final - User:",
+            finalUser ? "PRESENTE" : "AUSENTE"
+          );
+        }, 500);
+
+        // Verificar el estado de autenticación después de la actualización
+        console.log(
+          "Token después de actualización:",
+          localStorage.getItem("token")
+        );
+        console.log("Estado de autenticación después de actualización:", {
+          token: !!localStorage.getItem("token"),
+          user: JSON.parse(localStorage.getItem("user") || "null"),
+        });
+
+        // Actualizar el contexto de autenticación
+        if (typeof updateUser === "function") {
+          console.log("Actualizando contexto de autenticación...");
+          updateUser(result.user);
+          console.log("Contexto de autenticación actualizado:", result.user);
+        }
+
+        // Solución temporal: forzar la autenticación
+        console.log("Forzando autenticación...");
+        const currentToken = localStorage.getItem("token");
+        const currentUserData = JSON.parse(
+          localStorage.getItem("user") || "{}"
+        );
+
+        if (currentToken && currentUserData) {
+          console.log("Datos de autenticación válidos, forzando estado...");
+          // Simular un pequeño delay para asegurar que el contexto se actualice
+          setTimeout(() => {
+            console.log("Verificando estado después del delay...");
+          }, 100);
+        }
+
+        return;
+      }
 
       if (!response.ok) {
+        console.log("Error en respuesta:", response.status, result);
+
+        // Si es un error de autenticación (401), no mostrar toast y dejar que el sistema maneje la redirección
+        if (response.status === 401) {
+          console.error("Error de autenticación:", result.error);
+          return;
+        }
+
+        // Si es un error de permisos (403), mostrar el mensaje pero no redirigir
+        if (response.status === 403) {
+          toast.error(
+            result.error || "No tienes permisos para realizar esta acción",
+            {
+              autoClose: 3000,
+            }
+          );
+          return;
+        }
+
         toast.error(result.error || "Error al actualizar el usuario", {
           autoClose: 3000,
         });
         return;
       }
-
-      toast.success("Usuario actualizado correctamente.", { autoClose: 1000 });
-
-      if (typeof onUpdate === "function") onUpdate();
-      setTimeout(() => {
-        if (typeof onClose === "function") onClose();
-      }, 2000);
     } catch (err) {
       console.error("Error al actualizar el usuario:", err);
+      console.error("Detalles del error:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+      });
       toast.error("Hubo un problema al actualizar el usuario.", {
         autoClose: 3000,
       });

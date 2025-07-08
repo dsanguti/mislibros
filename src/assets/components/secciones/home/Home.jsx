@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
-import MainHome from "./MainHome"; // Asegúrate de que el nombre del componente sea correcto
 import Modal from "../../Modal"; // Importamos el modal
+import MainHome from "./MainHome"; // Asegúrate de que el nombre del componente sea correcto
 
 const Home = () => {
   const [books, setBooks] = useState([]); // Cambiado de sagas a books
@@ -24,7 +24,7 @@ const Home = () => {
   useEffect(() => {
     const fetchAllBooks = async () => {
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("token");
         if (!authToken) {
           setError("No se encontró el token de autenticación");
           return;

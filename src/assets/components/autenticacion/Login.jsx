@@ -53,8 +53,9 @@ const Login = () => {
         setLoading(true); // Activar el estado de carga
         setIsVisible(false); // Ocultar el contenedor
 
-        // Guardar el token en localStorage
+        // Guardar el token y usuario en localStorage
         localStorage.setItem("token", data.token); // Guardamos el token
+        localStorage.setItem("user", JSON.stringify(data.user)); // Guardamos el usuario
 
         setTimeout(() => {
           login(data.token, data.user); // Pasar tanto el token como los datos del usuario

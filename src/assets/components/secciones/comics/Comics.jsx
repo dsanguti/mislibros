@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import CardBook from "../../CardBook";
-import MainComics from "./MainComics";
-import Modal from "../../Modal"; 
+import Modal from "../../Modal";
 import HeaderComics from "./HeaderComics";
+import MainComics from "./MainComics";
 
 const Comics = () => {
   const [comics, setComics] = useState([]);
@@ -26,7 +26,7 @@ const Comics = () => {
   useEffect(() => {
     const fetchComics = async () => {
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("token");
         if (!authToken) {
           setError("No se encontró el token de autenticación");
           return;
@@ -69,16 +69,17 @@ const Comics = () => {
   useEffect(() => {
     console.log("🎯 Estado actualizado de selectedBook:", selectedBook);
   }, [selectedBook]);
-  
 
   const handleComicsClick = (selected) => {
     console.log("Elemento seleccionado en Comics.jsx:", selected);
     if (!selected || !selected.id) {
-      console.error("Error: el elemento seleccionado no tiene ID válido", selected);
+      console.error(
+        "Error: el elemento seleccionado no tiene ID válido",
+        selected
+      );
       return;
     }
     setSelectedComics(selected);
-   
   };
 
   const handleBookClick = (book) => {
@@ -90,7 +91,7 @@ const Comics = () => {
     }
     setSelectedBook(book);
     if (isMobile) {
-      setModalOpen(true); 
+      setModalOpen(true);
     }
   };
 
@@ -126,7 +127,11 @@ const Comics = () => {
             </Modal>
           ) : (
             <div className={style.containerCard}>
-              {selectedBook ? <CardBook book={selectedBook} /> : <p>Seleccione un libro</p>}
+              {selectedBook ? (
+                <CardBook book={selectedBook} />
+              ) : (
+                <p>Seleccione un libro</p>
+              )}
             </div>
           )}
         </>

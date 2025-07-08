@@ -17,7 +17,7 @@ const MainGenero = ({ genero, onBookClick }) => {
       setError(null);
 
       try {
-        const authToken = localStorage.getItem("authToken");
+        const authToken = localStorage.getItem("token");
         console.log("Token de autenticación:", authToken);
 
         if (!authToken) {
@@ -27,7 +27,9 @@ const MainGenero = ({ genero, onBookClick }) => {
         }
 
         const response = await fetch(
-          `http://localhost:8001/api/libros-genero?genero=${encodeURIComponent(genero.nombre)}`,
+          `http://localhost:8001/api/libros-genero?genero=${encodeURIComponent(
+            genero.nombre
+          )}`,
           {
             method: "GET",
             headers: {
@@ -69,11 +71,18 @@ const MainGenero = ({ genero, onBookClick }) => {
 
   return (
     <div className={style.mainSagaContainer}>
-      <h4 className={style.tittle}>Género: {genero ? genero.nombre : "Selecciona un género"}</h4>
+      <h4 className={style.tittle}>
+        Género: {genero ? genero.nombre : "Selecciona un género"}
+      </h4>
       {genero && (
         <div className={style.containerListBooks}>
           <HeaderRow />
-          <BooksListRow books={libros} error={error} loading={loading} onBookClick={onBookClick} />
+          <BooksListRow
+            books={libros}
+            error={error}
+            loading={loading}
+            onBookClick={onBookClick}
+          />
         </div>
       )}
     </div>
