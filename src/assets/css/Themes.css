@@ -1,23 +1,94 @@
 :root {
   /* Colors */
   --color-primary: rgb(0, 70, 71);
-  --color-primary-transparente:rgb(0,68,69,0.85);
+  --color-primary-transparente: rgb(0, 68, 69, 0.85);
   --color-secundary: #2c7873;
-  --color-secundary-submenu:#184441;
-  --color-background-dark:rgb(2,28,30);
-  --color-background-dark-transparente: rgb(2,28,30,0.85);
-  --color-background-light:rgb(234, 226, 226);
-  --color-hover:#6fb98f;
-  --color-logout:rgb(247, 235, 68);
-  --color-gestor:#A0E100;
+  --color-secundary-submenu: #184441;
+  --color-background-dark: rgb(2, 28, 30);
+  --color-background-dark-transparente: rgb(2, 28, 30, 0.85);
+  --color-background-light: rgb(234, 226, 226);
+  --color-hover: #6fb98f;
+  --color-logout: rgb(247, 235, 68);
+  --color-gestor: #a0e100;
   /* Shadows */
   --shadow-sm: 0px 0px 8px rgba(69, 69, 69, 0.3);
   --shadow-md: 0px 0px 16px rgba(69, 69, 69, 0.5);
   --shadow-md-light: 10px 10px 16px rgba(226, 217, 217, 0.5);
-  --shadow-carrusel-img: 10px 10px 31px -10px rgba(0,0,0,0.75);
+  --shadow-carrusel-img: 10px 10px 31px -10px rgba(0, 0, 0, 0.75);
   --shadow-search: 0px 2px 8px 0px rgba(60, 64, 67, 0.25);
 
   /* Borders */
   --radius-sm: 0.5rem;
   --radius-md: 1rem;
+}
+
+/* Tema claro (por defecto) */
+[data-theme="light"] {
+  /* Colores de fondo */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --bg-card: #ffffff;
+  --bg-modal: #ffffff;
+
+  /* Colores de texto */
+  --text-primary: #13602d;
+  --text-secondary: #486d2b;
+  --text-muted: #adb5bd;
+  --text-inverse: #ffffff;
+
+  /* Colores de borde */
+  --border-primary: #dee2e6;
+  --border-secondary: #e9ecef;
+  --border-focus: #2c7873;
+
+  /* Colores de estado */
+  --success: #28a745;
+  --warning: #ffc107;
+  --error: #dc3545;
+  --info: #17a2b8;
+
+  /* Sombras */
+  --shadow-card: 0 2px 8px rgba(8, 8, 8, 0.352);
+  --shadow-dropdown: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-modal: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Tema oscuro */
+[data-theme="dark"] {
+  /* Colores de fondo */
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #404040;
+  --bg-card: #2d2d2d;
+  --bg-modal: #2d2d2d;
+
+  /* Colores de texto */
+  --text-primary: #ffffff;
+  --text-secondary: #ffffff;
+  --text-muted: #808080;
+  --text-inverse: #1a1a1a;
+
+  /* Colores de borde */
+  --border-primary: #404040;
+  --border-secondary: #505050;
+  --border-focus: #6fb98f;
+
+  /* Colores de estado */
+  --success: #4caf50;
+  --warning: #ff9800;
+  --error: #f44336;
+  --info: #2196f3;
+
+  /* Sombras */
+  --shadow-card: 0 2px 8px rgba(218, 211, 211, 0.3);
+  --shadow-dropdown: 0 4px 12px rgba(255, 255, 255, 0.15);
+  --shadow-modal: 0 10px 30px rgba(255, 255, 255, 0.2);
+}
+
+/* Aplicar tema por defecto al body */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

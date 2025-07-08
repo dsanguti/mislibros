@@ -3,11 +3,14 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Admin.module.css";
 import { AuthContext } from "../../autenticacion/AuthProvider";
+import { useTheme } from "../../hooks/useTheme";
 import EyesClosed from "../../icons/EyesClosed";
 import EyesOpen from "../../icons/EyesOpen";
 
 const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
   const { updateUser } = useContext(AuthContext);
+  const { getCurrentTheme, setThemeMode, saveUserThemePreference } = useTheme();
+
   const [formData, setFormData] = useState({
     id: user.id,
     user: user.user,
@@ -16,6 +19,13 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
     lastname: user.lastname,
     mail: user.mail,
     profile: user.profile,
+    theme: user.theme || getCurrentTheme(), // Agregar campo de tema
+  });
+
+  console.log("EditUserForm inicializado con:", {
+    userTheme: user.theme,
+    getCurrentTheme: getCurrentTheme(),
+    formDataTheme: formData.theme,
   });
 
   const [passwordError, setPasswordError] = useState("");
@@ -48,15 +58,28 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+
+    setFormData((prevFormData) => {
+      const newFormData = {
+        ...prevFormData,
+        [name]: value,
+      };
+
+      console.log("formData actualizado:", newFormData);
+      return newFormData;
     });
 
     if (name === "password") {
       setIsPasswordChanged(true);
       const errors = validatePassword(value);
       setPasswordError(errors.length > 0 ? errors.join(", ") : "");
+    }
+
+    // Aplicar el tema inmediatamente si se cambia
+    if (name === "theme") {
+      console.log("Tema cambiado a:", value);
+      setThemeMode(value);
+      saveUserThemePreference(value);
     }
   };
 
@@ -68,14 +91,51 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
 
+    console.log("Estado completo al enviar:", {
+      user: user,
+      formData: formData,
+      userTheme: user.theme,
+      formDataTheme: formData.theme,
+    });
+
+    // Obtener el valor actual del tema del formulario
+    const form = e.target;
+    const themeSelect = form.querySelector('select[name="theme"]');
+    const currentThemeValue = themeSelect ? themeSelect.value : formData.theme;
+
     // Verificar si se han hecho cambios
+    // Si el tema del usuario es undefined/null, comparar directamente con el valor del formulario
+    const currentUserTheme = user.theme;
+    const newUserTheme = currentThemeValue;
+
+    console.log("Comparando temas:", {
+      currentUserTheme,
+      newUserTheme,
+      userThemeOriginal: user.theme,
+      formDataTheme: formData.theme,
+      currentThemeValue,
+      areDifferent: newUserTheme !== currentUserTheme,
+    });
+
     const hasChanges =
       formData.user !== user.user ||
       formData.name !== user.name ||
       formData.lastname !== user.lastname ||
       formData.mail !== user.mail ||
       formData.profile !== user.profile ||
+      newUserTheme !== currentUserTheme ||
       (isPasswordChanged && formData.password);
+
+    console.log("Verificación de cambios:", {
+      user: formData.user !== user.user,
+      name: formData.name !== user.name,
+      lastname: formData.lastname !== user.lastname,
+      mail: formData.mail !== user.mail,
+      profile: formData.profile !== user.profile,
+      theme: newUserTheme !== currentUserTheme,
+      password: isPasswordChanged && formData.password,
+      hasChanges,
+    });
 
     if (!hasChanges) {
       toast.info("No se han realizado cambios", {
@@ -110,6 +170,7 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
         lastname: formData.lastname,
         mail: formData.mail,
         profile: formData.profile,
+        theme: currentThemeValue,
       };
 
       // Solo incluir la contraseña si se ha cambiado
@@ -343,6 +404,22 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
               El perfil solo puede ser modificado por un administrador
             </small>
           )}
+        </div>
+
+        <div className={style.formGroup}>
+          <label className={style.labelForm}>Tema de la aplicación:</label>
+          <select
+            name="theme"
+            value={formData.theme}
+            onChange={handleChange}
+            required
+          >
+            <option value="light">Tema Claro</option>
+            <option value="dark">Tema Oscuro</option>
+          </select>
+          <small className={style.disabledNote}>
+            Selecciona tu tema preferido para la aplicación
+          </small>
         </div>
 
         <div className={style.buttonContainer}>

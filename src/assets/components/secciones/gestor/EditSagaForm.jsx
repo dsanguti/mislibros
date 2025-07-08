@@ -116,11 +116,13 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
           onChange={handleChange}
         />
         <div className={style.buttonContainerEditSaga}>
-        <button className={style.buttonFormEdit} type="submit">
-          Guardar Cambios
-        </button>
-</div>
-        
+          <button className={style.buttonFormCancel} onClick={onClose}>
+            Cancelar
+          </button>
+          <button className={style.buttonFormEdit} type="submit">
+            Guardar Cambios
+          </button>
+        </div>
       </form>
     </div>
   );

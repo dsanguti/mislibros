@@ -17,10 +17,11 @@
   margin: auto;
   margin-bottom: 15px;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-primary);
   border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
+  box-shadow: var(--shadow-modal);
+  background-color: var(--bg-modal);
+  color: var(--text-primary);
   position: relative;
   filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.3));
 }
@@ -38,7 +39,7 @@
   height: auto;
   padding: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Añadir sombra */
-  background-color: white; /* Fondo blanco para contraste */
+  background-color: var(--bg-modal); /* Fondo adaptado al tema */
   border-radius: 50%; /* Forma circular */
   filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.3));
 }
@@ -52,9 +53,19 @@
 .input {
   margin: 10px 0;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-primary);
   border-radius: 4px;
   font-size: 16px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  border-color: var(--border-focus);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(111, 185, 143, 0.25);
+  background-color: var(--bg-primary);
 }
 
 .button {
@@ -143,14 +154,16 @@
 }
 
 .modalContent {
-  background-color: white;
+  background-color: var(--bg-modal);
+  color: var(--text-primary);
   border-radius: 8px;
   padding: 20px;
   width: 90%;
   max-width: 400px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border-primary);
 }
 
 .modalHeader {
@@ -159,12 +172,12 @@
   align-items: center;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-primary);
 }
 
 .modalHeader h2 {
   margin: 0;
-  color: #004445;
+  color: var(--text-primary);
   font-size: 1.5rem;
 }
 
@@ -173,7 +186,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #666;
+  color: var(--text-muted);
   padding: 0;
   width: 30px;
   height: 30px;
@@ -185,8 +198,8 @@
 }
 
 .closeButton:hover {
-  background-color: #f0f0f0;
-  color: #333;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .forgotPasswordContent {
@@ -195,7 +208,7 @@
 }
 
 .forgotPasswordContent p {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
 }

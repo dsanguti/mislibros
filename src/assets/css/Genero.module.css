@@ -30,7 +30,13 @@
   justify-content: center; /* Centra verticalmente el contenido */
   align-items: center; /* Centra horizontalmente el contenido */
   overflow-y: auto; /* Habilitar scroll vertical */
-   /* Asegura que ocupe todo el alto del contenedor */
+  /* Asegura que ocupe todo el alto del contenedor */
+}
+
+/* Sombra específica para modo oscuro en containerCard */
+[data-theme="dark"] .containerCard {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15),
+    0 2px 4px rgba(255, 255, 255, 0.1);
 }
 
 .mainSagaContainer h4 {
@@ -52,11 +58,10 @@
     width: 400px;
     height: 100vh; /* Asegura que ocupe la mitad de la altura de la pantalla */
     overflow-y: auto; /* Habilitar scroll vertical */
-
   }
 
   .containerCard {
-   display: none;
+    display: none;
   }
 }
 

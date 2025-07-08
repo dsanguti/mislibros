@@ -151,6 +151,14 @@ export const AuthProvider = ({ children }) => {
   const login = (token, userData) => {
     console.log("AuthProvider - Login llamado");
     authStateManager.login(token, userData);
+
+    // Aplicar el tema del usuario si existe
+    if (userData.theme) {
+      console.log("AuthProvider - Aplicando tema del usuario:", userData.theme);
+      // Guardar el tema en localStorage para que el ThemeProvider lo cargue
+      localStorage.setItem("userTheme", userData.theme);
+    }
+
     navigate("/");
   };
 

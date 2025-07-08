@@ -12,6 +12,7 @@ import Tittle from "./assets/components/Tittle";
 import Login from "./assets/components/autenticacion/Login.jsx"; // Asegúrate de que esta ruta sea correcta
 import ResetPasswordForm from "./assets/components/autenticacion/ResetPasswordForm.jsx";
 import { useAuth } from "./assets/components/autenticacion/UseAuth.jsx"; // Importa el hook de autenticación
+import { ThemeProvider } from "./assets/components/context/ThemeContext";
 
 const Home = lazy(() => import("./assets/components/secciones/home/Home.jsx"));
 const Comics = lazy(() =>
@@ -58,7 +59,7 @@ function App() {
   }
 
   return (
-    <>
+    <ThemeProvider>
       <ToastContainer />
       <div className="container-app">
         {/* Renderiza el título solo si está autenticado */}
@@ -97,9 +98,9 @@ function App() {
                 <>
                   <Route path="/" element={<Home />} />
                   <Route path="/sagas" element={<Sagas />} />
-                  <Route path="/comics" element={<Comics />} />
                   <Route path="/generos" element={<Generos />} />
                   <Route path="/starwars" element={<Starwars />} />
+                  <Route path="/comics" element={<Comics />} />
                   <Route path="/gestor" element={<Gestor />} />
                   <Route path="/editorlibros" element={<EditBooks />} />
                   <Route path="/addlibros" element={<AddBook />} />
@@ -112,7 +113,7 @@ function App() {
           </Suspense>
         </div>
       </div>
-    </>
+    </ThemeProvider>
   );
 }
 

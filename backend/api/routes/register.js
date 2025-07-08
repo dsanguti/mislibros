@@ -83,8 +83,8 @@ router.post("/register", async (req, res) => {
 
     // Insertar nuevo usuario con verificación por email
     const insertQuery = `
-      INSERT INTO users (user, password, name, lastname, mail, profile, verification_token, verification_expires, is_verified)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE)
+      INSERT INTO users (user, password, name, lastname, mail, profile, theme, verification_token, verification_expires, is_verified)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, FALSE)
     `;
 
     const insertResult = await new Promise((resolve, reject) => {
@@ -97,6 +97,7 @@ router.post("/register", async (req, res) => {
           lastname,
           mail,
           profile || "Consulta",
+          "light", // Tema por defecto para nuevos usuarios
           verificationToken,
           verificationExpires,
         ],

@@ -38,6 +38,13 @@
   text-decoration: none;
 }
 
+/* Color específico para modo oscuro */
+[data-theme="dark"] .tittle {
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(255, 255, 255, 0.2);
+}
+
 .subtittle {
   color: var(--color-secundary);
   font-family: "Caveat", cursive;
@@ -45,9 +52,16 @@
   font-weight: 700;
   font-size: 1.3rem;
   font-style: normal;
-  margin:-10px;
+  margin: -10px;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
   text-decoration: none;
+}
+
+/* Color específico para modo oscuro */
+[data-theme="dark"] .subtittle {
+  color: #ffffff;
+  text-shadow: 2px 2px 8px rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 /* Vista Móvil*/

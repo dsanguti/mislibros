@@ -6,7 +6,7 @@
   max-width: 800px;
   margin: 0 auto;
 }
-.container h2{
+.container h2 {
   font-family: "Merienda", cursive;
   font-optical-sizing: auto;
   font-weight: 900;
@@ -18,13 +18,15 @@
 }
 
 .dropzone {
-  border: 2px dashed #ddd;
+  border: 2px dashed var(--border-primary);
   border-radius: 8px;
   padding: 40px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.3s ease;
   margin-bottom: 20px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .dropzone:hover,
@@ -34,12 +36,12 @@
 
 .dropzone p {
   margin: 0;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .fileTypes {
   font-size: 0.9rem;
-  color: #6c757d;
+  color: var(--text-muted);
   margin-top: 1rem;
 }
 
@@ -59,7 +61,7 @@
 .progressBar {
   width: 100%;
   height: 8px;
-  background-color: #f0f0f0;
+  background-color: var(--bg-tertiary);
   border-radius: 4px;
   overflow: hidden;
   margin: 10px 0;
@@ -85,18 +87,20 @@
 .fileInfo,
 .metadataInfo {
   width: 100%;
-  background-color: #f8f9fa;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
   padding: 20px;
   border-radius: 8px;
   margin: 20px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-primary);
 }
 
 .fileInfo h3,
 .metadataInfo h3 {
-  color: var(--color-primary);
+  color: var(--text-primary);
   margin-bottom: 15px;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--border-primary);
   padding-bottom: 10px;
 }
 
@@ -116,13 +120,13 @@
 .description {
   margin-top: 20px;
   padding-top: 20px;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--border-primary);
 }
 
 .description p {
   margin-top: 10px;
   line-height: 1.6;
-  color: #495057;
+  color: var(--text-secondary);
 }
 
 .formActions {

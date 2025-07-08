@@ -41,7 +41,8 @@ router.put("/update_user", async (req, res) => {
 
     const currentUser = userRows[0];
     console.log("Usuario actual encontrado:", currentUser);
-    const { id, user, password, name, lastname, mail, profile } = req.body;
+    const { id, user, password, name, lastname, mail, profile, theme } =
+      req.body;
 
     // Verificar permisos: solo admin puede editar otros usuarios o cambiar perfiles
     console.log("Verificando permisos - perfil actual:", currentUser.profile);
@@ -99,13 +100,22 @@ router.put("/update_user", async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
       updateQuery =
-        "UPDATE users SET user = ?, password = ?, name = ?, lastname = ?, mail = ?, profile = ? WHERE id = ?";
-      updateParams = [user, hashedPassword, name, lastname, mail, profile, id];
+        "UPDATE users SET user = ?, password = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ? WHERE id = ?";
+      updateParams = [
+        user,
+        hashedPassword,
+        name,
+        lastname,
+        mail,
+        profile,
+        theme,
+        id,
+      ];
     } else {
       // Si no se proporciona contraseña, no la actualizamos
       updateQuery =
-        "UPDATE users SET user = ?, name = ?, lastname = ?, mail = ?, profile = ? WHERE id = ?";
-      updateParams = [user, name, lastname, mail, profile, id];
+        "UPDATE users SET user = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ? WHERE id = ?";
+      updateParams = [user, name, lastname, mail, profile, theme, id];
     }
 
     // Actualizar el usuario
@@ -130,6 +140,7 @@ router.put("/update_user", async (req, res) => {
         lastname,
         mail,
         profile,
+        theme,
       },
     };
     console.log("Enviando respuesta:", responseData);

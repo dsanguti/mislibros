@@ -22,10 +22,22 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el tamaño y sombra */
 }
 
+/* Sombra específica para modo oscuro en imágenes del carrusel */
+[data-theme="dark"] .carrusel img {
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15),
+    0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
 .carrusel img:hover {
   transform: scale(1.1); /* Aumenta el tamaño de la imagen al 110% */
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Aumenta la sombra al hacer hover */
   cursor: pointer;
+}
+
+/* Efecto hover específico para modo oscuro */
+[data-theme="dark"] .carrusel img:hover {
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25),
+    0 4px 8px rgba(255, 255, 255, 0.15);
 }
 .carrusel p {
   margin-top: 25px;
@@ -60,11 +72,11 @@
 }
 /* Media query para pantallas móviles */
 @media (max-width: 768px) {
-  .container{
+  .container {
     display: flex;
     align-items: center;
     justify-content: center;
- }
+  }
   .carrusel {
     gap: 10px; /* Reduce el espacio entre los elementos del carrusel */
     padding: 1px; /* Reduce el padding */
@@ -76,7 +88,12 @@
     border-radius: 7px;
     box-shadow: var(--shadow-carrusel-img);
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transición suave para el tamaño y sombra */
-  
+  }
+
+  /* Sombra específica para modo oscuro en imágenes del carrusel (móvil) */
+  [data-theme="dark"] .carrusel img {
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15),
+      0 2px 4px rgba(255, 255, 255, 0.1);
   }
 
   .sagaItem {

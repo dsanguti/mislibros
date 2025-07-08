@@ -58,10 +58,27 @@
   background-color: #1f2937;
 }
 
+/* Tema específico para modo oscuro */
+[data-theme="dark"] .tooltip.default {
+  background-color: #000000;
+  color: white;
+  box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1),
+    0 4px 6px -2px rgba(255, 255, 255, 0.05);
+}
+
 .tooltip.light {
   color: #1f2937;
   background-color: white;
   border: 1px solid #e5e7eb;
+}
+
+/* Tema light específico para modo oscuro */
+[data-theme="dark"] .tooltip.light {
+  background-color: #000000;
+  color: white;
+  border: 1px solid #404040;
+  box-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1),
+    0 4px 6px -2px rgba(255, 255, 255, 0.05);
 }
 
 .tooltip.error {
@@ -101,6 +118,23 @@
   border-bottom: none;
 }
 
+/* Flechas específicas para modo oscuro - Tema default */
+[data-theme="dark"] .arrow.arrow-top.arrow-default {
+  border-top-color: #000000;
+}
+
+[data-theme="dark"] .arrow.arrow-bottom.arrow-default {
+  border-bottom-color: #000000;
+}
+
+[data-theme="dark"] .arrow.arrow-left.arrow-default {
+  border-left-color: #000000;
+}
+
+[data-theme="dark"] .arrow.arrow-right.arrow-default {
+  border-right-color: #000000;
+}
+
 .arrow.arrow-bottom.arrow-default {
   bottom: 100%;
   left: 50%;
@@ -132,6 +166,23 @@
   transform: translateX(-50%);
   border-top-color: white;
   border-bottom: none;
+}
+
+/* Flechas específicas para modo oscuro - Tema light */
+[data-theme="dark"] .arrow.arrow-top.arrow-light {
+  border-top-color: #000000;
+}
+
+[data-theme="dark"] .arrow.arrow-bottom.arrow-light {
+  border-bottom-color: #000000;
+}
+
+[data-theme="dark"] .arrow.arrow-left.arrow-light {
+  border-left-color: #000000;
+}
+
+[data-theme="dark"] .arrow.arrow-right.arrow-light {
+  border-right-color: #000000;
 }
 
 .arrow.arrow-bottom.arrow-light {

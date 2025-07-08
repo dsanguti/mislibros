@@ -50,7 +50,8 @@ router.get("/all_users", (req, res) => {
         name, 
         lastname, 
         mail, 
-        profile
+        profile,
+        theme
       FROM users
     `;
 

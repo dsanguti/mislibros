@@ -98,6 +98,7 @@ const login = async (req, res) => {
           lastname: userData.lastname,
           mail: userData.mail,
           profile: userData.profile,
+          theme: userData.theme || "light", // Incluir el tema del usuario
         },
         token,
       });

@@ -12,14 +12,16 @@
 }
 
 .modalContent {
-  background: #fff;
+  background: var(--bg-modal);
+  color: var(--text-primary);
   padding: 20px;
   border-radius: 8px;
   position: relative;
   width: 90%;
   max-width: 500px;
   max-height: 90%; /* Asegura que el contenido del modal no exceda el 90% de la altura de la pantalla */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border-primary);
   overflow-y: auto; /* Habilita el scroll vertical si el contenido excede la altura del modal */
 }
 
@@ -41,6 +43,12 @@
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.closeButton:hover {
+  color: var(--text-primary);
 }
 
 /* Media query para pantallas móviles */

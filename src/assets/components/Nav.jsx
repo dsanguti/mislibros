@@ -68,6 +68,7 @@ const Nav = () => {
     <>
       <nav className={style.navbar}>
         <Ham isOpen={isOpen} toggleMenu={toggleMenu} />
+
         <ul className={`${style.ul} ${isOpen ? style.open : ""}`}>
           <li>
             <NavLink
