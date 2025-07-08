@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
+import useEmptyBooksModal from "../../../hooks/useEmptyBooksModal";
 import CardBook from "../../CardBook";
+import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal";
 import HeaderStarwars from "./HeaderStarwars";
 import MainStarwars from "./MainStarwars";
@@ -12,6 +14,44 @@ const StarWars = () => {
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [books, setBooks] = useState([]); // Estado para todos los libros
+  const { isModalOpen: isEmptyModalOpen, closeModal: closeEmptyModal } =
+    useEmptyBooksModal(books);
+
+  // Función para obtener todos los libros
+  const fetchAllBooks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setBooks([]);
+        return;
+      }
+
+      const response = await fetch("http://localhost:8001/api/all_books", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setBooks(data);
+        } else {
+          setBooks([]);
+        }
+      } else {
+        setBooks([]);
+      }
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
+      setBooks([]);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,6 +109,27 @@ const StarWars = () => {
       fetchStarwars();
     }
   }, [starwars.length]);
+
+  useEffect(() => {
+    fetchAllBooks();
+
+    // Escuchar eventos de libros para actualizar la lista
+    const handleBookUpdated = () => {
+      console.log("Evento bookUpdated recibido, actualizando lista de libros");
+      fetchAllBooks();
+    };
+
+    window.addEventListener("bookAdded", handleBookUpdated);
+    window.addEventListener("bookDeleted", handleBookUpdated);
+    window.addEventListener("bookUpdated", handleBookUpdated);
+
+    return () => {
+      window.removeEventListener("bookAdded", handleBookUpdated);
+      window.removeEventListener("bookDeleted", handleBookUpdated);
+      window.removeEventListener("bookUpdated", handleBookUpdated);
+    };
+  }, []);
+
   useEffect(() => {
     console.log("🎯 Estado actualizado de selectedBook:", selectedBook);
   }, [selectedBook]);
@@ -137,6 +198,10 @@ const StarWars = () => {
               )}
             </div>
           )}
+          <EmptyBooksMessage
+            isOpen={isEmptyModalOpen}
+            onClose={closeEmptyModal}
+          />
         </>
       )}
     </div>

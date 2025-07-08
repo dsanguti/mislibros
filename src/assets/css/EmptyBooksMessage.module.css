@@ -1,0 +1,120 @@
+.emptyContent {
+  text-align: center;
+  max-width: 500px;
+  padding: 40px;
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  
+}
+
+.iconContainer {
+  margin-bottom: 20px;
+}
+
+.bookIcon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-family: "Merienda", cursive;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  text-shadow: var(--text-shadow);
+}
+
+.message {
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.suggestion {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 30px;
+  font-style: italic;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.cancelButton {
+  padding: 12px 25px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+  background-color: #5a6268;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 30px;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+
+.addButton:hover {
+  background: var(--color-secundary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.addButton:active {
+  transform: translateY(0);
+}
+
+.buttonIcon {
+  font-size: 1.5rem;
+  
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .emptyContainer {
+    min-height: 300px;
+    padding: 20px 10px;
+  }
+
+  .emptyContent {
+    padding: 30px 20px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .message {
+    font-size: 1rem;
+  }
+
+  .addButton {
+    padding: 12px 25px;
+    font-size: 1rem;
+  }
+}

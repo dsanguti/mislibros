@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
+import useEmptyBooksModal from "../../../hooks/useEmptyBooksModal";
 import CardBook from "../../CardBook";
+import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal"; // Importamos el modal
 import MainHome from "./MainHome"; // Asegúrate de que el nombre del componente sea correcto
 
@@ -10,6 +12,8 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal
+  const { isModalOpen: isEmptyModalOpen, closeModal: closeEmptyModal } =
+    useEmptyBooksModal(books);
 
   useEffect(() => {
     const handleResize = () => {
@@ -101,6 +105,10 @@ const Home = () => {
               )}
             </div>
           )}
+          <EmptyBooksMessage
+            isOpen={isEmptyModalOpen}
+            onClose={closeEmptyModal}
+          />
         </>
       )}
     </div>

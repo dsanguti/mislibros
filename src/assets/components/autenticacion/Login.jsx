@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom"; // Para redirigir al inicio desp
 import styles from "../../css/Login.module.css"; // Importa el CSS módulo
 import { useAuth } from "../autenticacion/UseAuth"; // Hook de autenticación
 import CargaApp from "../CargaApp";
+import { useTheme } from "../hooks/useTheme";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import RegisterForm from "./RegisterForm";
 
 const Login = () => {
   const { login } = useAuth(); // Usar el hook de autenticación
+  const { getCurrentTheme } = useTheme();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -17,6 +19,10 @@ const Login = () => {
   const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const navigate = useNavigate(); // Hook para redirigir
+
+  const currentTheme = getCurrentTheme();
+  const logoSrc =
+    currentTheme === "dark" ? "/logoAppColorDark.png" : "/logoAppColor.png";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -103,11 +109,7 @@ const Login = () => {
               transition: "height 0.3s ease, opacity 0.3s ease", // Duración de la transición de altura y opacidad
             }}
           >
-            <img
-              src="/logoAppColor.png"
-              alt="logo app"
-              className={styles.logo}
-            />
+            <img src={logoSrc} alt="logo app" className={styles.logo} />
             <form onSubmit={handleSubmit} className={styles.form}>
               <input
                 type="text"

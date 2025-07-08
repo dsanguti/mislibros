@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
+import useEmptyBooksModal from "../../../hooks/useEmptyBooksModal";
 import CardBook from "../../CardBook";
+import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal"; // Importamos el modal
 import HeaderSaga from "./HeaderSaga";
 import MainSaga from "./MainSaga";
@@ -12,6 +14,44 @@ const Sagas = () => {
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal
+  const [books, setBooks] = useState([]); // Estado para todos los libros
+  const { isModalOpen: isEmptyModalOpen, closeModal: closeEmptyModal } =
+    useEmptyBooksModal(books);
+
+  // Función para obtener todos los libros
+  const fetchAllBooks = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setBooks([]);
+        return;
+      }
+
+      const response = await fetch("http://localhost:8001/api/all_books", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          setBooks(data);
+        } else {
+          setBooks([]);
+        }
+      } else {
+        setBooks([]);
+      }
+    } catch (error) {
+      console.error("Error al obtener libros:", error);
+      setBooks([]);
+    }
+  };
 
   // Función para obtener las sagas
   const fetchSagas = async () => {
@@ -63,8 +103,9 @@ const Sagas = () => {
   }, []);
 
   useEffect(() => {
-    // Cargar las sagas al montar el componente
+    // Cargar las sagas y libros al montar el componente
     fetchSagas();
+    fetchAllBooks();
 
     // Escuchar el evento sagaUpdated para actualizar la lista cuando se crea, edita o elimina una saga
     const handleSagaUpdated = () => {
@@ -72,11 +113,23 @@ const Sagas = () => {
       fetchSagas();
     };
 
+    // Escuchar eventos de libros para actualizar la lista
+    const handleBookUpdated = () => {
+      console.log("Evento bookUpdated recibido, actualizando lista de libros");
+      fetchAllBooks();
+    };
+
     window.addEventListener("sagaUpdated", handleSagaUpdated);
+    window.addEventListener("bookAdded", handleBookUpdated);
+    window.addEventListener("bookDeleted", handleBookUpdated);
+    window.addEventListener("bookUpdated", handleBookUpdated);
 
     // Limpiar el event listener cuando el componente se desmonte
     return () => {
       window.removeEventListener("sagaUpdated", handleSagaUpdated);
+      window.removeEventListener("bookAdded", handleBookUpdated);
+      window.removeEventListener("bookDeleted", handleBookUpdated);
+      window.removeEventListener("bookUpdated", handleBookUpdated);
     };
   }, []); // No incluimos fetchSagas en las dependencias para evitar bucles infinitos
 
@@ -123,6 +176,10 @@ const Sagas = () => {
               )}
             </div>
           )}
+          <EmptyBooksMessage
+            isOpen={isEmptyModalOpen}
+            onClose={closeEmptyModal}
+          />
         </>
       )}
     </div>

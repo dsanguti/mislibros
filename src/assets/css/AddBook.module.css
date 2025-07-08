@@ -11,6 +11,7 @@
   font-optical-sizing: auto;
   font-weight: 900;
   font-style: normal;
+  color: var(--text-primary);
 }
 .dropzoneContainer {
   width: 100%;
