@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import styles from "../css/CardBook.module.css";
 import Epub_Icon from "./icons/Epub_Icon";
+import Tooltip from "./Tooltip";
 
 const CardBook = ({ book }) => {
   if (!book) {
@@ -46,11 +47,14 @@ const CardBook = ({ book }) => {
         <div className={styles.titleWrapper}>
           <h2 className={styles.title}>{book.titulo}</h2>
           <div className={styles.epubIconContainer}>
-            <Epub_Icon
-              className={styles.epubIcon}
-              onClick={handleDownload}
-              title="Descargar libro"
-            />
+            <Tooltip
+              text="Descargar libro"
+              position="top"
+              theme="default"
+              size="small"
+            >
+              <Epub_Icon className={styles.epubIcon} onClick={handleDownload} />
+            </Tooltip>
           </div>
         </div>
         <p className={styles.genre}>
