@@ -425,7 +425,7 @@
     margin-bottom: 25px;
     font-size: 1.8rem;
     text-align: center;
-    color: var(--text-primary);
+    
   }
 }
 
@@ -501,7 +501,7 @@
 }
 .deleteConfirmation h2 {
   font-family: var(--myTittleForm);
-  color: var(--text-primary);
+  color: #f44336;
 }
 .deleteConfirmation h3 {
   color: var(--text-secondary);

@@ -60,6 +60,7 @@
 .headerLastname,
 .headerEmail,
 .headerProfile,
+.headerVerified,
 .headerEdit {
   text-align: center;
   font-family: "Merienda", cursive;
@@ -95,6 +96,29 @@
 .profile {
   width: 12%;
 }
+.headerVerified,
+.verificado {
+  width: 10%;
+}
+
+.containerVerificado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.verified {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+.notVerified {
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 1.2em;
+}
 .headerEdit,
 .actions {
   width: 15%;
@@ -127,6 +151,7 @@
 .lastname,
 .email,
 .profile,
+.verificado,
 .actions {
   text-align: center;
   padding: 10px 5px;
@@ -196,6 +221,8 @@
   .email,
   .headerProfile,
   .profile,
+  .headerVerified,
+  .verificado,
   .headerEdit,
   .actions {
     width: auto;
@@ -226,6 +253,11 @@
     min-width: 100px;
   }
 
+  .headerVerified,
+  .verificado {
+    min-width: 100px;
+  }
+
   .headerEdit,
   .actions {
     min-width: 100px;
@@ -250,7 +282,6 @@
   background-color: var(--bg-modal);
   border-radius: 8px;
   color: var(--text-primary);
-  
 }
 
 .myTittleForm {

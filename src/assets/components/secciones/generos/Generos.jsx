@@ -13,8 +13,9 @@ const Generos = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [error, setError] = useState(null);
   const [books, setBooks] = useState([]); // Estado para todos los libros
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
   const { isModalOpen: isEmptyModalOpen, closeModal: closeEmptyModal } =
-    useEmptyBooksModal(books);
+    useEmptyBooksModal(books, isLoading);
 
   const isMobile = window.innerWidth <= 768;
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,6 +57,7 @@ const Generos = () => {
 
   useEffect(() => {
     const fetchGeneros = async () => {
+      setIsLoading(true); // Iniciar carga
       try {
         const authToken = localStorage.getItem("token");
         const response = await fetch("http://localhost:8001/api/generos", {
@@ -76,6 +78,8 @@ const Generos = () => {
       } catch (err) {
         console.error("Error al cargar géneros:", err);
         setError("Error al cargar géneros.");
+      } finally {
+        setIsLoading(false); // Finalizar carga
       }
     };
 

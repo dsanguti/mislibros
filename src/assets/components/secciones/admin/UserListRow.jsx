@@ -14,6 +14,9 @@ const UserListRow = ({
   if (!Array.isArray(users) || users.length === 0)
     return <p>No hay usuarios</p>;
 
+  // Debug: mostrar los datos de los usuarios
+  console.log("Datos de usuarios recibidos:", users);
+
   return (
     <div className={style.containerUserRows}>
       {users.map((user) => (
@@ -24,6 +27,7 @@ const UserListRow = ({
           lastname={user.lastname}
           mail={user.mail}
           profile={user.profile}
+          verificado={user.is_verified}
           onClick={() => onUserClick(user)}
           onEditClick={() => onEditClick(user)}
           onDeleteClick={() => onDeleteClick(user)}

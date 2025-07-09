@@ -12,8 +12,9 @@ const Home = () => {
   const [error, setError] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false); // Estado para el modal
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
   const { isModalOpen: isEmptyModalOpen, closeModal: closeEmptyModal } =
-    useEmptyBooksModal(books);
+    useEmptyBooksModal(books, isLoading);
 
   useEffect(() => {
     const handleResize = () => {
@@ -27,10 +28,12 @@ const Home = () => {
 
   useEffect(() => {
     const fetchAllBooks = async () => {
+      setIsLoading(true); // Iniciar carga
       try {
         const authToken = localStorage.getItem("token");
         if (!authToken) {
           setError("No se encontró el token de autenticación");
+          setIsLoading(false);
           return;
         }
 
@@ -48,6 +51,7 @@ const Home = () => {
           const errorData = await response.json();
           setError("Error al obtener all_books");
           console.error("Error en la solicitud:", errorData);
+          setIsLoading(false);
           return;
         }
 
@@ -61,6 +65,8 @@ const Home = () => {
       } catch (error) {
         setError("Error al obtener all_books");
         console.error("Error:", error);
+      } finally {
+        setIsLoading(false); // Finalizar carga
       }
     };
 

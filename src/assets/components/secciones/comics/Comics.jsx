@@ -15,8 +15,9 @@ const Comics = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [books, setBooks] = useState([]); // Estado para todos los libros
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
   const { isModalOpen: isEmptyModalOpen, closeModal: closeEmptyModal } =
-    useEmptyBooksModal(books);
+    useEmptyBooksModal(books, isLoading);
 
   // Función para obtener todos los libros
   const fetchAllBooks = async () => {
@@ -65,10 +66,12 @@ const Comics = () => {
 
   useEffect(() => {
     const fetchComics = async () => {
+      setIsLoading(true); // Iniciar carga
       try {
         const authToken = localStorage.getItem("token");
         if (!authToken) {
           setError("No se encontró el token de autenticación");
+          setIsLoading(false);
           return;
         }
 
@@ -86,6 +89,7 @@ const Comics = () => {
           const errorData = await response.json();
           setError("Error al obtener los Comics");
           console.error("Error en la solicitud:", errorData);
+          setIsLoading(false);
           return;
         }
 
@@ -99,6 +103,8 @@ const Comics = () => {
       } catch (error) {
         setError("Error al obtener los comics");
         console.error("Error:", error);
+      } finally {
+        setIsLoading(false); // Finalizar carga
       }
     };
 

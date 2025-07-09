@@ -51,6 +51,7 @@ router.get("/all_users", (req, res) => {
         lastname, 
         mail, 
         profile,
+        is_verified,
         theme
       FROM users
     `;

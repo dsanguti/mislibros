@@ -38,7 +38,7 @@
   width: 95px; /* Ajusta el tamaño según sea necesario */
   height: auto;
   padding: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Añadir sombra */
+  box-shadow: var(--shadow-modal); /* Añadir sombra */
   background-color: var(--bg-modal); /* Fondo adaptado al tema */
   border-radius: 50%; /* Forma circular */
   filter: drop-shadow(4px 4px 6px rgba(0, 0, 0, 0.3));
@@ -127,7 +127,7 @@
 .linkButton {
   background: none;
   border: none;
-  color: #004445;
+  color: var(--text-primary);
   text-decoration: underline;
   cursor: pointer;
   font-size: 14px;

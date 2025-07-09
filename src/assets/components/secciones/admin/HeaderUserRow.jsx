@@ -8,6 +8,7 @@ const HeaderUserRow = () => {
       <div className={style.headerLastname}>Apellido</div>
       <div className={style.headerEmail}>Email</div>
       <div className={style.headerProfile}>Perfil</div>
+      <div className={style.headerVerified}>Verificado</div>
       <div className={style.headerEdit}>Editar / Eliminar</div>
     </div>
   );

@@ -15,8 +15,9 @@ const StarWars = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isModalOpen, setModalOpen] = useState(false);
   const [books, setBooks] = useState([]); // Estado para todos los libros
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
   const { isModalOpen: isEmptyModalOpen, closeModal: closeEmptyModal } =
-    useEmptyBooksModal(books);
+    useEmptyBooksModal(books, isLoading);
 
   // Función para obtener todos los libros
   const fetchAllBooks = async () => {
@@ -65,10 +66,12 @@ const StarWars = () => {
 
   useEffect(() => {
     const fetchStarwars = async () => {
+      setIsLoading(true); // Iniciar carga
       try {
         const authToken = localStorage.getItem("token");
         if (!authToken) {
           setError("No se encontró el token de autenticación");
+          setIsLoading(false);
           return;
         }
 
@@ -89,6 +92,7 @@ const StarWars = () => {
           const errorData = await response.json();
           setError("Error al obtener libros de Star Wars");
           console.error("Error en la solicitud:", errorData);
+          setIsLoading(false);
           return;
         }
 
@@ -102,6 +106,8 @@ const StarWars = () => {
       } catch (error) {
         setError("Error al obtener libros de Star Wars");
         console.error("Error:", error);
+      } finally {
+        setIsLoading(false); // Finalizar carga
       }
     };
 

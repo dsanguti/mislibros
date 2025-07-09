@@ -6,6 +6,7 @@ import LastnameUser from "./LastnameUser";
 import NameUser from "./NameUser";
 import ProfileUser from "./ProfileUser";
 import UserUser from "./UserUser";
+import VerificadoUser from "./VerificadoUser";
 
 const UserRow = ({
   user,
@@ -13,6 +14,7 @@ const UserRow = ({
   lastname,
   mail,
   profile,
+  verificado,
   onClick,
   onEditClick,
   onDeleteClick,
@@ -33,6 +35,9 @@ const UserRow = ({
       </div>
       <div className={style.profile}>
         <ProfileUser profile={profile} />
+      </div>
+      <div className={style.verificado}>
+        <VerificadoUser verificado={verificado} />
       </div>
       <div className={style.actions}>
         <Edit_Icon

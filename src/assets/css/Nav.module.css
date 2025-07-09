@@ -18,7 +18,7 @@ nav a {
   align-items: center;
   background-color: var(--color-primary);
   height: 50px;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-modal);
 }
 
 .ul {
