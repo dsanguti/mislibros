@@ -7,7 +7,13 @@ import { useTheme } from "../../hooks/useTheme";
 import EyesClosed from "../../icons/EyesClosed";
 import EyesOpen from "../../icons/EyesOpen";
 
-const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
+const EditUserForm = ({
+  user,
+  onClose,
+  onUpdate,
+  canEditProfile = true,
+  isAdminEdit = false,
+}) => {
   const { updateUser } = useContext(AuthContext);
   const { getCurrentTheme, setThemeMode, saveUserThemePreference } = useTheme();
 
@@ -20,6 +26,7 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
     mail: user.mail,
     profile: user.profile,
     theme: user.theme || getCurrentTheme(), // Agregar campo de tema
+    verificado: isAdminEdit ? (user.is_verified ? "1" : "0") : undefined, // Campo de verificación solo para admin
   });
 
   console.log("EditUserForm inicializado con:", {
@@ -123,6 +130,7 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
       formData.lastname !== user.lastname ||
       formData.mail !== user.mail ||
       formData.profile !== user.profile ||
+      (isAdminEdit && formData.verificado !== (user.is_verified ? "1" : "0")) ||
       newUserTheme !== currentUserTheme ||
       (isPasswordChanged && formData.password);
 
@@ -132,6 +140,9 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
       lastname: formData.lastname !== user.lastname,
       mail: formData.mail !== user.mail,
       profile: formData.profile !== user.profile,
+      verificado: isAdminEdit
+        ? formData.verificado !== (user.is_verified ? "1" : "0")
+        : false,
       theme: newUserTheme !== currentUserTheme,
       password: isPasswordChanged && formData.password,
       hasChanges,
@@ -172,6 +183,11 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
         profile: formData.profile,
         theme: currentThemeValue,
       };
+
+      // Solo incluir el campo verificado si es edición desde admin
+      if (isAdminEdit) {
+        dataToSend.verificado = formData.verificado;
+      }
 
       // Solo incluir la contraseña si se ha cambiado
       if (isPasswordChanged && formData.password) {
@@ -405,6 +421,21 @@ const EditUserForm = ({ user, onClose, onUpdate, canEditProfile = true }) => {
             </small>
           )}
         </div>
+
+        {isAdminEdit && (
+          <div className={style.formGroup}>
+            <label className={style.labelForm}>Verificado:</label>
+            <select
+              name="verificado"
+              value={formData.verificado}
+              onChange={handleChange}
+              required
+            >
+              <option value="0">No</option>
+              <option value="1">Sí</option>
+            </select>
+          </div>
+        )}
 
         <div className={style.formGroup}>
           <label className={style.labelForm}>Tema de la aplicación:</label>

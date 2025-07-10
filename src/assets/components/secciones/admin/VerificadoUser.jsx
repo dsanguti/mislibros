@@ -1,14 +1,6 @@
 import style from "../../../css/Admin.module.css";
 
 const VerificadoUser = ({ verificado }) => {
-  // Debug: mostrar el valor recibido
-  console.log(
-    "Valor de verificado recibido:",
-    verificado,
-    "Tipo:",
-    typeof verificado
-  );
-
   // Convertir el valor a booleano si es necesario
   const isVerified =
     verificado === 1 ||

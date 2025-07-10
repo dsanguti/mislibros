@@ -41,8 +41,17 @@ router.put("/update_user", async (req, res) => {
 
     const currentUser = userRows[0];
     console.log("Usuario actual encontrado:", currentUser);
-    const { id, user, password, name, lastname, mail, profile, theme } =
-      req.body;
+    const {
+      id,
+      user,
+      password,
+      name,
+      lastname,
+      mail,
+      profile,
+      theme,
+      verificado,
+    } = req.body;
 
     // Verificar permisos: solo admin puede editar otros usuarios o cambiar perfiles
     console.log("Verificando permisos - perfil actual:", currentUser.profile);
@@ -91,6 +100,12 @@ router.put("/update_user", async (req, res) => {
       return res.status(400).json({ error: "El usuario o email ya existe" });
     }
 
+    // Convertir el valor de verificado a booleano si se proporciona
+    const isVerified =
+      verificado !== undefined
+        ? verificado === "1" || verificado === 1
+        : undefined;
+
     // Preparar la consulta de actualización
     let updateQuery, updateParams;
 
@@ -99,23 +114,58 @@ router.put("/update_user", async (req, res) => {
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      updateQuery =
-        "UPDATE users SET user = ?, password = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ? WHERE id = ?";
-      updateParams = [
-        user,
-        hashedPassword,
-        name,
-        lastname,
-        mail,
-        profile,
-        theme,
-        id,
-      ];
+      if (isVerified !== undefined) {
+        // Si se proporciona el campo verificado
+        updateQuery =
+          "UPDATE users SET user = ?, password = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ?, is_verified = ? WHERE id = ?";
+        updateParams = [
+          user,
+          hashedPassword,
+          name,
+          lastname,
+          mail,
+          profile,
+          theme,
+          isVerified,
+          id,
+        ];
+      } else {
+        // Si no se proporciona el campo verificado
+        updateQuery =
+          "UPDATE users SET user = ?, password = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ? WHERE id = ?";
+        updateParams = [
+          user,
+          hashedPassword,
+          name,
+          lastname,
+          mail,
+          profile,
+          theme,
+          id,
+        ];
+      }
     } else {
       // Si no se proporciona contraseña, no la actualizamos
-      updateQuery =
-        "UPDATE users SET user = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ? WHERE id = ?";
-      updateParams = [user, name, lastname, mail, profile, theme, id];
+      if (isVerified !== undefined) {
+        // Si se proporciona el campo verificado
+        updateQuery =
+          "UPDATE users SET user = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ?, is_verified = ? WHERE id = ?";
+        updateParams = [
+          user,
+          name,
+          lastname,
+          mail,
+          profile,
+          theme,
+          isVerified,
+          id,
+        ];
+      } else {
+        // Si no se proporciona el campo verificado
+        updateQuery =
+          "UPDATE users SET user = ?, name = ?, lastname = ?, mail = ?, profile = ?, theme = ? WHERE id = ?";
+        updateParams = [user, name, lastname, mail, profile, theme, id];
+      }
     }
 
     // Actualizar el usuario
@@ -141,6 +191,7 @@ router.put("/update_user", async (req, res) => {
         mail,
         profile,
         theme,
+        ...(isVerified !== undefined && { is_verified: isVerified }),
       },
     };
     console.log("Enviando respuesta:", responseData);

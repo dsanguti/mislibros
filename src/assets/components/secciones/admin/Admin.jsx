@@ -141,6 +141,7 @@ const Admin = () => {
               user={selectedUser}
               onClose={closeModal}
               onUpdate={handleUpdate}
+              isAdminEdit={true}
             />
           ) : isDeleting && selectedUser ? (
             <DeleteUserForm

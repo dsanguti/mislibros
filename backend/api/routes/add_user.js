@@ -40,7 +40,8 @@ router.post("/add_user", async (req, res) => {
       });
     }
 
-    const { user, password, name, lastname, mail, profile } = req.body;
+    const { user, password, name, lastname, mail, profile, verificado } =
+      req.body;
 
     // Verificar si el usuario ya existe
     const existingUser = await query(
@@ -56,14 +57,17 @@ router.post("/add_user", async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Insertar el nuevo usuario directamente (sin verificación por email)
+    // Convertir el valor de verificado a booleano
+    const isVerified = verificado === "1" || verificado === 1;
+
+    // Insertar el nuevo usuario con el estado de verificación especificado
     const result = await query(
-      "INSERT INTO users (user, password, name, lastname, mail, profile, is_verified) VALUES (?, ?, ?, ?, ?, ?, TRUE)",
-      [user, hashedPassword, name, lastname, mail, profile]
+      "INSERT INTO users (user, password, name, lastname, mail, profile, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      [user, hashedPassword, name, lastname, mail, profile, isVerified]
     );
 
     console.log(
-      `Usuario ${user} creado exitosamente por administrador (verificado automáticamente)`
+      `Usuario ${user} creado exitosamente por administrador (verificado: ${isVerified})`
     );
     console.log("=== FIN CREACIÓN USUARIO (ADMIN) ===");
 

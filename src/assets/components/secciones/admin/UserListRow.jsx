@@ -14,9 +14,6 @@ const UserListRow = ({
   if (!Array.isArray(users) || users.length === 0)
     return <p>No hay usuarios</p>;
 
-  // Debug: mostrar los datos de los usuarios
-  console.log("Datos de usuarios recibidos:", users);
-
   return (
     <div className={style.containerUserRows}>
       {users.map((user) => (

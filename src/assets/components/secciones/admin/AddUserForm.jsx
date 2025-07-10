@@ -12,6 +12,7 @@ const AddUserForm = ({ onClose, onAdd }) => {
     lastname: "",
     mail: "",
     profile: "Consulta",
+    verificado: "0", // Valor por defecto: no verificado
   });
 
   const [passwordError, setPasswordError] = useState("");
@@ -175,6 +176,20 @@ const AddUserForm = ({ onClose, onAdd }) => {
             onChange={handleChange}
             required
           />
+        </div>
+
+        <div className={style.formGroup}>
+          <label htmlFor="verificado">Verificado:</label>
+          <select
+            id="verificado"
+            name="verificado"
+            value={formData.verificado}
+            onChange={handleChange}
+            required
+          >
+            <option value="0">No</option>
+            <option value="1">Sí</option>
+          </select>
         </div>
 
         <div className={style.formGroup}>
