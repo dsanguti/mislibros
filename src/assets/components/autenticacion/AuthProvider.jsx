@@ -157,6 +157,8 @@ export const AuthProvider = ({ children }) => {
       console.log("AuthProvider - Aplicando tema del usuario:", userData.theme);
       // Guardar el tema en localStorage para que el ThemeProvider lo cargue
       localStorage.setItem("userTheme", userData.theme);
+      // Disparar evento personalizado para notificar al ThemeProvider
+      window.dispatchEvent(new CustomEvent("userThemeChange"));
     }
 
     navigate("/");
@@ -171,6 +173,14 @@ export const AuthProvider = ({ children }) => {
   const updateUser = (newUserData) => {
     console.log("AuthProvider - UpdateUser llamado:", newUserData);
     authStateManager.updateUser(newUserData);
+
+    // Si el tema del usuario cambió, notificar al ThemeProvider
+    if (newUserData.theme) {
+      console.log("AuthProvider - Tema actualizado:", newUserData.theme);
+      localStorage.setItem("userTheme", newUserData.theme);
+      // Disparar evento personalizado para notificar al ThemeProvider
+      window.dispatchEvent(new CustomEvent("userThemeChange"));
+    }
   };
 
   console.log("=== AuthProvider render ===");

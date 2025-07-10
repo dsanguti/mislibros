@@ -218,14 +218,29 @@ const EditUserForm = ({
           autoClose: 1000,
         });
 
-        // Actualizar el localStorage con los nuevos datos del usuario
-        const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-        const updatedUser = {
-          ...currentUser,
-          ...result.user,
-        };
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-        console.log("Usuario actualizado en localStorage:", updatedUser);
+        // NO actualizar el localStorage ni el contexto de autenticación cuando es edición desde admin
+        // Solo actualizar si es edición del propio perfil del usuario
+        if (!isAdminEdit) {
+          // Actualizar el localStorage con los nuevos datos del usuario
+          const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+          const updatedUser = {
+            ...currentUser,
+            ...result.user,
+          };
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+          console.log("Usuario actualizado en localStorage:", updatedUser);
+
+          // Actualizar el contexto de autenticación
+          if (typeof updateUser === "function") {
+            console.log("Actualizando contexto de autenticación...");
+            updateUser(result.user);
+            console.log("Contexto de autenticación actualizado:", result.user);
+          }
+        } else {
+          console.log(
+            "Edición desde admin - NO actualizando contexto de autenticación"
+          );
+        }
 
         // Forzar una recarga del contexto de autenticación sin redirección
         console.log("Actualizando contexto de autenticación...");
@@ -265,13 +280,6 @@ const EditUserForm = ({
           token: !!localStorage.getItem("token"),
           user: JSON.parse(localStorage.getItem("user") || "null"),
         });
-
-        // Actualizar el contexto de autenticación
-        if (typeof updateUser === "function") {
-          console.log("Actualizando contexto de autenticación...");
-          updateUser(result.user);
-          console.log("Contexto de autenticación actualizado:", result.user);
-        }
 
         // Solución temporal: forzar la autenticación
         console.log("Forzando autenticación...");

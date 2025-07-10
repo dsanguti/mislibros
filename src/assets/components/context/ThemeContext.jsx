@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 
 const ThemeContext = createContext();
 
@@ -9,24 +9,59 @@ export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState("light"); // Tema por defecto
   const [isLoading, setIsLoading] = useState(true);
 
-  // Cargar tema desde localStorage al inicializar
-  useEffect(() => {
+  // Aplicar tema al documento
+  const applyTheme = useCallback((newTheme) => {
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  }, []);
+
+  // Función para cargar y aplicar el tema
+  const loadAndApplyTheme = useCallback(() => {
     const savedTheme = localStorage.getItem("theme");
     const userTheme = localStorage.getItem("userTheme");
 
     // Priorizar el tema del usuario si existe, sino usar el tema guardado
     const themeToUse = userTheme || savedTheme || "light";
 
+    console.log("ThemeContext - Aplicando tema:", themeToUse);
     setTheme(themeToUse);
     applyTheme(themeToUse);
-    setIsLoading(false);
-  }, []);
+  }, [applyTheme]);
 
-  // Aplicar tema al documento
-  const applyTheme = (newTheme) => {
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
-  };
+  // Cargar tema desde localStorage al inicializar
+  useEffect(() => {
+    loadAndApplyTheme();
+    setIsLoading(false);
+  }, [loadAndApplyTheme]);
+
+  // Escuchar cambios en localStorage para sincronizar con AuthProvider
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "userTheme") {
+        console.log(
+          "ThemeContext - userTheme cambiado en localStorage:",
+          e.newValue
+        );
+        loadAndApplyTheme();
+      }
+    };
+
+    // Escuchar cambios en localStorage (entre tabs)
+    window.addEventListener("storage", handleStorageChange);
+
+    // Escuchar evento personalizado para cambios locales
+    const handleUserThemeChange = () => {
+      console.log("ThemeContext - Evento userThemeChange recibido");
+      loadAndApplyTheme();
+    };
+
+    window.addEventListener("userThemeChange", handleUserThemeChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("userThemeChange", handleUserThemeChange);
+    };
+  }, [loadAndApplyTheme]);
 
   // Cambiar tema
   const toggleTheme = () => {
@@ -46,6 +81,8 @@ export const ThemeProvider = ({ children }) => {
   // Guardar preferencia de tema del usuario
   const saveUserThemePreference = (userTheme) => {
     localStorage.setItem("userTheme", userTheme);
+    // Disparar evento personalizado para notificar el cambio
+    window.dispatchEvent(new CustomEvent("userThemeChange"));
     setThemeMode(userTheme);
   };
 
