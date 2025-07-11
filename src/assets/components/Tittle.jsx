@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"; // Importa PropTypes
 import { NavLink } from "react-router-dom";
-import style from "../css/tittle.module.css";
+import style from "../css/Tittle.module.css";
 import { useTheme } from "./hooks/useTheme";
 
 const Tittle = ({ children }) => {

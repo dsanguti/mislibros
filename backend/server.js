@@ -6,11 +6,11 @@ const mysql = require("mysql2");
 const path = require("path");
 
 const app = express();
-const port = 8001;
+const port = process.env.PORT || 8001;
 
 // Configuración de las CORS
 const corsOptions = {
-  origin: "http://localhost:5173", // Origen de tu frontend
+  origin: process.env.FRONTEND_URL || "http://localhost:5173", // Origen de tu frontend
   methods: ["GET", "POST", "PUT", "DELETE"], // Se agrega "DELETE"
   credentials: true, // Permitir cookies y credenciales
 };
@@ -32,10 +32,10 @@ app.use((req, res, next) => {
 
 // Configuración de la base de datos
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "mislibros",
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "mislibros",
 });
 
 db.connect((err) => {
@@ -117,5 +117,5 @@ app._router.stack.forEach((middleware) => {
 
 // Inicio del servidor
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`Servidor corriendo en puerto ${port}`);
 });

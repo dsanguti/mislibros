@@ -1,11 +1,9 @@
-import style from "../css/BooksRow.module.css"
+import style from "../css/BooksRow.module.css";
 
-
-const BookTitle = ({titulo})=>(
+const BookTitle = ({ titulo }) => (
   <div className={style.containerTitulo}>
     <span>{titulo}</span>
   </div>
-
-)
+);
 
 export default BookTitle;
