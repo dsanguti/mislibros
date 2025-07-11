@@ -1,0 +1,221 @@
+/*
+OPCIONES ALTERNATIVAS PARA VISTA MÓVIL EN ADMIN
+===============================================
+
+OPCIÓN 1: VISTA DE TARJETAS (CARDS)
+Reemplaza el contenido del @media (max-width: 768px) en Admin.module.css con esto:
+
+@media (max-width: 768px) {
+  .containerUserList {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .containerHeaderUser {
+    display: none; 
+  }
+
+  .containerUserRows {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 10px;
+  }
+
+  .containerUserRow {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-primary);
+    min-width: auto;
+  }
+
+  .containerUserRow:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .user,
+  .name,
+  .lastname,
+  .email,
+  .profile,
+  .verificado,
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-secondary);
+    font-size: 0.9rem;
+  }
+
+  .user::before { content: "Usuario: "; font-weight: bold; }
+  .name::before { content: "Nombre: "; font-weight: bold; }
+  .lastname::before { content: "Apellido: "; font-weight: bold; }
+  .email::before { content: "Email: "; font-weight: bold; }
+  .profile::before { content: "Perfil: "; font-weight: bold; }
+  .verificado::before { content: "Verificado: "; font-weight: bold; }
+  .actions::before { content: "Acciones: "; font-weight: bold; }
+
+  .actions {
+    border-bottom: none;
+    justify-content: center;
+    gap: 15px;
+  }
+
+  .iconEdit,
+  .iconDelete {
+    font-size: 1.2rem;
+    padding: 8px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+  }
+}
+
+===============================================
+
+OPCIÓN 2: VISTA COMPACTA CON COLUMNAS REDUCIDAS
+Reemplaza el contenido del @media (max-width: 768px) en Admin.module.css con esto:
+
+@media (max-width: 768px) {
+  .containerUserList {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .containerHeaderUser {
+    padding: 8px 4px;
+    min-width: 600px;
+    font-size: 0.75rem;
+  }
+
+  .containerUserRows {
+    min-width: 600px;
+  }
+
+  .containerUserRow {
+    min-width: 600px;
+    padding: 6px 0;
+  }
+
+  .headerUser,
+  .user,
+  .headerName,
+  .name,
+  .headerLastname,
+  .lastname,
+  .headerEmail,
+  .email,
+  .headerProfile,
+  .profile,
+  .headerVerified,
+  .verificado,
+  .headerEdit,
+  .actions {
+    font-size: 0.75rem;
+    padding: 6px 2px;
+  }
+
+  .headerUser,
+  .user { min-width: 60px; }
+  .headerName,
+  .name { min-width: 60px; }
+  .headerLastname,
+  .lastname { min-width: 70px; }
+  .headerEmail,
+  .email { min-width: 120px; }
+  .headerProfile,
+  .profile { min-width: 50px; }
+  .headerVerified,
+  .verificado { min-width: 50px; }
+  .headerEdit,
+  .actions { min-width: 60px; }
+
+  .iconEdit,
+  .iconDelete {
+    font-size: 0.9rem;
+    margin: 0 2px;
+  }
+}
+
+===============================================
+
+OPCIÓN 3: VISTA DE LISTA VERTICAL
+Reemplaza el contenido del @media (max-width: 768px) en Admin.module.css con esto:
+
+@media (max-width: 768px) {
+  .containerUserList {
+    width: 100%;
+    overflow: visible;
+  }
+
+  .containerHeaderUser {
+    display: none;
+  }
+
+  .containerUserRows {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .containerUserRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-primary);
+    min-width: auto;
+  }
+
+  .containerUserRow:hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  .user,
+  .name,
+  .lastname,
+  .email,
+  .profile,
+  .verificado {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.85rem;
+    padding: 4px 0;
+  }
+
+  .user::before { content: "Usuario"; font-weight: bold; font-size: 0.75rem; color: var(--text-secondary); }
+  .name::before { content: "Nombre"; font-weight: bold; font-size: 0.75rem; color: var(--text-secondary); }
+  .lastname::before { content: "Apellido"; font-weight: bold; font-size: 0.75rem; color: var(--text-secondary); }
+  .email::before { content: "Email"; font-weight: bold; font-size: 0.75rem; color: var(--text-secondary); }
+  .profile::before { content: "Perfil"; font-weight: bold; font-size: 0.75rem; color: var(--text-secondary); }
+  .verificado::before { content: "Verificado"; font-weight: bold; font-size: 0.75rem; color: var(--text-secondary); }
+
+  .actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-secondary);
+  }
+
+  .iconEdit,
+  .iconDelete {
+    font-size: 1.1rem;
+    padding: 8px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+  }
+}
+*/ 

@@ -24,6 +24,39 @@ const Admin = () => {
     fetchUsers();
   }, []);
 
+  // Forzar el scroll al inicio en móvil
+  useEffect(() => {
+    const container = document.querySelector(`.${style.containerUserList}`);
+    if (container && window.innerWidth <= 768) {
+      setTimeout(() => {
+        // Comenzar desde la posición inicial para ver "Usuario"
+        container.scrollLeft = 0;
+      }, 200);
+    }
+  }, [users]);
+
+  // Efecto adicional para asegurar el scroll inicial
+  useEffect(() => {
+    const handleResize = () => {
+      const container = document.querySelector(`.${style.containerUserList}`);
+      if (container && window.innerWidth <= 768) {
+        container.scrollLeft = 0;
+      }
+    };
+
+    const forceInitialScroll = () => {
+      const container = document.querySelector(`.${style.containerUserList}`);
+      if (container && window.innerWidth <= 768) {
+        container.scrollLeft = 0;
+      }
+    };
+
+    setTimeout(forceInitialScroll, 100);
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const fetchUsers = async () => {
     try {
       setLoading(true);

@@ -1,4 +1,4 @@
-import style from "../../../css/admin.module.css";
+import style from "../../../css/Admin.module.css";
 
 const UserUser = ({user})=>{
   return (

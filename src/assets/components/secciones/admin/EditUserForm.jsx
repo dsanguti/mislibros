@@ -38,6 +38,8 @@ const EditUserForm = ({
   const [passwordError, setPasswordError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isPasswordChanged, setIsPasswordChanged] = useState(false);
+  const [originalTheme] = useState(user.theme || getCurrentTheme());
+  const [isThemeChanged, setIsThemeChanged] = useState(false);
 
   const validatePassword = (password) => {
     if (!password) return []; // Si no hay contraseña, no mostrar errores
@@ -82,16 +84,25 @@ const EditUserForm = ({
       setPasswordError(errors.length > 0 ? errors.join(", ") : "");
     }
 
-    // Aplicar el tema inmediatamente si se cambia
+    // Marcar que el tema ha cambiado pero no aplicarlo aún
     if (name === "theme") {
-      console.log("Tema cambiado a:", value);
-      setThemeMode(value);
-      saveUserThemePreference(value);
+      console.log("Tema seleccionado:", value);
+      setIsThemeChanged(true);
     }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleCancel = () => {
+    // Si el tema cambió pero se cancela, restaurar el tema original
+    if (isThemeChanged) {
+      console.log("Restaurando tema original:", originalTheme);
+      setThemeMode(originalTheme);
+      saveUserThemePreference(originalTheme);
+    }
+    onClose();
   };
 
   const handleSubmit = async (e) => {
@@ -214,6 +225,14 @@ const EditUserForm = ({
 
       if (response.ok) {
         console.log("Respuesta exitosa, mostrando toast de éxito");
+
+        // Aplicar el tema solo si se guardó exitosamente
+        if (isThemeChanged) {
+          console.log("Aplicando tema guardado:", currentThemeValue);
+          setThemeMode(currentThemeValue);
+          saveUserThemePreference(currentThemeValue);
+        }
+
         toast.success("Usuario actualizado correctamente.", {
           autoClose: 1000,
         });
@@ -462,7 +481,7 @@ const EditUserForm = ({
         </div>
 
         <div className={style.buttonContainer}>
-          <button className={style.buttonFormCancel} onClick={onClose}>
+          <button className={style.buttonFormCancel} onClick={handleCancel}>
             Cancelar
           </button>
           <button
