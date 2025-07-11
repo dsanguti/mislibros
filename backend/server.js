@@ -8,11 +8,22 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 8001;
 
-// Configuración de las CORS
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173"
+];
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:5173", // Origen de tu frontend
-  methods: ["GET", "POST", "PUT", "DELETE"], // Se agrega "DELETE"
-  credentials: true, // Permitir cookies y credenciales
+  origin: function (origin, callback) {
+    // Permitir peticiones sin origin (como Postman o curl)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
