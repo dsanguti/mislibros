@@ -13,7 +13,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000"
 ];
-
+console.log("Allowed origins:", allowedOrigins);
 const corsOptions = {
   origin: function (origin, callback) {
     // Permitir peticiones sin origin (como Postman o curl)
