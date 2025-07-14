@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import style from "../../../css/AddBook.module.css";
 import AddBookForm from "./AddBookForm";
-import { API_ENDPOINTS } from "../../../config/api";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 // Configurar el worker de PDF.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;

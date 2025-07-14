@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
-import { API_ENDPOINTS } from "../../../config/api";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const EditBookForm = ({ book, onClose, onUpdate }) => {
   console.log("Libro completo recibido:", book);

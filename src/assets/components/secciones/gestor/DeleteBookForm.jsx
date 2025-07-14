@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
-import { API_ENDPOINTS } from "../../../config/api";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const DeleteBookForm = ({ book, onClose, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);

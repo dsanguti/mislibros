@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "../../../css/Gestor.module.css";
 import { useAuth } from "../../autenticacion/UseAuth";
-import { API_ENDPOINTS } from "../../../config/api";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const AddSagaForm = ({ onClose, onUpdate }) => {
   const [nombre, setNombre] = useState("");
