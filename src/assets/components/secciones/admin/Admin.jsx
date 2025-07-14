@@ -9,6 +9,7 @@ import DeleteUserForm from "./DeleteUserForm";
 import EditUserForm from "./EditUserForm";
 import HeaderUserRow from "./HeaderUserRow";
 import UserListRow from "./UserListRow";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const Admin = () => {
   const [users, setUsers] = useState([]);
@@ -67,7 +68,7 @@ const Admin = () => {
         throw new Error("No hay token de autenticación");
       }
 
-      const response = await fetch("http://localhost:8001/api/all_users", {
+      const response = await fetch(API_ENDPOINTS.ALL_USERS, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

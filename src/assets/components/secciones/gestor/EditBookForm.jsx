@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const EditBookForm = ({ book, onClose, onUpdate }) => {
   console.log("Libro completo recibido:", book);
@@ -42,7 +43,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     const fetchGeneros = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:8001/api/generoEnum", {
+        const response = await fetch(API_ENDPOINTS.GENERO_ENUM, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -71,7 +72,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     const fetchSagas = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:8001/api/sagas", {
+        const response = await fetch(API_ENDPOINTS.SAGAS, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -157,7 +158,7 @@ const EditBookForm = ({ book, onClose, onUpdate }) => {
     if (file) data.append("cover", file);
 
     try {
-      const response = await fetch("http://localhost:8001/api/update_book", {
+      const response = await fetch(API_ENDPOINTS.UPDATE_BOOK, {
         method: "PUT",
         body: data,
         headers: {

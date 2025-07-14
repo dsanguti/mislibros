@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const EditSagaForm = ({ saga, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
@@ -48,7 +49,7 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8001/api/update_saga/${formData.id}`,
+        `${API_ENDPOINTS.UPDATE_SAGA}/${formData.id}`,
         {
           method: "PUT",
           body: data,

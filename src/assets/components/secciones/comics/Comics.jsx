@@ -6,6 +6,7 @@ import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal";
 import HeaderComics from "./HeaderComics";
 import MainComics from "./MainComics";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const Comics = () => {
   const [comics, setComics] = useState([]);
@@ -28,7 +29,7 @@ const Comics = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8001/api/all_books", {
+      const response = await fetch(API_ENDPOINTS.ALL_BOOKS, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -75,7 +76,7 @@ const Comics = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:8001/api/librosComics", {
+        const response = await fetch(API_ENDPOINTS.LIBROS_COMICS, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authToken}`,

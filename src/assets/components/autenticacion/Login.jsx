@@ -6,6 +6,7 @@ import CargaApp from "../CargaApp";
 import { useTheme } from "../hooks/useTheme";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import RegisterForm from "./RegisterForm";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const Login = () => {
   const { login } = useAuth(); // Usar el hook de autenticación
@@ -31,7 +32,7 @@ const Login = () => {
     try {
       console.log("Enviando datos de login:", { user: username, password });
       const response = await fetch(
-        "http://localhost:8001/api/login", // Asegúrate de usar el puerto correcto
+        API_ENDPOINTS.LOGIN, // Asegúrate de usar el puerto correcto
         {
           method: "POST",
           headers: {

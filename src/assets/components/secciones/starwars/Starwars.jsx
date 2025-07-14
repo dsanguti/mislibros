@@ -6,6 +6,7 @@ import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal";
 import HeaderStarwars from "./HeaderStarwars";
 import MainStarwars from "./MainStarwars";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const StarWars = () => {
   const [starwars, setStarwars] = useState([]);
@@ -28,7 +29,7 @@ const StarWars = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8001/api/all_books", {
+      const response = await fetch(API_ENDPOINTS.ALL_BOOKS, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -76,7 +77,7 @@ const StarWars = () => {
         }
 
         const response = await fetch(
-          "http://localhost:8001/api/librosStarwars",
+          API_ENDPOINTS.LIBROS_STARWARS,
           {
             method: "GET",
             headers: {

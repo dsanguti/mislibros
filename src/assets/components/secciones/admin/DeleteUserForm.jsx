@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Admin.module.css";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const DeleteUserForm = ({ user, onClose, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -20,7 +21,7 @@ const DeleteUserForm = ({ user, onClose, onDelete }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8001/api/delete_user/${user.id}`,
+        `${API_ENDPOINTS.DELETE_USER}/${user.id}`,
         {
           method: "DELETE",
           headers: {

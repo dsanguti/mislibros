@@ -6,6 +6,7 @@ import { AuthContext } from "../../autenticacion/AuthProvider";
 import { useTheme } from "../../hooks/useTheme";
 import EyesClosed from "../../icons/EyesClosed";
 import EyesOpen from "../../icons/EyesOpen";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const EditUserForm = ({
   user,
@@ -207,7 +208,7 @@ const EditUserForm = ({
 
       console.log("Enviando petición de actualización:", dataToSend);
 
-      const response = await fetch("http://localhost:8001/api/update_user", {
+      const response = await fetch(API_ENDPOINTS.UPDATE_USER, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

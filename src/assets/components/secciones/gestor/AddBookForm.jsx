@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
   const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
 
         // Obtener géneros
         const genresResponse = await fetch(
-          "http://localhost:8001/api/generoEnum",
+          API_ENDPOINTS.GENERO_ENUM,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -59,7 +60,7 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
         setGenres(genresData);
 
         // Obtener sagas
-        const sagasResponse = await fetch("http://localhost:8001/api/sagas", {
+        const sagasResponse = await fetch(API_ENDPOINTS.SAGAS, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -182,7 +183,7 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
       console.log("Archivo:", file);
       console.log("Carátula:", formData.coverFile);
 
-      const response = await fetch("http://localhost:8001/api/add_book", {
+      const response = await fetch(API_ENDPOINTS.ADD_BOOK, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

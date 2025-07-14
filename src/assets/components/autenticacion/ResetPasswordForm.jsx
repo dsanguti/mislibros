@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "../../css/Login.module.css";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const ResetPasswordForm = () => {
   const [searchParams] = useSearchParams();
@@ -91,7 +92,7 @@ const ResetPasswordForm = () => {
     });
 
     try {
-      const response = await fetch("http://localhost:8001/api/reset-password", {
+      const response = await fetch(API_ENDPOINTS.RESET_PASSWORD, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

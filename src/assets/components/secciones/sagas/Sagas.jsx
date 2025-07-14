@@ -6,6 +6,7 @@ import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal"; // Importamos el modal
 import HeaderSaga from "./HeaderSaga";
 import MainSaga from "./MainSaga";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const Sagas = () => {
   const [sagas, setSagas] = useState([]);
@@ -28,7 +29,7 @@ const Sagas = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8001/api/all_books", {
+      const response = await fetch(API_ENDPOINTS.ALL_BOOKS, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -65,7 +66,7 @@ const Sagas = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8001/api/sagas", {
+      const response = await fetch(API_ENDPOINTS.SAGAS, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,

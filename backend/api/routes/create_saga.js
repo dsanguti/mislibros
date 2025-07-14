@@ -63,7 +63,7 @@ router.post("/create_saga", upload.single("cover"), (req, res) => {
       // Verificar si se subió una imagen
       if (req.file) {
         // Crear la URL para la base de datos
-        coverPath = `http://localhost:8001/images/sagas/${req.file.filename}`;
+        coverPath = `${process.env.FRONTEND_URL}/images/sagas/${req.file.filename}`;
       }
 
       // Validar campos requeridos

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import BooksListRow from "../../BooksListRow";
 import HeaderRow from "../../HeaderRow";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const MainGenero = ({ genero, onBookClick }) => {
   console.log("📥 Prop recibida en MainGenero:", genero);
@@ -27,7 +28,7 @@ const MainGenero = ({ genero, onBookClick }) => {
         }
 
         const response = await fetch(
-          `http://localhost:8001/api/libros-genero?genero=${encodeURIComponent(
+          `${API_ENDPOINTS.LIBROS_GENERO}?genero=${encodeURIComponent(
             genero.nombre
           )}`,
           {

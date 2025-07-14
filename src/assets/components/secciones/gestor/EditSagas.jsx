@@ -7,6 +7,8 @@ import EditIcon from "../../icons/Edit_Icon";
 import AddSagaForm from "./AddSagaForm";
 import DeleteSagaForm from "./DeleteSagaForm";
 import EditSagaForm from "./EditSagaForm";
+import { API_ENDPOINTS } from "../../../config/api";
+
 const EditSagas = () => {
   const [sagas, setSagas] = useState([]);
   const [error, setError] = useState("");
@@ -23,7 +25,7 @@ const EditSagas = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8001/api/sagas", {
+      const response = await fetch(API_ENDPOINTS.SAGAS, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

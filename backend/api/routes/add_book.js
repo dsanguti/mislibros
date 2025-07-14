@@ -139,7 +139,7 @@ router.post(
           // Obtener el nombre real del archivo guardado
           const fileFileName = path.basename(req.files.file[0].path);
           // Crear la URL para la base de datos
-          filePath = `http://localhost:8001/uploads/books/${fileFileName}`;
+          filePath = `${process.env.FRONTEND_URL}/uploads/books/${fileFileName}`;
 
           console.log("Rutas de archivo:", {
             originalName: req.files.file[0].originalname,
@@ -153,7 +153,7 @@ router.post(
           // Obtener el nombre real del archivo guardado
           const coverFileName = path.basename(req.files.cover[0].path);
           // Crear la URL para la base de datos
-          coverPath = `http://localhost:8001/images/cover/${coverFileName}`;
+          coverPath = `${process.env.FRONTEND_URL}/images/cover/${coverFileName}`;
 
           console.log("Rutas de carátula:", {
             originalName: req.files.cover[0].originalname,

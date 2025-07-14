@@ -5,7 +5,7 @@ import CardBook from "../../CardBook";
 import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal"; // Importamos el modal
 import MainHome from "./MainHome"; // Asegúrate de que el nombre del componente sea correcto
-
+import { API_ENDPOINTS } from "../../../../config/api";
 const Home = () => {
   const [books, setBooks] = useState([]); // Cambiado de sagas a books
   const [selectedBook, setSelectedBook] = useState(null);
@@ -37,7 +37,7 @@ const Home = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:8001/api/all_books", {
+        const response = await fetch(API_ENDPOINTS.ALL_BOOKS, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${authToken}`,

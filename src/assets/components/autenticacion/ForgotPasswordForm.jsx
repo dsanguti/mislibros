@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "../../css/Login.module.css";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const ForgotPasswordForm = ({ onClose }) => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ const ForgotPasswordForm = ({ onClose }) => {
 
     try {
       const response = await fetch(
-        "http://localhost:8001/api/forgot-password",
+        API_ENDPOINTS.FORGOT_PASSWORD,
         {
           method: "POST",
           headers: {

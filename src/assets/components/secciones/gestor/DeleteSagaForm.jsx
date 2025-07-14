@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const DeleteSagaForm = ({ saga, onClose, onUpdate }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -19,7 +20,7 @@ const DeleteSagaForm = ({ saga, onClose, onUpdate }) => {
     setIsDeleting(true);
 
     try {
-      const response = await fetch("http://localhost:8001/api/delete_saga", {
+      const response = await fetch(API_ENDPOINTS.DELETE_SAGA, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

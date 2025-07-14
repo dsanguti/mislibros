@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import style from "../../../css/Sagas.module.css";
 import BooksListRow from "../../BooksListRow";
 import HeaderRow from "../../HeaderRow";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const MainSaga = ({ saga, onBookClick }) => {
   const [libros, setLibros] = useState([]);
@@ -26,7 +27,7 @@ const MainSaga = ({ saga, onBookClick }) => {
         }
         console.log("ID de la saga al hacer clic:", saga.id); //
         const response = await fetch(
-          `http://localhost:8001/api/libros-sagas?sagaId=${saga.id}`,
+          `${API_ENDPOINTS.LIBROS_SAGAS}?sagaId=${saga.id}`,
 
           {
             method: "GET",

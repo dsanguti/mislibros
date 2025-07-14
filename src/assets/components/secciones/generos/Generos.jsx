@@ -6,6 +6,7 @@ import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal";
 import HeaderGenero from "./HeaderGenero";
 import MainGenero from "./MainGenero";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const Generos = () => {
   const [generos, setGeneros] = useState([]);
@@ -29,7 +30,7 @@ const Generos = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:8001/api/all_books", {
+      const response = await fetch(API_ENDPOINTS.ALL_BOOKS, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -60,7 +61,7 @@ const Generos = () => {
       setIsLoading(true); // Iniciar carga
       try {
         const authToken = localStorage.getItem("token");
-        const response = await fetch("http://localhost:8001/api/generos", {
+        const response = await fetch(API_ENDPOINTS.GENEROS, {
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",

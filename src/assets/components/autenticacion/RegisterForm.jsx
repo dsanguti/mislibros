@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import styles from "../../css/Login.module.css";
 import EyesClosed from "../icons/EyesClosed";
 import EyesOpen from "../icons/EyesOpen";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const RegisterForm = ({ onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -71,7 +72,7 @@ const RegisterForm = ({ onClose, onSuccess }) => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("http://localhost:8001/api/register", {
+      const response = await fetch(API_ENDPOINTS.REGISTER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

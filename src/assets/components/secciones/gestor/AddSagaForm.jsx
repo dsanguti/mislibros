@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "../../../css/Gestor.module.css";
 import { useAuth } from "../../autenticacion/UseAuth";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const AddSagaForm = ({ onClose, onUpdate }) => {
   const [nombre, setNombre] = useState("");
@@ -53,7 +54,7 @@ const AddSagaForm = ({ onClose, onUpdate }) => {
         formData.append("cover", coverFile);
       }
 
-      const response = await fetch("http://localhost:8001/api/create_saga", {
+      const response = await fetch(API_ENDPOINTS.CREATE_SAGA, {
         method: "POST",
         body: formData,
         headers: {

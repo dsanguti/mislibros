@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import style from "../../../css/Admin.module.css";
 import EyesClosed from "../../icons/EyesClosed.jsx";
 import EyesOpen from "../../icons/EyesOpen.jsx";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const AddUserForm = ({ onClose, onAdd }) => {
   const [formData, setFormData] = useState({
@@ -76,7 +77,7 @@ const AddUserForm = ({ onClose, onAdd }) => {
         return;
       }
 
-      const response = await fetch("http://localhost:8001/api/add_user", {
+      const response = await fetch(API_ENDPOINTS.ADD_USER, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

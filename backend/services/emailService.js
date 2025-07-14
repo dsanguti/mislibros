@@ -27,7 +27,7 @@ const sendVerificationEmail = async (email, verificationToken, userName) => {
     }`
   );
 
-  const verificationUrl = `http://localhost:8001/api/verify-email?token=${verificationToken}`;
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
   console.log(`URL de verificación: ${verificationUrl}`);
 
   const mailOptions = {

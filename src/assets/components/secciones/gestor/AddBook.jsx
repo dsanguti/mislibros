@@ -5,6 +5,7 @@ import { useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
 import style from "../../../css/AddBook.module.css";
 import AddBookForm from "./AddBookForm";
+import { API_ENDPOINTS } from "../../../config/api";
 
 // Configurar el worker de PDF.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -292,7 +293,7 @@ const AddBook = () => {
               formData.append("file", file);
 
               const response = await fetch(
-                "http://localhost:8001/api/extract_metadata",
+                API_ENDPOINTS.EXTRACT_METADATA,
                 {
                   method: "POST",
                   body: formData,
@@ -318,7 +319,7 @@ const AddBook = () => {
               if (metadata.cover) {
                 try {
                   const coverResponse = await fetch(
-                    `http://localhost:8001${metadata.cover}`
+                    `${API_ENDPOINTS.IMAGES}${metadata.cover}`
                   );
                   const coverBuffer = await coverResponse.arrayBuffer();
                   coverImage = arrayBufferToBlob(coverBuffer, "image/png");
@@ -340,7 +341,7 @@ const AddBook = () => {
 
               // Limpiar archivos temporales después de procesarlos
               try {
-                await fetch("http://localhost:8001/api/cleanup", {
+                await fetch(API_ENDPOINTS.CLEANUP, {
                   method: "DELETE",
                   headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -366,7 +367,7 @@ const AddBook = () => {
               formData.append("file", file);
 
               const response = await fetch(
-                "http://localhost:8001/api/extract_mobi_metadata",
+                API_ENDPOINTS.EXTRACT_MOBI_METADATA,
                 {
                   method: "POST",
                   body: formData,
@@ -388,7 +389,7 @@ const AddBook = () => {
               if (metadata.cover) {
                 try {
                   const coverResponse = await fetch(
-                    `http://localhost:8001${metadata.cover}`
+                    `${API_ENDPOINTS.IMAGES}${metadata.cover}`
                   );
                   const coverBuffer = await coverResponse.arrayBuffer();
                   coverImage = arrayBufferToBlob(coverBuffer, "image/jpeg");

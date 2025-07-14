@@ -2,6 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import style from "../../../css/Gestor.module.css";
+import { API_ENDPOINTS } from "../../../config/api";
 
 const DeleteBookForm = ({ book, onClose, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -19,7 +20,7 @@ const DeleteBookForm = ({ book, onClose, onDelete }) => {
 
     try {
       const response = await fetch(
-        `http://localhost:8001/api/delete_book/${book.id}`,
+        `${API_ENDPOINTS.DELETE_BOOK}/${book.id}`,
         {
           method: "DELETE",
           headers: {
