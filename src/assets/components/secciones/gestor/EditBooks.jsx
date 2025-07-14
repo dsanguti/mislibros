@@ -5,7 +5,7 @@ import Modal from "../../Modal";
 import DeleteBookForm from "./DeleteBookForm";
 import EditBookForm from "./EditBookForm";
 import MainEditBooks from "./MainEditBooks";
-import { API_ENDPOINTS } from "../../../config/api";
+import { API_ENDPOINTS } from "../../../../config/api";
 
 const EditBooks = () => {
   const [books, setBooks] = useState([]);
