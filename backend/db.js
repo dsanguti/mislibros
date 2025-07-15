@@ -1,6 +1,23 @@
 const mysql = require("mysql2");
 require("dotenv").config();
 
+// Debug: Mostrar todas las variables de entorno relacionadas con MySQL
+console.log("=== DEBUG: Variables de entorno MySQL ===");
+console.log("MYSQL_HOST:", process.env.MYSQL_HOST);
+console.log("MYSQL_USER:", process.env.MYSQL_USER);
+console.log(
+  "MYSQL_PASSWORD:",
+  process.env.MYSQL_PASSWORD ? "***SET***" : "NOT SET"
+);
+console.log("MYSQL_DATABASE:", process.env.MYSQL_DATABASE);
+console.log("MYSQL_PORT:", process.env.MYSQL_PORT);
+console.log("DB_HOST:", process.env.DB_HOST);
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD ? "***SET***" : "NOT SET");
+console.log("DB_NAME:", process.env.DB_NAME);
+console.log("DB_PORT:", process.env.DB_PORT);
+console.log("==========================================");
+
 // Crear un pool de conexiones en vez de una sola conexión
 const db = mysql.createPool({
   host: process.env.MYSQL_HOST || process.env.DB_HOST || "localhost",
@@ -14,7 +31,7 @@ const db = mysql.createPool({
 });
 
 // Agregar logging para debug
-console.log("Configuración de base de datos:");
+console.log("Configuración final de base de datos:");
 console.log(
   "Host:",
   process.env.MYSQL_HOST || process.env.DB_HOST || "localhost"
