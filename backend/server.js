@@ -44,6 +44,15 @@ app.use((req, res, next) => {
 // Importar la conexión a la base de datos desde db.js
 require("./db");
 
+// Endpoint de salud
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "Servidor funcionando correctamente",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Servir archivos estáticos
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Servir imágenes de uploads
@@ -114,6 +123,34 @@ app._router.stack.forEach((middleware) => {
 });
 
 // Inicio del servidor
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Servidor corriendo en puerto ${port}`);
+});
+
+// Manejo de señales de terminación
+process.on("SIGTERM", () => {
+  console.log("SIGTERM recibido, cerrando servidor...");
+  server.close(() => {
+    console.log("Servidor cerrado");
+    process.exit(0);
+  });
+});
+
+process.on("SIGINT", () => {
+  console.log("SIGINT recibido, cerrando servidor...");
+  server.close(() => {
+    console.log("Servidor cerrado");
+    process.exit(0);
+  });
+});
+
+// Manejo de errores no capturados
+process.on("uncaughtException", (err) => {
+  console.error("Error no capturado:", err);
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("Promesa rechazada no manejada:", reason);
+  process.exit(1);
 });
