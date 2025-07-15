@@ -11,7 +11,7 @@ const port = process.env.PORT || 8001;
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
-  "http://localhost:3000"
+  "http://localhost:3000",
 ];
 console.log("Allowed origins:", allowedOrigins);
 const corsOptions = {
@@ -44,10 +44,10 @@ app.use((req, res, next) => {
 
 // Configuración de la base de datos
 const db = mysql.createConnection({
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASSWORD || "",
-  database: process.env.DB_NAME || "mislibros",
+  host: process.env.MYSQL_HOST || process.env.DB_HOST || "localhost",
+  user: process.env.MYSQL_USER || process.env.DB_USER || "root",
+  password: process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || "",
+  database: process.env.MYSQL_DATABASE || process.env.DB_NAME || "mislibros",
 });
 
 db.connect((err) => {
