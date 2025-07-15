@@ -138,8 +138,14 @@ router.post(
         if (req.files.file) {
           // Obtener el nombre real del archivo guardado
           const fileFileName = path.basename(req.files.file[0].path);
-          // Crear la URL para la base de datos
-          filePath = `${process.env.FRONTEND_URL}/uploads/books/${fileFileName}`;
+          // Crear la URL para la base de datos usando la URL del backend
+          const backendUrl =
+            process.env.RAILWAY_STATIC_URL ||
+            `https://${
+              process.env.RAILWAY_PROJECT_DOMAIN ||
+              "mislibros-production.up.railway.app"
+            }`;
+          filePath = `${backendUrl}/uploads/books/${fileFileName}`;
 
           console.log("Rutas de archivo:", {
             originalName: req.files.file[0].originalname,
@@ -152,8 +158,14 @@ router.post(
         if (req.files.cover) {
           // Obtener el nombre real del archivo guardado
           const coverFileName = path.basename(req.files.cover[0].path);
-          // Crear la URL para la base de datos
-          coverPath = `${process.env.FRONTEND_URL}/images/cover/${coverFileName}`;
+          // Crear la URL para la base de datos usando la URL del backend
+          const backendUrl =
+            process.env.RAILWAY_STATIC_URL ||
+            `https://${
+              process.env.RAILWAY_PROJECT_DOMAIN ||
+              "mislibros-production.up.railway.app"
+            }`;
+          coverPath = `${backendUrl}/images/cover/${coverFileName}`;
 
           console.log("Rutas de carátula:", {
             originalName: req.files.cover[0].originalname,

@@ -62,8 +62,14 @@ router.post("/create_saga", upload.single("cover"), (req, res) => {
 
       // Verificar si se subió una imagen
       if (req.file) {
-        // Crear la URL para la base de datos
-        coverPath = `${process.env.FRONTEND_URL}/images/sagas/${req.file.filename}`;
+        // Crear la URL para la base de datos usando la URL del backend
+        const backendUrl =
+          process.env.RAILWAY_STATIC_URL ||
+          `https://${
+            process.env.RAILWAY_PROJECT_DOMAIN ||
+            "mislibros-production.up.railway.app"
+          }`;
+        coverPath = `${backendUrl}/images/sagas/${req.file.filename}`;
       }
 
       // Validar campos requeridos
