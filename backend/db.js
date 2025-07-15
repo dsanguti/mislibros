@@ -16,6 +16,14 @@ console.log("DB_USER:", process.env.DB_USER);
 console.log("DB_PASSWORD:", process.env.DB_PASSWORD ? "***SET***" : "NOT SET");
 console.log("DB_NAME:", process.env.DB_NAME);
 console.log("DB_PORT:", process.env.DB_PORT);
+
+// Debug: Mostrar TODAS las variables de entorno disponibles
+console.log("=== TODAS LAS VARIABLES DE ENTORNO ===");
+Object.keys(process.env).forEach((key) => {
+  if (key.includes("MYSQL") || key.includes("DB") || key.includes("DATABASE")) {
+    console.log(`${key}:`, process.env[key] ? "***SET***" : "NOT SET");
+  }
+});
 console.log("==========================================");
 
 // Crear un pool de conexiones en vez de una sola conexión
