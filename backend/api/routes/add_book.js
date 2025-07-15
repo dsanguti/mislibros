@@ -139,13 +139,19 @@ router.post(
           // Obtener el nombre real del archivo guardado
           const fileFileName = path.basename(req.files.file[0].path);
           // Crear la URL para la base de datos usando la URL del backend
-          const backendUrl =
-            process.env.RAILWAY_STATIC_URL ||
-            `https://${
-              process.env.RAILWAY_PROJECT_DOMAIN ||
-              "mislibros-production.up.railway.app"
-            }`;
+          const backendUrl = "https://mislibros-production.up.railway.app";
           filePath = `${backendUrl}/uploads/books/${fileFileName}`;
+
+          console.log("=== DEBUG: Variables de entorno para archivos ===");
+          console.log("RAILWAY_STATIC_URL:", process.env.RAILWAY_STATIC_URL);
+          console.log(
+            "RAILWAY_PROJECT_DOMAIN:",
+            process.env.RAILWAY_PROJECT_DOMAIN
+          );
+          console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+          console.log("Backend URL calculada:", backendUrl);
+          console.log("File path final:", filePath);
+          console.log("================================================");
 
           console.log("Rutas de archivo:", {
             originalName: req.files.file[0].originalname,
@@ -159,13 +165,19 @@ router.post(
           // Obtener el nombre real del archivo guardado
           const coverFileName = path.basename(req.files.cover[0].path);
           // Crear la URL para la base de datos usando la URL del backend
-          const backendUrl =
-            process.env.RAILWAY_STATIC_URL ||
-            `https://${
-              process.env.RAILWAY_PROJECT_DOMAIN ||
-              "mislibros-production.up.railway.app"
-            }`;
+          const backendUrl = "https://mislibros-production.up.railway.app";
           coverPath = `${backendUrl}/images/cover/${coverFileName}`;
+
+          console.log("=== DEBUG: Variables de entorno para imágenes ===");
+          console.log("RAILWAY_STATIC_URL:", process.env.RAILWAY_STATIC_URL);
+          console.log(
+            "RAILWAY_PROJECT_DOMAIN:",
+            process.env.RAILWAY_PROJECT_DOMAIN
+          );
+          console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+          console.log("Backend URL calculada:", backendUrl);
+          console.log("Cover path final:", coverPath);
+          console.log("================================================");
 
           console.log("Rutas de carátula:", {
             originalName: req.files.cover[0].originalname,
