@@ -1,11 +1,13 @@
 const mysql = require("mysql2");
+require("dotenv").config();
 
-// Crear la conexión a la base de datos
+// Crear la conexión a la base de datos usando variables de entorno
 const db = mysql.createConnection({
-  host: "localhost", // Cambia si no estás usando localhost
-  user: "root", // Usuario de tu base de datos
-  password: "", // Contraseña de tu base de datos
-  database: "mislibros", // Nombre de tu base de datos
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "root",
+  password: process.env.DB_PASSWORD || "",
+  database: process.env.DB_NAME || "mislibros",
+  port: process.env.DB_PORT || 3306,
 });
 
 // Función para agregar campos de verificación a la tabla users

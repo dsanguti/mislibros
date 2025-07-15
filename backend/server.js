@@ -2,7 +2,6 @@ require("dotenv").config(); // Cargar variables de entorno
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const mysql = require("mysql2");
 const path = require("path");
 
 const app = express();
@@ -42,21 +41,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Configuración de la base de datos
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST || process.env.DB_HOST || "localhost",
-  user: process.env.MYSQL_USER || process.env.DB_USER || "root",
-  password: process.env.MYSQL_PASSWORD || process.env.DB_PASSWORD || "",
-  database: process.env.MYSQL_DATABASE || process.env.DB_NAME || "mislibros",
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error("Error al conectar a la base de datos:", err);
-  } else {
-    console.log("Conexión exitosa a la base de datos.");
-  }
-});
+// Importar la conexión a la base de datos desde db.js
+require("./db");
 
 // Servir archivos estáticos
 app.use("/images", express.static(path.join(__dirname, "images")));
