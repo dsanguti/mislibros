@@ -109,23 +109,32 @@ app.use("/api", verifyEmailRoutes);
 app.use("/api", forgotPasswordRoutes);
 app.use("/api", resetPasswordRoutes);
 
-// Middleware para listar todas las rutas registradas
-app._router.stack.forEach((middleware) => {
-  if (middleware.route) {
-    console.log(`Ruta registrada: ${middleware.route.path}`);
-  } else if (middleware.name === "router") {
-    middleware.handle.stack.forEach((handler) => {
-      if (handler.route) {
-        console.log(`Ruta registrada: ${handler.route.path}`);
-      }
-    });
-  }
-});
-
 // Inicio del servidor
-const server = app.listen(port, () => {
-  console.log(`Servidor corriendo en puerto ${port}`);
-});
+const server = app
+  .listen(port, () => {
+    console.log(`Servidor corriendo en puerto ${port}`);
+
+    // Middleware para listar todas las rutas registradas
+    try {
+      app._router.stack.forEach((middleware) => {
+        if (middleware.route) {
+          console.log(`Ruta registrada: ${middleware.route.path}`);
+        } else if (middleware.name === "router") {
+          middleware.handle.stack.forEach((handler) => {
+            if (handler.route) {
+              console.log(`Ruta registrada: ${handler.route.path}`);
+            }
+          });
+        }
+      });
+    } catch (error) {
+      console.log("No se pudieron listar las rutas:", error.message);
+    }
+  })
+  .on("error", (err) => {
+    console.error("Error al iniciar el servidor:", err);
+    process.exit(1);
+  });
 
 // Manejo de señales de terminación
 process.on("SIGTERM", () => {
