@@ -1,21 +1,10 @@
 const express = require("express");
-const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const db = require("../../db");
 const router = express.Router();
+const { uploadSaga } = require("../../config/cloudinary");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "_" + file.originalname);
-  },
-});
-
-const upload = multer({ storage });
-
-router.put("/update_saga", upload.single("coverSaga"), (req, res) => {
+router.put("/update_saga", uploadSaga.single("coverSaga"), (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   console.log("🔑 Token recibido:", token ? "Sí, presente" : "No presente");
@@ -97,7 +86,19 @@ router.put("/update_saga", upload.single("coverSaga"), (req, res) => {
             .json({ error: "No tienes permiso para modificar esta saga" });
         }
 
-        const currentCover = req.file ? req.file.path : results[0].coverSaga;
+        // Mantener el valor actual si no se proporciona uno nuevo
+        let currentCover = results[0].coverSaga;
+
+        // Si se subió una nueva imagen (Cloudinary)
+        if (req.file) {
+          // La imagen se subió a Cloudinary, obtener la URL
+          currentCover = req.file.path; // Cloudinary devuelve la URL en path
+
+          console.log("Nueva imagen de saga (Cloudinary):", {
+            originalName: req.file.originalname,
+            cloudinaryUrl: currentCover,
+          });
+        }
 
         const updateQuery = `
           UPDATE sagas 

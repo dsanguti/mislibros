@@ -5,13 +5,11 @@ const db = require("../../db");
 const fs = require("fs");
 const path = require("path");
 const router = express.Router();
+const { uploadCover } = require("../../config/cloudinary");
 
-// Asegurar que las carpetas necesarias existan
+// Asegurar que las carpetas necesarias existan (solo para archivos de libros)
 const ensureDirectoriesExist = () => {
-  const directories = [
-    path.join(__dirname, "../../uploads/books"),
-    path.join(__dirname, "../../images/cover"),
-  ];
+  const directories = [path.join(__dirname, "../../uploads/books")];
 
   directories.forEach((dir) => {
     if (!fs.existsSync(dir)) {
@@ -21,40 +19,32 @@ const ensureDirectoriesExist = () => {
   });
 };
 
-// Llamar a la función al iniciar el módulo
 ensureDirectoriesExist();
 
-// Configuración de multer para almacenar archivos
+// Configuración de multer para almacenar archivos de libros (no imágenes)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Determinar la carpeta según el tipo de archivo
+    // Solo para archivos de libros, no para imágenes
     if (file.fieldname === "file") {
       cb(null, path.join(__dirname, "../../uploads/books/"));
-    } else if (file.fieldname === "cover") {
-      cb(null, path.join(__dirname, "../../images/cover/"));
+    } else {
+      cb(new Error("Campo de archivo no válido"), null);
     }
   },
   filename: (req, file, cb) => {
     // Generar nombre único para el archivo
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     const filename = uniqueSuffix + "-" + file.originalname;
-
-    // Guardar el nombre generado en el objeto req para usarlo después
-    if (file.fieldname === "cover") {
-      req.generatedCoverName = filename;
-    }
-
     cb(null, filename);
   },
 });
 
-// Configurar multer para aceptar múltiples archivos
-const upload = multer({
+// Configurar multer para archivos de libros
+const uploadBook = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    // Validar tipos de archivo permitidos
+    // Solo permitir archivos de libros
     if (file.fieldname === "file") {
-      // Permitir EPUB, PDF y MOBI
       const allowedTypes = [
         "application/epub+zip",
         "application/pdf",
@@ -65,13 +55,8 @@ const upload = multer({
       } else {
         cb(new Error("Tipo de archivo no permitido para el libro"), false);
       }
-    } else if (file.fieldname === "cover") {
-      // Permitir imágenes
-      if (file.mimetype.startsWith("image/")) {
-        cb(null, true);
-      } else {
-        cb(new Error("Tipo de archivo no permitido para la portada"), false);
-      }
+    } else {
+      cb(new Error("Campo de archivo no válido"), false);
     }
   },
 });
@@ -79,10 +64,8 @@ const upload = multer({
 // Ruta para añadir un nuevo libro
 router.post(
   "/add_book",
-  upload.fields([
-    { name: "file", maxCount: 1 },
-    { name: "cover", maxCount: 1 },
-  ]),
+  uploadBook.single("file"),
+  uploadCover.single("cover"),
   (req, res) => {
     try {
       // Verificar token
@@ -124,7 +107,7 @@ router.post(
         });
 
         // Validar campos requeridos
-        if (!titulo || !autor || !id_genero || !req.files.file) {
+        if (!titulo || !autor || !id_genero || !req.file) {
           return res.status(400).json({
             error:
               "Faltan campos requeridos: título, autor, género y archivo del libro",
@@ -135,55 +118,43 @@ router.post(
         let filePath = null;
         let coverPath = null;
 
-        if (req.files.file) {
+        if (req.file) {
           // Obtener el nombre real del archivo guardado
-          const fileFileName = path.basename(req.files.file[0].path);
+          const fileFileName = path.basename(req.file.path);
           // Crear la URL para la base de datos usando la URL del backend
-          const backendUrl = "https://mislibros-production.up.railway.app";
+          const backendUrl =
+            process.env.NODE_ENV === "production"
+              ? "https://mislibros-production.up.railway.app"
+              : `http://localhost:${process.env.PORT || 8001}`;
           filePath = `${backendUrl}/uploads/books/${fileFileName}`;
 
           console.log("=== DEBUG: Variables de entorno para archivos ===");
-          console.log("RAILWAY_STATIC_URL:", process.env.RAILWAY_STATIC_URL);
-          console.log(
-            "RAILWAY_PROJECT_DOMAIN:",
-            process.env.RAILWAY_PROJECT_DOMAIN
-          );
-          console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+          console.log("NODE_ENV:", process.env.NODE_ENV);
+          console.log("PORT:", process.env.PORT);
           console.log("Backend URL calculada:", backendUrl);
           console.log("File path final:", filePath);
           console.log("================================================");
 
           console.log("Rutas de archivo:", {
-            originalName: req.files.file[0].originalname,
+            originalName: req.file.originalname,
             savedFileName: fileFileName,
             dbPath: filePath,
-            physicalPath: req.files.file[0].path,
+            physicalPath: req.file.path,
           });
         }
 
-        if (req.files.cover) {
-          // Obtener el nombre real del archivo guardado
-          const coverFileName = path.basename(req.files.cover[0].path);
-          // Crear la URL para la base de datos usando la URL del backend
-          const backendUrl = "https://mislibros-production.up.railway.app";
-          coverPath = `${backendUrl}/images/cover/${coverFileName}`;
+        // Verificar si hay una imagen de carátula (Cloudinary)
+        if (req.files && req.files.cover && req.files.cover[0]) {
+          // La imagen se subió a Cloudinary, obtener la URL
+          coverPath = req.files.cover[0].path; // Cloudinary devuelve la URL en path
 
-          console.log("=== DEBUG: Variables de entorno para imágenes ===");
-          console.log("RAILWAY_STATIC_URL:", process.env.RAILWAY_STATIC_URL);
-          console.log(
-            "RAILWAY_PROJECT_DOMAIN:",
-            process.env.RAILWAY_PROJECT_DOMAIN
-          );
-          console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
-          console.log("Backend URL calculada:", backendUrl);
-          console.log("Cover path final:", coverPath);
+          console.log("=== DEBUG: Cloudinary para imágenes ===");
+          console.log("Cover path de Cloudinary:", coverPath);
           console.log("================================================");
 
           console.log("Rutas de carátula:", {
             originalName: req.files.cover[0].originalname,
-            savedFileName: coverFileName,
-            dbPath: coverPath,
-            physicalPath: req.files.cover[0].path,
+            cloudinaryUrl: coverPath,
           });
         }
 

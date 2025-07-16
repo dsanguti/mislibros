@@ -4,15 +4,15 @@ const jwt = require("jsonwebtoken");
 const db = require("../../db");
 const router = express.Router();
 const path = require("path"); // Added for path.basename
+const { uploadCover } = require("../../config/cloudinary");
 
+// Configuración de multer para almacenar archivos de libros (no imágenes)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    if (file.fieldname === "cover") {
-      cb(null, "uploads/");
-    } else if (file.fieldname === "file") {
+    if (file.fieldname === "file") {
       cb(null, "uploads/books/");
     } else {
-      cb(null, "uploads/");
+      cb(new Error("Campo de archivo no válido"), null);
     }
   },
   filename: (req, file, cb) => {
@@ -20,15 +20,32 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const uploadBook = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    // Solo permitir archivos de libros
+    if (file.fieldname === "file") {
+      const allowedTypes = [
+        "application/epub+zip",
+        "application/pdf",
+        "application/x-mobipocket-ebook",
+      ];
+      if (allowedTypes.includes(file.mimetype)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Tipo de archivo no permitido para el libro"), false);
+      }
+    } else {
+      cb(new Error("Campo de archivo no válido"), false);
+    }
+  },
+});
 
 // Modificar para aceptar múltiples archivos
 router.put(
   "/update_book",
-  upload.fields([
-    { name: "cover", maxCount: 1 },
-    { name: "file", maxCount: 1 },
-  ]),
+  uploadBook.single("file"),
+  uploadCover.single("cover"),
   (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
 
@@ -133,29 +150,54 @@ router.put(
           let currentCover = results[0].cover;
           let currentFile = results[0].file;
 
-          // Si se subió una nueva imagen de portada, generar la URL correcta
-          if (req.files?.cover) {
-            const coverFileName = path.basename(req.files.cover[0].path);
-            const backendUrl = "https://mislibros-production.up.railway.app";
-            currentCover = `${backendUrl}/images/cover/${coverFileName}`;
+          // Si se subió una nueva imagen de portada (Cloudinary)
+          if (req.files && req.files.cover && req.files.cover[0]) {
+            // La imagen se subió a Cloudinary, obtener la URL
+            currentCover = req.files.cover[0].path; // Cloudinary devuelve la URL en path
 
-            console.log("Nueva imagen de portada:", {
-              originalPath: req.files.cover[0].path,
-              fileName: coverFileName,
-              newUrl: currentCover,
+            console.log("Nueva imagen de portada (Cloudinary):", {
+              originalName: req.files.cover[0].originalname,
+              cloudinaryUrl: currentCover,
             });
           }
 
+          // Logging detallado para diagnóstico
+          console.log("=== DIAGNÓSTICO CLOUDINARY ===");
+          console.log("req.files:", req.files);
+          console.log("req.file:", req.file);
+          console.log("Variables de entorno Cloudinary:");
+          console.log(
+            "CLOUDINARY_CLOUD_NAME:",
+            process.env.CLOUDINARY_CLOUD_NAME ? "SET" : "NOT SET"
+          );
+          console.log(
+            "CLOUDINARY_API_KEY:",
+            process.env.CLOUDINARY_API_KEY ? "SET" : "NOT SET"
+          );
+          console.log(
+            "CLOUDINARY_API_SECRET:",
+            process.env.CLOUDINARY_API_SECRET ? "SET" : "NOT SET"
+          );
+          console.log("NODE_ENV:", process.env.NODE_ENV);
+          console.log("currentCover final:", currentCover);
+          console.log("================================================");
+
           // Si se subió un nuevo archivo, generar la URL correcta
-          if (req.files?.file) {
-            const fileFileName = path.basename(req.files.file[0].path);
-            const backendUrl = "https://mislibros-production.up.railway.app";
+          if (req.file) {
+            const fileFileName = path.basename(req.file.path);
+            // Usar URL dinámica basada en el entorno
+            const backendUrl =
+              process.env.NODE_ENV === "production"
+                ? "https://mislibros-production.up.railway.app"
+                : `http://localhost:${process.env.PORT || 8001}`;
             currentFile = `${backendUrl}/uploads/books/${fileFileName}`;
 
             console.log("Nuevo archivo:", {
-              originalPath: req.files.file[0].path,
+              originalPath: req.file.path,
               fileName: fileFileName,
               newUrl: currentFile,
+              environment: process.env.NODE_ENV,
+              backendUrl: backendUrl,
             });
           }
 

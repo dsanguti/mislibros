@@ -1,47 +1,11 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 const db = require("../../db");
 const router = express.Router();
-
-// Configuración de multer para almacenar imágenes
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Crear directorio para las carátulas de sagas si no existe
-    const dir = path.join(__dirname, "../../images/sagas");
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    // Generar nombre único para el archivo
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const filename = uniqueSuffix + path.extname(file.originalname);
-    cb(null, filename);
-  },
-});
-
-// Configurar multer para aceptar solo imágenes
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    // Verificar que sea una imagen
-    if (file.mimetype.startsWith("image/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Solo se permiten archivos de imagen"), false);
-    }
-  },
-  limits: {
-    fileSize: 5 * 1024 * 1024, // Limitar a 5MB
-  },
-});
+const { uploadSaga } = require("../../config/cloudinary");
 
 // Ruta para crear una nueva saga
-router.post("/create_saga", upload.single("cover"), (req, res) => {
+router.post("/create_saga", uploadSaga.single("cover"), (req, res) => {
   try {
     // Verificar token
     const token = req.headers.authorization?.split(" ")[1];
@@ -62,14 +26,12 @@ router.post("/create_saga", upload.single("cover"), (req, res) => {
 
       // Verificar si se subió una imagen
       if (req.file) {
-        // Crear la URL para la base de datos usando la URL del backend
-        const backendUrl =
-          process.env.RAILWAY_STATIC_URL ||
-          `https://${
-            process.env.RAILWAY_PROJECT_DOMAIN ||
-            "mislibros-production.up.railway.app"
-          }`;
-        coverPath = `${backendUrl}/images/sagas/${req.file.filename}`;
+        // La imagen se subió a Cloudinary, obtener la URL
+        coverPath = req.file.path; // Cloudinary devuelve la URL en path
+
+        console.log("=== DEBUG: Cloudinary para sagas ===");
+        console.log("Cover path de Cloudinary:", coverPath);
+        console.log("================================================");
       }
 
       // Validar campos requeridos
