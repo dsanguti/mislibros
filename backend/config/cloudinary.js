@@ -2,12 +2,33 @@ const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const multer = require("multer");
 
-// Configurar Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Validar que todas las credenciales estén presentes
+const requiredEnvVars = [
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+];
+
+const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error("❌ ERROR: Faltan variables de entorno de Cloudinary:");
+  missingVars.forEach((varName) => console.error(`   - ${varName}`));
+  console.error("Por favor, configura estas variables en Railway");
+}
+
+// Configurar Cloudinary solo si todas las credenciales están presentes
+if (missingVars.length === 0) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  console.log("✅ Cloudinary configurado correctamente");
+} else {
+  console.error("❌ Cloudinary no configurado - faltan credenciales");
+}
 
 // Logging para verificar configuración
 console.log("=== CONFIGURACIÓN CLOUDINARY ===");

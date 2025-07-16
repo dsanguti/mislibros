@@ -203,6 +203,19 @@ router.put(
             if (process.env.NODE_ENV === "production") {
               // En producción: subir a Cloudinary
               try {
+                // Verificar que Cloudinary esté configurado
+                if (
+                  !process.env.CLOUDINARY_CLOUD_NAME ||
+                  !process.env.CLOUDINARY_API_KEY ||
+                  !process.env.CLOUDINARY_API_SECRET
+                ) {
+                  console.error("❌ Error: Faltan credenciales de Cloudinary");
+                  return res.status(500).json({
+                    error:
+                      "Error de configuración: faltan credenciales de Cloudinary",
+                  });
+                }
+
                 console.log("Subiendo imagen a Cloudinary...");
                 const result = await cloudinary.uploader.upload(
                   req.files.cover[0].path,
@@ -225,17 +238,23 @@ router.put(
                   "Error al subir imagen a Cloudinary:",
                   uploadError
                 );
-                return res
-                  .status(500)
-                  .json({ error: "Error al subir la imagen" });
+
+                // Proporcionar mensaje de error más específico
+                let errorMessage = "Error al subir la imagen";
+                if (uploadError.http_code === 401) {
+                  errorMessage =
+                    "Error de autenticación con Cloudinary - verifica las credenciales";
+                } else if (uploadError.http_code === 400) {
+                  errorMessage = "Error en el formato de la imagen";
+                }
+
+                return res.status(500).json({ error: errorMessage });
               }
             } else {
               // En desarrollo: usar URL local
               console.log("Usando almacenamiento local para desarrollo");
               const coverFileName = path.basename(req.files.cover[0].path);
-              const backendUrl = `http://localhost:${
-                process.env.PORT || 8001
-              }`;
+              const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
               currentCover = `${backendUrl}/images/cover/${coverFileName}`;
 
               console.log("Imagen guardada localmente:", currentCover);
