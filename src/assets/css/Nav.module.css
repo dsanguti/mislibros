@@ -421,8 +421,8 @@ nav a {
   /* Estilos del submenu User en vista móvil */
   .submenuUser {
     position: absolute;
-    top: 100%;
-    left: 0;
+    top: 0;
+    left: 100%;
     background-color: var(--color-primary);
     border-radius: 4px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -433,7 +433,7 @@ nav a {
     width: 200px;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
+    transform: translateX(-10px);
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
@@ -441,7 +441,7 @@ nav a {
   .userMenu:hover .submenuUser {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 
   /* Estilos para los elementos del submenú en móvil */
