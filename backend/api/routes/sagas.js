@@ -21,7 +21,7 @@ router.get("/sagas-compare", (req, res) => {
     const userId = decoded.userId;
     console.log("User ID:", userId);
 
-    // Obtener todas las sagas con información detallada
+    // Query simplificado para evitar errores
     const query = `
       SELECT 
         s.id, 
@@ -29,19 +29,19 @@ router.get("/sagas-compare", (req, res) => {
         s.coverSaga, 
         s.user_id,
         s.created_at,
-        s.updated_at,
-        COUNT(b.id) as libros_count
+        s.updated_at
       FROM sagas s
-      LEFT JOIN books b ON s.id = b.saga_id
       WHERE s.user_id = ?
-      GROUP BY s.id
       ORDER BY s.created_at ASC
     `;
 
     db.query(query, [userId], (err, results) => {
       if (err) {
         console.error("Error al obtener las sagas:", err);
-        return res.status(500).json({ error: "Error al obtener las sagas" });
+        return res.status(500).json({
+          error: "Error al obtener las sagas",
+          details: err.message,
+        });
       }
 
       console.log("Sagas encontradas:", results.length);
@@ -49,12 +49,14 @@ router.get("/sagas-compare", (req, res) => {
 
       // Separar sagas antiguas y nuevas (por ejemplo, antes y después de una fecha)
       const sagasAntiguas = results.filter((saga) => {
+        if (!saga.created_at) return false;
         const createdAt = new Date(saga.created_at);
         const fechaLimite = new Date("2025-07-16T17:00:00Z"); // Ajusta esta fecha
         return createdAt < fechaLimite;
       });
 
       const sagasNuevas = results.filter((saga) => {
+        if (!saga.created_at) return true; // Si no tiene fecha, considerarla nueva
         const createdAt = new Date(saga.created_at);
         const fechaLimite = new Date("2025-07-16T17:00:00Z"); // Ajusta esta fecha
         return createdAt >= fechaLimite;
