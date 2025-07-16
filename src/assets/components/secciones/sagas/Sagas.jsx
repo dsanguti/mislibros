@@ -211,6 +211,10 @@ const Sagas = () => {
                 }
 
                 // Probar petición HTTP directa
+                console.log("🔍 Iniciando test HTTP...");
+                console.log("URL:", API_ENDPOINTS.SAGAS_MOBILE_TEST);
+                console.log("Token:", token ? "PRESENTE" : "AUSENTE");
+
                 fetch(API_ENDPOINTS.SAGAS_MOBILE_TEST, {
                   method: "GET",
                   headers: {
@@ -220,7 +224,12 @@ const Sagas = () => {
                   },
                   credentials: "include",
                 })
-                  .then((response) => response.json())
+                  .then((response) => {
+                    console.log("🔍 Response recibida:", response);
+                    console.log("🔍 Status:", response.status);
+                    console.log("🔍 OK:", response.ok);
+                    return response.json();
+                  })
                   .then((data) => {
                     console.log("🔍 Respuesta del test móvil:", data);
                     alert(
@@ -231,7 +240,9 @@ const Sagas = () => {
                   })
                   .catch((error) => {
                     console.error("❌ Error en test HTTP:", error);
-                    alert(`Error HTTP: ${error.message}`);
+                    console.error("❌ Error name:", error.name);
+                    console.error("❌ Error message:", error.message);
+                    alert(`Error HTTP: ${error.name} - ${error.message}`);
                   });
               }}
               style={{
