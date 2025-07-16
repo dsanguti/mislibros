@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_ENDPOINTS } from "../../../../config/api";
 import style from "../../../css/Sagas.module.css";
 import useEmptyBooksModal from "../../../hooks/useEmptyBooksModal";
 import CardBook from "../../CardBook";
@@ -6,7 +7,6 @@ import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal"; // Importamos el modal
 import HeaderSaga from "./HeaderSaga";
 import MainSaga from "./MainSaga";
-import { API_ENDPOINTS } from "../../../../config/api";
 
 const Sagas = () => {
   const [sagas, setSagas] = useState([]);
@@ -66,6 +66,29 @@ const Sagas = () => {
         return;
       }
 
+      // Primero probar el endpoint de debug
+      console.log("🔍 Probando endpoint de debug...");
+      const debugResponse = await fetch(API_ENDPOINTS.SAGAS_DEBUG, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
+
+      const debugData = await debugResponse.json();
+      console.log("🔍 Respuesta del debug:", debugData);
+
+      if (!debugResponse.ok) {
+        console.error("❌ Error en debug:", debugData);
+        setError(`Error de debug: ${debugData.error}`);
+        setIsLoading(false);
+        return;
+      }
+
+      // Si el debug funciona, usar el endpoint normal
       const response = await fetch(API_ENDPOINTS.SAGAS, {
         method: "GET",
         headers: {

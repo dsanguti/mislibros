@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
 
   // Sagas
   SAGAS: `${API_BASE_URL}/api/sagas`,
+  SAGAS_DEBUG: `${API_BASE_URL}/api/sagas-debug`,
   CREATE_SAGA: `${API_BASE_URL}/api/create_saga`,
   UPDATE_SAGA: `${API_BASE_URL}/api/update_saga`,
   DELETE_SAGA: `${API_BASE_URL}/api/delete_saga`,
