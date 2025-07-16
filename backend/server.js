@@ -11,19 +11,34 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://mislibros.vercel.app",
+  "https://mislibros-git-main-dsanguti.vercel.app",
+  "https://mislibros-dsanguti.vercel.app",
 ];
 console.log("Allowed origins:", allowedOrigins);
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log("CORS - Origin recibido:", origin);
     // Permitir peticiones sin origin (como Postman o curl)
     if (!origin || allowedOrigins.includes(origin)) {
+      console.log("CORS - Origin permitido:", origin);
       callback(null, true);
     } else {
+      console.log("CORS - Origin bloqueado:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Accept",
+    "Origin",
+    "X-Requested-With",
+  ],
   credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
