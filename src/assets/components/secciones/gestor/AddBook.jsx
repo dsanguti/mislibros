@@ -454,7 +454,7 @@ const AddBook = () => {
 
   // Manejar el éxito al añadir un libro
   const handleSuccess = () => {
-    toast.success("Libro añadido correctamente");
+    toast.success("Libro añadido correctamente", { autoClose: 1000 });
     handleCloseForm();
   };
 
