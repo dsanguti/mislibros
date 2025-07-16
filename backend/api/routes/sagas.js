@@ -3,11 +3,98 @@ const jwt = require("jsonwebtoken");
 const db = require("../../db");
 const router = express.Router();
 
+// Endpoint específico para probar desde móvil
+router.get("/sagas-mobile-test", (req, res) => {
+  console.log("=== MOBILE TEST SAGAS ===");
+  console.log("User-Agent:", req.headers["user-agent"]);
+  console.log("Origin:", req.headers["origin"]);
+  console.log("Referer:", req.headers["referer"]);
+  console.log(
+    "Authorization header:",
+    req.headers.authorization ? "PRESENTE" : "AUSENTE"
+  );
+
+  // Permitir CORS para móvil
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.json({
+      success: false,
+      error: "No token provided",
+      debug: {
+        userAgent: req.headers["user-agent"],
+        origin: req.headers["origin"],
+        referer: req.headers["referer"],
+        authorization: "AUSENTE",
+        timestamp: new Date().toISOString(),
+      },
+    });
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.json({
+        success: false,
+        error: "Token inválido",
+        debug: {
+          tokenError: err.message,
+          userAgent: req.headers["user-agent"],
+          timestamp: new Date().toISOString(),
+        },
+      });
+    }
+
+    const userId = decoded.userId;
+
+    // Obtener sagas
+    const query = `SELECT s.id, s.nombre, s.coverSaga, s.user_id FROM sagas s WHERE s.user_id = ?`;
+
+    db.query(query, [userId], (err, results) => {
+      if (err) {
+        return res.json({
+          success: false,
+          error: "Error de base de datos",
+          debug: {
+            databaseError: err.message,
+            userId: userId,
+            userAgent: req.headers["user-agent"],
+            timestamp: new Date().toISOString(),
+          },
+        });
+      }
+
+      return res.json({
+        success: true,
+        sagas: results,
+        debug: {
+          userId: userId,
+          sagasCount: results.length,
+          userAgent: req.headers["user-agent"],
+          origin: req.headers["origin"],
+          timestamp: new Date().toISOString(),
+        },
+      });
+    });
+  });
+});
+
 // Endpoint de debug para verificar autenticación
 router.get("/sagas-debug", (req, res) => {
   console.log("=== DEBUG SAGAS ===");
-  console.log("Headers:", req.headers);
-  console.log("Authorization header:", req.headers.authorization);
+  console.log("User-Agent:", req.headers["user-agent"]);
+  console.log("Origin:", req.headers["origin"]);
+  console.log("Referer:", req.headers["referer"]);
+  console.log(
+    "Authorization header:",
+    req.headers.authorization ? "PRESENTE" : "AUSENTE"
+  );
 
   const token = req.headers.authorization?.split(" ")[1];
   console.log("Token extraído:", token ? "PRESENTE" : "AUSENTE");
@@ -17,8 +104,10 @@ router.get("/sagas-debug", (req, res) => {
     return res.status(401).json({
       error: "No token provided",
       debug: {
-        headers: req.headers,
-        authorization: req.headers.authorization,
+        userAgent: req.headers["user-agent"],
+        origin: req.headers["origin"],
+        referer: req.headers["referer"],
+        authorization: req.headers.authorization ? "PRESENTE" : "AUSENTE",
       },
     });
   }
@@ -31,6 +120,7 @@ router.get("/sagas-debug", (req, res) => {
         debug: {
           tokenError: err.message,
           token: token.substring(0, 20) + "...",
+          userAgent: req.headers["user-agent"],
         },
       });
     }
@@ -54,6 +144,7 @@ router.get("/sagas-debug", (req, res) => {
           debug: {
             databaseError: err.message,
             userId: userId,
+            userAgent: req.headers["user-agent"],
           },
         });
       }
@@ -68,6 +159,8 @@ router.get("/sagas-debug", (req, res) => {
           userId: userId,
           sagasCount: results.length,
           tokenDecoded: decoded,
+          userAgent: req.headers["user-agent"],
+          origin: req.headers["origin"],
         },
       });
     });
