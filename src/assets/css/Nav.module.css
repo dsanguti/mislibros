@@ -420,11 +420,9 @@ nav a {
 
   /* Estilos del submenu User en vista móvil */
   .submenuUser {
-    visibility: hidden; /* Oculto por defecto */
     position: absolute;
-    top: 0;
-    left: 100%;
-    right: auto;
+    top: 100%;
+    left: 0;
     background-color: var(--color-primary);
     border-radius: 4px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -432,55 +430,38 @@ nav a {
     list-style: none;
     padding: 0;
     margin: 0;
-    width: 25%;
-    height: auto;
-    min-height: 100%;
-    max-width: 150px;
-    opacity: 1;
-    transition: opacity 0.6s ease, visibility 0s 0.6s; /* Transición suave para el submenú */
-    overflow: visible; /* Permitir que los elementos sean visibles */
-  }
-  .userMenu:hover .submenuUser {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.6s ease;
-  }
-  .userMenu:hover .submenuUser li:first-child,
-  .userMenu:hover .submenuUser li:nth-child(2) {
-    border-bottom: 1px solid white !important;
-  }
-
-  .submenuUser:not(:hover) {
-    transition: opacity 0.6s ease, visibility 0s 0.6s; /* La visibilidad cambia tras la transición */
+    width: 200px;
     opacity: 0;
     visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
-  /* Eliminar bordes o efecto hover no deseados en submenuUser */
-  .submenuUser:hover,
-  .submenuUser li:hover {
-    border: none !important;
-
-    outline: none !important;
+  .userMenu:hover .submenuUser {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
   }
 
-  /* Asegurarse de que no haya un borde inferior en li del submenuUser */
+  /* Estilos para los elementos del submenú en móvil */
   .submenuUser li {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     background-color: var(--color-primary);
-    margin: 0; /* Asegura que no haya margen que afecte el espaciado */
-    padding: 8px 0; /* Ajusta el padding para el espaciado interno */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil entre elementos */
-    min-height: 50px; /* Altura mínima para cada elemento */
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    min-height: 50px;
   }
 
   .submenuUser li:last-child {
-    border-bottom: none; /* Sin borde en el último elemento */
+    border-bottom: none;
   }
 
+  /* Contenedores de los elementos del submenú */
   .containerSalir,
   .containerGestor,
   .containerKey {
@@ -488,34 +469,28 @@ nav a {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 8px 12px;
+    padding: 12px 16px;
     background-color: var(--color-primary);
     text-align: center;
     min-height: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
   }
 
-  /* Estilo para el icono logout y gestor que desaparezcan*/
-  .logout {
-    display: none;
+  .containerSalir:hover,
+  .containerGestor:hover,
+  .containerKey:hover {
+    background-color: var(--color-secundary);
   }
-  .userIcon {
-    display: none;
-  }
+
+  /* Ocultar iconos en móvil */
+  .logout,
+  .userIcon,
   .keyIcon {
     display: none;
   }
 
-  /* Mostrar el submenuUser en hover */
-  .userMenu:hover .submenuUser {
-    opacity: 1;
-    visibility: visible;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  /* Asegúrate de que el ícono de usuario no se superponga */
+  /* Asegurar que el contenedor de usuario tenga posición relativa */
   .userMenu {
     position: relative;
   }
