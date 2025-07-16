@@ -231,8 +231,9 @@ router.post(
         });
 
         // Convertir valores booleanos
-        const isStarWars = starwars === "true" || starwars === true;
-        const isComics = comics === "true" || comics === true;
+        const isStarWars =
+          starwars === "1" || starwars === "true" || starwars === true;
+        const isComics = comics === "1" || comics === "true" || comics === true;
 
         console.log("=== DEBUG: Conversión de valores booleanos ===");
         console.log("starwars original:", starwars, "tipo:", typeof starwars);
