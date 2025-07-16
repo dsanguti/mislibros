@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_ENDPOINTS } from "../../../../config/api";
 import style from "../../../css/Sagas.module.css";
 import useEmptyBooksModal from "../../../hooks/useEmptyBooksModal";
 import CardBook from "../../CardBook";
@@ -6,7 +7,6 @@ import EmptyBooksMessage from "../../EmptyBooksMessage";
 import Modal from "../../Modal";
 import HeaderStarwars from "./HeaderStarwars";
 import MainStarwars from "./MainStarwars";
-import { API_ENDPOINTS } from "../../../../config/api";
 
 const StarWars = () => {
   const [starwars, setStarwars] = useState([]);
@@ -65,57 +65,86 @@ const StarWars = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const fetchStarwars = async () => {
-      setIsLoading(true); // Iniciar carga
-      try {
-        const authToken = localStorage.getItem("token");
-        if (!authToken) {
-          setError("No se encontró el token de autenticación");
-          setIsLoading(false);
-          return;
-        }
-
-        const response = await fetch(
-          API_ENDPOINTS.LIBROS_STARWARS,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            credentials: "include",
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          setError("Error al obtener libros de Star Wars");
-          console.error("Error en la solicitud:", errorData);
-          setIsLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setStarwars(data);
-        } else {
-          setError("Los datos no son un array válido");
-          console.error("Datos inválidos:", data);
-        }
-      } catch (error) {
-        setError("Error al obtener libros de Star Wars");
-        console.error("Error:", error);
-      } finally {
-        setIsLoading(false); // Finalizar carga
+  // Función para obtener libros de Star Wars
+  const fetchStarwars = async () => {
+    setIsLoading(true); // Iniciar carga
+    try {
+      const authToken = localStorage.getItem("token");
+      if (!authToken) {
+        setError("No se encontró el token de autenticación");
+        setIsLoading(false);
+        return;
       }
+
+      const response = await fetch(API_ENDPOINTS.LIBROS_STARWARS, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError("Error al obtener libros de Star Wars");
+        console.error("Error en la solicitud:", errorData);
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setStarwars(data);
+      } else {
+        setError("Los datos no son un array válido");
+        console.error("Datos inválidos:", data);
+      }
+    } catch (error) {
+      setError("Error al obtener libros de Star Wars");
+      console.error("Error:", error);
+    } finally {
+      setIsLoading(false); // Finalizar carga
+    }
+  };
+
+  useEffect(() => {
+    fetchStarwars();
+  }, []);
+
+  useEffect(() => {
+    fetchAllBooks();
+
+    // Escuchar eventos de libros para actualizar la lista
+    const handleBookUpdated = () => {
+      console.log("Evento bookUpdated recibido, actualizando lista de libros");
+      fetchAllBooks();
+      fetchStarwars(); // También actualizar libros de Star Wars
     };
 
-    if (starwars.length === 0) {
-      fetchStarwars();
-    }
-  }, [starwars.length]);
+    const handleBookAdded = () => {
+      console.log("Evento bookAdded recibido, actualizando lista de libros");
+      fetchAllBooks();
+      fetchStarwars(); // También actualizar libros de Star Wars
+    };
+
+    const handleBookDeleted = () => {
+      console.log("Evento bookDeleted recibido, actualizando lista de libros");
+      fetchAllBooks();
+      fetchStarwars(); // También actualizar libros de Star Wars
+    };
+
+    window.addEventListener("bookAdded", handleBookAdded);
+    window.addEventListener("bookDeleted", handleBookDeleted);
+    window.addEventListener("bookUpdated", handleBookUpdated);
+
+    return () => {
+      window.removeEventListener("bookAdded", handleBookAdded);
+      window.removeEventListener("bookDeleted", handleBookDeleted);
+      window.removeEventListener("bookUpdated", handleBookUpdated);
+    };
+  }, []);
 
   useEffect(() => {
     fetchAllBooks();
