@@ -120,8 +120,6 @@ router.post(
           saga_id,
           starwars,
           comics,
-          starwarsType: typeof starwars,
-          comicsType: typeof comics,
           userId,
           files: req.files ? Object.keys(req.files) : "No hay archivos",
         });
@@ -235,18 +233,6 @@ router.post(
           starwars === "1" || starwars === "true" || starwars === true;
         const isComics = comics === "1" || comics === "true" || comics === true;
 
-        console.log("=== DEBUG: Conversión de valores booleanos ===");
-        console.log("starwars original:", starwars, "tipo:", typeof starwars);
-        console.log("comics original:", comics, "tipo:", typeof comics);
-        console.log(
-          "isStarWars convertido:",
-          isStarWars,
-          "tipo:",
-          typeof isStarWars
-        );
-        console.log("isComics convertido:", isComics, "tipo:", typeof isComics);
-        console.log("================================================");
-
         // Convertir saga_id a null si está vacío
         const finalSagaId =
           saga_id && saga_id.trim() !== "" ? Number(saga_id) : null;
@@ -279,12 +265,6 @@ router.post(
           finalSagaId,
           Number(id_genero),
         ];
-
-        console.log("=== DEBUG: Parámetros de la consulta SQL ===");
-        console.log("Parámetros:", params);
-        console.log("starwars en params:", params[5]);
-        console.log("comics en params:", params[6]);
-        console.log("================================================");
 
         db.query(query, params, (err, result) => {
           if (err) {
