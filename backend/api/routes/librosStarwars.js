@@ -30,6 +30,7 @@ router.get("/librosStarwars", (req, res) => {
         b.autor, 
         b.sinopsis, 
         b.cover,
+        b.file,
         b.starwars,
         s.nombre AS nombreSaga,
         g.nombre AS genero

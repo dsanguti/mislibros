@@ -25,6 +25,7 @@ router.get("/librosComics", (req, res) => {
         b.autor, 
         b.sinopsis, 
         b.cover,
+        b.file,
         s.nombre AS nombreSaga,
         g.nombre AS genero
       FROM books b

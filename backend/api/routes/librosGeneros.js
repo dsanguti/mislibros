@@ -31,6 +31,7 @@ router.get("/libros-genero", (req, res) => {
          books.autor, 
          books.sinopsis, 
          books.cover, 
+         books.file,
          genero.nombre AS genero 
        FROM books 
        INNER JOIN genero ON books.id_genero = genero.id 
