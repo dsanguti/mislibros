@@ -215,35 +215,72 @@ const Sagas = () => {
                 console.log("URL:", API_ENDPOINTS.SAGAS_MOBILE_TEST);
                 console.log("Token:", token ? "PRESENTE" : "AUSENTE");
 
-                fetch(API_ENDPOINTS.SAGAS_MOBILE_TEST, {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                  },
-                  credentials: "include",
-                })
-                  .then((response) => {
-                    console.log("🔍 Response recibida:", response);
-                    console.log("🔍 Status:", response.status);
-                    console.log("🔍 OK:", response.ok);
-                    return response.json();
+                // Versión más robusta para móvil
+                try {
+                  const controller = new AbortController();
+                  const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
+
+                  fetch(API_ENDPOINTS.SAGAS_MOBILE_TEST, {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                      Accept: "application/json",
+                    },
+                    credentials: "include",
+                    signal: controller.signal,
+                    mode: "cors",
+                    cache: "no-cache",
                   })
-                  .then((data) => {
-                    console.log("🔍 Respuesta del test móvil:", data);
-                    alert(
-                      `Test HTTP:\nSuccess: ${data.success}\nError: ${
-                        data.error || "Ninguno"
-                      }\nSagas: ${data.sagas ? data.sagas.length : 0}`
-                    );
-                  })
-                  .catch((error) => {
-                    console.error("❌ Error en test HTTP:", error);
-                    console.error("❌ Error name:", error.name);
-                    console.error("❌ Error message:", error.message);
-                    alert(`Error HTTP: ${error.name} - ${error.message}`);
-                  });
+                    .then((response) => {
+                      clearTimeout(timeoutId);
+                      console.log("🔍 Response recibida:", response);
+                      console.log("🔍 Status:", response.status);
+                      console.log("🔍 OK:", response.ok);
+
+                      if (!response.ok) {
+                        throw new Error(
+                          `HTTP ${response.status}: ${response.statusText}`
+                        );
+                      }
+
+                      return response.text(); // Usar text() en lugar de json() para debug
+                    })
+                    .then((text) => {
+                      console.log("🔍 Response text:", text);
+                      try {
+                        const data = JSON.parse(text);
+                        console.log("🔍 Respuesta del test móvil:", data);
+                        alert(
+                          `Test HTTP:\nSuccess: ${data.success}\nError: ${
+                            data.error || "Ninguno"
+                          }\nSagas: ${data.sagas ? data.sagas.length : 0}`
+                        );
+                      } catch (parseError) {
+                        console.error("❌ Error parsing JSON:", parseError);
+                        alert(
+                          `Error parsing JSON: ${
+                            parseError.message
+                          }\nResponse: ${text.substring(0, 100)}...`
+                        );
+                      }
+                    })
+                    .catch((error) => {
+                      clearTimeout(timeoutId);
+                      console.error("❌ Error en test HTTP:", error);
+                      console.error("❌ Error name:", error.name);
+                      console.error("❌ Error message:", error.message);
+
+                      if (error.name === "AbortError") {
+                        alert("Error: Timeout - La petición tardó demasiado");
+                      } else {
+                        alert(`Error HTTP: ${error.name} - ${error.message}`);
+                      }
+                    });
+                } catch (error) {
+                  console.error("❌ Error al iniciar fetch:", error);
+                  alert(`Error al iniciar fetch: ${error.message}`);
+                }
               }}
               style={{
                 background: "white",
