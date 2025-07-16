@@ -462,6 +462,8 @@ nav a {
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     height: 50px; /* Altura fija igual al userMenu */
     flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
   }
 
   .submenuUser li:first-child {
@@ -510,16 +512,22 @@ nav a {
 
   /* Estilos específicos para h4 en móvil */
   .submenuUser li h4 {
-    padding: 0;
-    margin: 0;
-    font-size: 1rem;
-    color: white;
-    text-align: center;
-    width: 100%;
-    line-height: 50px; /* Alinear con la altura del contenedor */
-    display: block;
-    position: relative;
-    z-index: 1;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 1rem !important;
+    color: white !important;
+    text-align: center !important;
+    width: 100% !important;
+    line-height: 50px !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 10 !important;
+    transform: none !important;
+    box-sizing: border-box !important;
   }
 
   /* Asegurar que el contenedor de usuario tenga posición relativa */
