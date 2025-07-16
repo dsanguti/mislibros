@@ -421,7 +421,7 @@ nav a {
   /* Estilos del submenu User en vista móvil */
   .submenuUser {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 100%;
     background-color: var(--color-primary);
     border-radius: 0;
@@ -438,6 +438,9 @@ nav a {
     transform: translateX(-10px);
     transition: all 0.3s ease;
     border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
   }
 
   .userMenu:hover .submenuUser {
@@ -455,12 +458,13 @@ nav a {
     background-color: var(--color-primary);
     margin: 0;
     padding: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     height: 50px; /* Altura fija igual al userMenu */
+    flex-shrink: 0;
   }
 
-  .submenuUser li:last-child {
-    border-bottom: none;
+  .submenuUser li:first-child {
+    border-top: none;
   }
 
   /* Contenedores de los elementos del submenú */
@@ -477,6 +481,8 @@ nav a {
     height: 50px; /* Altura fija igual al userMenu */
     cursor: pointer;
     transition: background-color 0.2s ease;
+    font-size: 1rem;
+    font-weight: 500;
   }
 
   .containerSalir:hover,
