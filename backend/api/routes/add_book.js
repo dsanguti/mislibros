@@ -202,7 +202,7 @@ router.post(
             // En desarrollo: usar URL local
             console.log("Usando almacenamiento local para desarrollo");
             const coverFileName = path.basename(req.files.cover[0].path);
-            const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
+            const backendUrl = `http://localhost:${process.env.PORT || 10000}`;
             coverPath = `${backendUrl}/images/cover/${coverFileName}`;
 
             console.log("Imagen guardada localmente:", coverPath);

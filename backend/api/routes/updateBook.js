@@ -233,7 +233,9 @@ router.put(
               // En desarrollo: usar URL local
               console.log("Usando almacenamiento local para desarrollo");
               const coverFileName = path.basename(req.files.cover[0].path);
-              const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
+              const backendUrl = `http://localhost:${
+                process.env.PORT || 8001
+              }`;
               currentCover = `${backendUrl}/images/cover/${coverFileName}`;
 
               console.log("Imagen guardada localmente:", currentCover);
@@ -247,7 +249,7 @@ router.put(
             const backendUrl =
               process.env.NODE_ENV === "production"
                 ? "https://mislibros-production.up.railway.app"
-                : `http://localhost:${process.env.PORT || 8001}`;
+                : `http://localhost:${process.env.PORT || 10000}`;
             currentFile = `${backendUrl}/uploads/books/${fileFileName}`;
 
             console.log("Nuevo archivo:", {
