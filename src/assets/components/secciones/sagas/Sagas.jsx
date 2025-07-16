@@ -66,29 +66,14 @@ const Sagas = () => {
         return;
       }
 
-      // Primero probar el endpoint de debug
-      console.log("🔍 Probando endpoint de debug...");
-      const debugResponse = await fetch(API_ENDPOINTS.SAGAS_DEBUG, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        credentials: "include",
-      });
+      console.log("🔍 Iniciando fetchSagas...");
+      console.log("URL:", API_ENDPOINTS.SAGAS);
+      console.log("Token:", token ? "PRESENTE" : "AUSENTE");
 
-      const debugData = await debugResponse.json();
-      console.log("🔍 Respuesta del debug:", debugData);
+      // Versión robusta para móvil
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
 
-      if (!debugResponse.ok) {
-        console.error("❌ Error en debug:", debugData);
-        setError(`Error de debug: ${debugData.error}`);
-        setIsLoading(false);
-        return;
-      }
-
-      // Si el debug funciona, usar el endpoint normal
       const response = await fetch(API_ENDPOINTS.SAGAS, {
         method: "GET",
         headers: {
@@ -97,26 +82,52 @@ const Sagas = () => {
           Accept: "application/json",
         },
         credentials: "include",
+        signal: controller.signal,
+        mode: "cors",
+        cache: "no-cache",
       });
 
+      clearTimeout(timeoutId);
+      console.log("🔍 Response recibida:", response);
+      console.log("🔍 Status:", response.status);
+      console.log("🔍 OK:", response.ok);
+
       if (!response.ok) {
-        const errorData = await response.json();
-        setError("Error al obtener sagas");
+        const errorData = await response.text();
         console.error("Error en la solicitud:", errorData);
+        setError(`Error HTTP ${response.status}: ${response.statusText}`);
         setIsLoading(false);
         return;
       }
 
-      const data = await response.json();
-      if (Array.isArray(data)) {
-        setSagas(data);
-      } else {
-        setError("Los datos no son un array válido");
-        console.error("Datos inválidos:", data);
+      const text = await response.text();
+      console.log("🔍 Response text:", text);
+
+      try {
+        const data = JSON.parse(text);
+        console.log("🔍 Sagas parseadas:", data);
+
+        if (Array.isArray(data)) {
+          setSagas(data);
+          console.log("✅ Sagas cargadas correctamente:", data.length);
+        } else {
+          setError("Los datos no son un array válido");
+          console.error("Datos inválidos:", data);
+        }
+      } catch (parseError) {
+        console.error("❌ Error parsing JSON:", parseError);
+        setError(`Error parsing JSON: ${parseError.message}`);
       }
     } catch (error) {
-      setError("Error al obtener sagas");
-      console.error("Error:", error);
+      console.error("❌ Error en fetchSagas:", error);
+      console.error("❌ Error name:", error.name);
+      console.error("❌ Error message:", error.message);
+
+      if (error.name === "AbortError") {
+        setError("Error: Timeout - La petición tardó demasiado");
+      } else {
+        setError(`Error al obtener sagas: ${error.message}`);
+      }
     } finally {
       setIsLoading(false); // Finalizar carga
     }
