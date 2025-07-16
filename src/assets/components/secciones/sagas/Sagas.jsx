@@ -262,8 +262,40 @@ const Sagas = () => {
                       try {
                         const data = JSON.parse(text);
                         console.log("🔍 Comparación de sagas:", data);
+
+                        // Verificar URLs de carátulas
+                        if (
+                          data.todasLasSagas &&
+                          Array.isArray(data.todasLasSagas)
+                        ) {
+                          console.log("🔍 Verificando URLs de carátulas...");
+                          data.todasLasSagas.forEach((saga, index) => {
+                            console.log(`Saga ${index + 1}:`, {
+                              nombre: saga.nombre,
+                              coverSaga: saga.coverSaga,
+                              tieneCover: !!saga.coverSaga,
+                            });
+
+                            // Test de carga de imagen
+                            if (saga.coverSaga) {
+                              const img = new Image();
+                              img.onload = () => {
+                                console.log(
+                                  `✅ Imagen cargada: ${saga.nombre}`
+                                );
+                              };
+                              img.onerror = () => {
+                                console.error(
+                                  `❌ Error cargando imagen: ${saga.nombre} - ${saga.coverSaga}`
+                                );
+                              };
+                              img.src = saga.coverSaga;
+                            }
+                          });
+                        }
+
                         alert(
-                          `Comparación:\nTotal: ${data.totalSagas}\nAntiguas: ${data.sagasAntiguas.count}\nNuevas: ${data.sagasNuevas.count}\nUser ID: ${data.userId}`
+                          `Comparación:\nTotal: ${data.totalSagas}\nAntiguas: ${data.sagasAntiguas.count}\nNuevas: ${data.sagasNuevas.count}\nUser ID: ${data.userId}\n\nRevisa la consola para detalles de carátulas`
                         );
                       } catch (parseError) {
                         console.error("❌ Error parsing JSON:", parseError);
