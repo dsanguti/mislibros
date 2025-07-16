@@ -458,7 +458,7 @@ nav a {
     width: 100%;
     background-color: var(--color-primary);
     margin: 0;
-    padding-right: 86px !important;
+    padding-right: 35px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     height: 50px; /* Altura fija igual al userMenu */
     flex-shrink: 0;
@@ -502,7 +502,7 @@ nav a {
   .logout,
   .userIcon,
   .keyIcon {
-    display: block !important;
+    display: none !important;
     width: 1.7rem !important;
     height: 1.7rem !important;
     margin-right: 12px !important;
