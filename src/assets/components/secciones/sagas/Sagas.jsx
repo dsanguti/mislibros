@@ -181,6 +181,52 @@ const Sagas = () => {
         <p className={style.error}>{error}</p>
       ) : (
         <>
+          {/* Botón de debug temporal */}
+          <div
+            style={{
+              position: "fixed",
+              top: "10px",
+              right: "10px",
+              zIndex: 1000,
+              background: "#ff6b6b",
+              color: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              fontSize: "12px",
+            }}
+          >
+            <button
+              onClick={() => {
+                const token = localStorage.getItem("token");
+                const user = localStorage.getItem("user");
+                console.log("🔍 DEBUG MOBILE:");
+                console.log("Token:", token ? "PRESENTE" : "AUSENTE");
+                console.log("User:", user ? "PRESENTE" : "AUSENTE");
+                if (token) {
+                  console.log("Token length:", token.length);
+                  console.log("Token preview:", token.substring(0, 20) + "...");
+                }
+                if (user) {
+                  console.log("User data:", JSON.parse(user));
+                }
+                alert(
+                  `Token: ${token ? "PRESENTE" : "AUSENTE"}\nUser: ${
+                    user ? "PRESENTE" : "AUSENTE"
+                  }`
+                );
+              }}
+              style={{
+                background: "white",
+                color: "#ff6b6b",
+                border: "none",
+                padding: "5px 10px",
+                borderRadius: "3px",
+              }}
+            >
+              Debug Token
+            </button>
+          </div>
+
           <div className={style.ContainerHeaderMain}>
             <HeaderSaga
               className={style.header}
