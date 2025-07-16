@@ -422,6 +422,7 @@ nav a {
   .submenuUser {
     position: absolute;
     bottom: 0;
+    top: 42%;
     left: 100%;
     background-color: var(--color-primary);
     border-radius: 0;
