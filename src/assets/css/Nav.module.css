@@ -433,12 +433,12 @@ nav a {
     padding: 0;
     margin: 0;
     width: 25%;
-    height: 100%;
-    max-height: none;
+    height: auto;
+    min-height: 100%;
     max-width: 150px;
     opacity: 1;
     transition: opacity 0.6s ease, visibility 0s 0.6s; /* Transición suave para el submenú */
-    overflow: hidden; /* Evita que los elmentos sobresalgan*/
+    overflow: visible; /* Permitir que los elementos sean visibles */
   }
   .userMenu:hover .submenuUser {
     visibility: visible;
@@ -466,25 +466,32 @@ nav a {
 
   /* Asegurarse de que no haya un borde inferior en li del submenuUser */
   .submenuUser li {
-    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
     background-color: var(--color-primary);
     margin: 0; /* Asegura que no haya margen que afecte el espaciado */
-    padding: 0; /* Ajusta el padding para el espaciado interno */
-    border-bottom: none !important; /* Asegura que no haya borde inferior */
+    padding: 8px 0; /* Ajusta el padding para el espaciado interno */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil entre elementos */
+    min-height: 50px; /* Altura mínima para cada elemento */
   }
 
-  .containerSalir .containerGestor {
+  .submenuUser li:last-child {
+    border-bottom: none; /* Sin borde en el último elemento */
+  }
+
+  .containerSalir,
+  .containerGestor,
+  .containerKey {
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0;
+    padding: 8px 12px;
     background-color: var(--color-primary);
     text-align: center;
+    min-height: 50px;
   }
 
   /* Estilo para el icono logout y gestor que desaparezcan*/
@@ -500,10 +507,11 @@ nav a {
 
   /* Mostrar el submenuUser en hover */
   .userMenu:hover .submenuUser {
-    opacity: 100%;
+    opacity: 1;
+    visibility: visible;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
   }
 
