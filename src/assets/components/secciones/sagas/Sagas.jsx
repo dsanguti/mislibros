@@ -221,9 +221,9 @@ const Sagas = () => {
                   console.log("User data:", JSON.parse(user));
                 }
 
-                // Probar petición HTTP directa
-                console.log("🔍 Iniciando test HTTP...");
-                console.log("URL:", API_ENDPOINTS.SAGAS_MOBILE_TEST);
+                // Probar endpoint de comparación de sagas
+                console.log("🔍 Iniciando comparación de sagas...");
+                console.log("URL:", API_ENDPOINTS.SAGAS_COMPARE);
                 console.log("Token:", token ? "PRESENTE" : "AUSENTE");
 
                 // Versión más robusta para móvil
@@ -231,7 +231,7 @@ const Sagas = () => {
                   const controller = new AbortController();
                   const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
 
-                  fetch(API_ENDPOINTS.SAGAS_MOBILE_TEST, {
+                  fetch(API_ENDPOINTS.SAGAS_COMPARE, {
                     method: "GET",
                     headers: {
                       Authorization: `Bearer ${token}`,
@@ -261,11 +261,9 @@ const Sagas = () => {
                       console.log("🔍 Response text:", text);
                       try {
                         const data = JSON.parse(text);
-                        console.log("🔍 Respuesta del test móvil:", data);
+                        console.log("🔍 Comparación de sagas:", data);
                         alert(
-                          `Test HTTP:\nSuccess: ${data.success}\nError: ${
-                            data.error || "Ninguno"
-                          }\nSagas: ${data.sagas ? data.sagas.length : 0}`
+                          `Comparación:\nTotal: ${data.totalSagas}\nAntiguas: ${data.sagasAntiguas.count}\nNuevas: ${data.sagasNuevas.count}\nUser ID: ${data.userId}`
                         );
                       } catch (parseError) {
                         console.error("❌ Error parsing JSON:", parseError);
@@ -278,7 +276,7 @@ const Sagas = () => {
                     })
                     .catch((error) => {
                       clearTimeout(timeoutId);
-                      console.error("❌ Error en test HTTP:", error);
+                      console.error("❌ Error en comparación:", error);
                       console.error("❌ Error name:", error.name);
                       console.error("❌ Error message:", error.message);
 
