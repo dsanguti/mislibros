@@ -3,14 +3,40 @@ const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const db = require("../../db");
 const router = express.Router();
-const path = require("path"); // Added for path.basename
-const { uploadCover } = require("../../config/cloudinary");
+const path = require("path");
+const fs = require("fs");
+const { cloudinary } = require("../../config/cloudinary");
 
-// Configuración de multer para almacenar archivos de libros (no imágenes)
+// Asegurar que los directorios necesarios existan
+const ensureDirectoriesExist = () => {
+  const directories = [
+    path.join(__dirname, "../../uploads/books"),
+    path.join(__dirname, "../../images/cover"),
+    path.join(__dirname, "../../uploads/temp"),
+  ];
+
+  directories.forEach((dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+      console.log(`Directorio creado: ${dir}`);
+    }
+  });
+};
+
+ensureDirectoriesExist();
+
+// Configuración de multer para almacenar archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (file.fieldname === "file") {
       cb(null, "uploads/books/");
+    } else if (file.fieldname === "cover") {
+      // En desarrollo: usar directorio local, en producción: temporal para Cloudinary
+      if (process.env.NODE_ENV === "production") {
+        cb(null, "uploads/temp/");
+      } else {
+        cb(null, "images/cover/");
+      }
     } else {
       cb(new Error("Campo de archivo no válido"), null);
     }
@@ -20,11 +46,11 @@ const storage = multer.diskStorage({
   },
 });
 
-const uploadBook = multer({
+const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    // Solo permitir archivos de libros
     if (file.fieldname === "file") {
+      // Permitir archivos de libros
       const allowedTypes = [
         "application/epub+zip",
         "application/pdf",
@@ -35,6 +61,13 @@ const uploadBook = multer({
       } else {
         cb(new Error("Tipo de archivo no permitido para el libro"), false);
       }
+    } else if (file.fieldname === "cover") {
+      // Permitir imágenes
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(new Error("Tipo de archivo no permitido para la portada"), false);
+      }
     } else {
       cb(new Error("Campo de archivo no válido"), false);
     }
@@ -44,9 +77,11 @@ const uploadBook = multer({
 // Modificar para aceptar múltiples archivos
 router.put(
   "/update_book",
-  uploadBook.single("file"),
-  uploadCover.single("cover"),
-  (req, res) => {
+  upload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "cover", maxCount: 1 },
+  ]),
+  async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
 
     console.log("🔑 Token recibido:", token ? "Sí, presente" : "No presente");
@@ -55,7 +90,7 @@ router.put(
       return res.status(401).json({ error: "Token no proporcionado" });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
       if (err) {
         console.error("❌ Error al verificar el token:", err);
         return res.status(403).json({ error: "Token inválido" });
@@ -63,7 +98,7 @@ router.put(
 
       console.log("🔑 Token decodificado:", decoded);
 
-      // Obtener userId del token (ahora sabemos que está en decoded.id)
+      // Obtener userId del token
       const userId =
         decoded.id || decoded.userId || decoded.user_id || decoded.sub;
 
@@ -116,7 +151,7 @@ router.put(
       db.query(
         "SELECT id, cover, file, user_id FROM books WHERE id = ?",
         [bookId],
-        (err, results) => {
+        async (err, results) => {
           if (err) {
             console.error("❌ Error al verificar el libro:", err);
             return res
@@ -150,21 +185,51 @@ router.put(
           let currentCover = results[0].cover;
           let currentFile = results[0].file;
 
-          // Si se subió una nueva imagen de portada (Cloudinary)
+          // Si se subió una nueva imagen de portada
           if (req.files && req.files.cover && req.files.cover[0]) {
-            // La imagen se subió a Cloudinary, obtener la URL
-            currentCover = req.files.cover[0].path; // Cloudinary devuelve la URL en path
+            if (process.env.NODE_ENV === "production") {
+              // En producción: subir a Cloudinary
+              try {
+                console.log("Subiendo imagen a Cloudinary...");
+                const result = await cloudinary.uploader.upload(
+                  req.files.cover[0].path,
+                  {
+                    folder: "mislibros/covers",
+                    transformation: [
+                      { width: 400, height: 600, crop: "fill" },
+                      { quality: "auto" },
+                    ],
+                  }
+                );
 
-            console.log("Nueva imagen de portada (Cloudinary):", {
-              originalName: req.files.cover[0].originalname,
-              cloudinaryUrl: currentCover,
-            });
+                currentCover = result.secure_url;
+                console.log("Imagen subida a Cloudinary:", currentCover);
+
+                // Eliminar archivo temporal
+                fs.unlinkSync(req.files.cover[0].path);
+              } catch (uploadError) {
+                console.error(
+                  "Error al subir imagen a Cloudinary:",
+                  uploadError
+                );
+                return res
+                  .status(500)
+                  .json({ error: "Error al subir la imagen" });
+              }
+            } else {
+              // En desarrollo: usar URL local
+              const coverFileName = path.basename(req.files.cover[0].path);
+              const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
+              currentCover = `${backendUrl}/images/cover/${coverFileName}`;
+
+              console.log("Imagen guardada localmente:", currentCover);
+            }
           }
 
           // Logging detallado para diagnóstico
-          console.log("=== DIAGNÓSTICO CLOUDINARY ===");
+          console.log("=== DIAGNÓSTICO ALMACENAMIENTO ===");
+          console.log("NODE_ENV:", process.env.NODE_ENV);
           console.log("req.files:", req.files);
-          console.log("req.file:", req.file);
           console.log("Variables de entorno Cloudinary:");
           console.log(
             "CLOUDINARY_CLOUD_NAME:",
@@ -178,13 +243,12 @@ router.put(
             "CLOUDINARY_API_SECRET:",
             process.env.CLOUDINARY_API_SECRET ? "SET" : "NOT SET"
           );
-          console.log("NODE_ENV:", process.env.NODE_ENV);
           console.log("currentCover final:", currentCover);
           console.log("================================================");
 
           // Si se subió un nuevo archivo, generar la URL correcta
-          if (req.file) {
-            const fileFileName = path.basename(req.file.path);
+          if (req.files && req.files.file && req.files.file[0]) {
+            const fileFileName = path.basename(req.files.file[0].path);
             // Usar URL dinámica basada en el entorno
             const backendUrl =
               process.env.NODE_ENV === "production"
@@ -193,7 +257,7 @@ router.put(
             currentFile = `${backendUrl}/uploads/books/${fileFileName}`;
 
             console.log("Nuevo archivo:", {
-              originalPath: req.file.path,
+              originalPath: req.files.file[0].path,
               fileName: fileFileName,
               newUrl: currentFile,
               environment: process.env.NODE_ENV,

@@ -5,11 +5,15 @@ const db = require("../../db");
 const fs = require("fs");
 const path = require("path");
 const router = express.Router();
-const { uploadCover } = require("../../config/cloudinary");
+const { cloudinary } = require("../../config/cloudinary");
 
-// Asegurar que las carpetas necesarias existan (solo para archivos de libros)
+// Asegurar que las carpetas necesarias existan
 const ensureDirectoriesExist = () => {
-  const directories = [path.join(__dirname, "../../uploads/books")];
+  const directories = [
+    path.join(__dirname, "../../uploads/books"),
+    path.join(__dirname, "../../images/cover"),
+    path.join(__dirname, "../../uploads/temp"),
+  ];
 
   directories.forEach((dir) => {
     if (!fs.existsSync(dir)) {
@@ -21,12 +25,18 @@ const ensureDirectoriesExist = () => {
 
 ensureDirectoriesExist();
 
-// Configuración de multer para almacenar archivos de libros (no imágenes)
+// Configuración de multer para almacenar archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Solo para archivos de libros, no para imágenes
     if (file.fieldname === "file") {
       cb(null, path.join(__dirname, "../../uploads/books/"));
+    } else if (file.fieldname === "cover") {
+      // En desarrollo: usar directorio local, en producción: temporal para Cloudinary
+      if (process.env.NODE_ENV === "production") {
+        cb(null, path.join(__dirname, "../../uploads/temp/"));
+      } else {
+        cb(null, path.join(__dirname, "../../images/cover/"));
+      }
     } else {
       cb(new Error("Campo de archivo no válido"), null);
     }
@@ -39,12 +49,13 @@ const storage = multer.diskStorage({
   },
 });
 
-// Configurar multer para archivos de libros
-const uploadBook = multer({
+// Configurar multer para aceptar múltiples archivos
+const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    // Solo permitir archivos de libros
+    // Validar tipos de archivo permitidos
     if (file.fieldname === "file") {
+      // Permitir EPUB, PDF y MOBI
       const allowedTypes = [
         "application/epub+zip",
         "application/pdf",
@@ -55,8 +66,13 @@ const uploadBook = multer({
       } else {
         cb(new Error("Tipo de archivo no permitido para el libro"), false);
       }
-    } else {
-      cb(new Error("Campo de archivo no válido"), false);
+    } else if (file.fieldname === "cover") {
+      // Permitir imágenes
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(new Error("Tipo de archivo no permitido para la portada"), false);
+      }
     }
   },
 });
@@ -64,9 +80,11 @@ const uploadBook = multer({
 // Ruta para añadir un nuevo libro
 router.post(
   "/add_book",
-  uploadBook.single("file"),
-  uploadCover.single("cover"),
-  (req, res) => {
+  upload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "cover", maxCount: 1 },
+  ]),
+  async (req, res) => {
     try {
       // Verificar token
       const token = req.headers.authorization?.split(" ")[1];
@@ -75,7 +93,7 @@ router.post(
         return res.status(401).json({ error: "Token no proporcionado" });
       }
 
-      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
           console.error("Error de verificación de token:", err);
           return res.status(403).json({ error: "Token inválido" });
@@ -107,7 +125,7 @@ router.post(
         });
 
         // Validar campos requeridos
-        if (!titulo || !autor || !id_genero || !req.file) {
+        if (!titulo || !autor || !id_genero || !req.files.file) {
           return res.status(400).json({
             error:
               "Faltan campos requeridos: título, autor, género y archivo del libro",
@@ -118,9 +136,9 @@ router.post(
         let filePath = null;
         let coverPath = null;
 
-        if (req.file) {
+        if (req.files.file) {
           // Obtener el nombre real del archivo guardado
-          const fileFileName = path.basename(req.file.path);
+          const fileFileName = path.basename(req.files.file[0].path);
           // Crear la URL para la base de datos usando la URL del backend
           const backendUrl =
             process.env.NODE_ENV === "production"
@@ -136,25 +154,59 @@ router.post(
           console.log("================================================");
 
           console.log("Rutas de archivo:", {
-            originalName: req.file.originalname,
+            originalName: req.files.file[0].originalname,
             savedFileName: fileFileName,
             dbPath: filePath,
-            physicalPath: req.file.path,
+            physicalPath: req.files.file[0].path,
           });
         }
 
-        // Verificar si hay una imagen de carátula (Cloudinary)
-        if (req.files && req.files.cover && req.files.cover[0]) {
-          // La imagen se subió a Cloudinary, obtener la URL
-          coverPath = req.files.cover[0].path; // Cloudinary devuelve la URL en path
+        if (req.files.cover) {
+          if (process.env.NODE_ENV === "production") {
+            // En producción: subir a Cloudinary
+            try {
+              console.log("Subiendo imagen a Cloudinary...");
+              const result = await cloudinary.uploader.upload(
+                req.files.cover[0].path,
+                {
+                  folder: "mislibros/covers",
+                  transformation: [
+                    { width: 400, height: 600, crop: "fill" },
+                    { quality: "auto" },
+                  ],
+                }
+              );
 
-          console.log("=== DEBUG: Cloudinary para imágenes ===");
-          console.log("Cover path de Cloudinary:", coverPath);
+              coverPath = result.secure_url;
+              console.log("Imagen subida a Cloudinary:", coverPath);
+
+              // Eliminar archivo temporal
+              fs.unlinkSync(req.files.cover[0].path);
+            } catch (uploadError) {
+              console.error("Error al subir imagen a Cloudinary:", uploadError);
+              return res
+                .status(500)
+                .json({ error: "Error al subir la imagen" });
+            }
+          } else {
+            // En desarrollo: usar URL local
+            const coverFileName = path.basename(req.files.cover[0].path);
+            const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
+            coverPath = `${backendUrl}/images/cover/${coverFileName}`;
+
+            console.log("Imagen guardada localmente:", coverPath);
+          }
+
+          console.log("=== DEBUG: Almacenamiento de imágenes ===");
+          console.log("NODE_ENV:", process.env.NODE_ENV);
+          console.log("Cover path final:", coverPath);
           console.log("================================================");
 
           console.log("Rutas de carátula:", {
             originalName: req.files.cover[0].originalname,
-            cloudinaryUrl: coverPath,
+            savedFileName: path.basename(req.files.cover[0].path),
+            dbPath: coverPath,
+            physicalPath: req.files.cover[0].path,
           });
         }
 
