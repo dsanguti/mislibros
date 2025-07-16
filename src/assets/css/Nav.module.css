@@ -498,22 +498,22 @@ nav a {
     background-color: var(--color-secundary);
   }
 
-  /* Ocultar iconos en móvil */
+  /* Mostrar iconos en móvil */
   .logout,
   .userIcon,
   .keyIcon {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    margin: 0 !important;
+    display: block !important;
+    width: 1.7rem !important;
+    height: 1.7rem !important;
+    margin-right: 12px !important;
     padding: 0 !important;
-    visibility: hidden !important;
-    position: absolute !important;
-    left: -9999px !important;
-    top: -9999px !important;
+    visibility: visible !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
   }
 
-  /* Simplificar contenedores en móvil */
+  /* Contenedores con iconos en móvil */
   .containerSalir,
   .containerGestor,
   .containerKey {
@@ -522,6 +522,7 @@ nav a {
     justify-content: center !important;
     align-items: center !important;
     padding: 0 !important;
+    padding-right: 30px !important;
     margin: 0 !important;
     background-color: var(--color-primary) !important;
     text-align: center !important;
@@ -542,7 +543,7 @@ nav a {
     font-size: 1rem !important;
     color: white !important;
     text-align: center !important;
-    width: 60px !important;
+    width: auto !important;
     height: 100% !important;
     line-height: 50px !important;
     display: flex !important;
