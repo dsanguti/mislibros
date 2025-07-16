@@ -518,7 +518,7 @@ nav a {
   .containerGestor,
   .containerKey {
     width: 100% !important;
-    display: block !important;
+    display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     padding: 0 !important;
