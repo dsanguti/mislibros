@@ -209,11 +209,30 @@ const Sagas = () => {
                 if (user) {
                   console.log("User data:", JSON.parse(user));
                 }
-                alert(
-                  `Token: ${token ? "PRESENTE" : "AUSENTE"}\nUser: ${
-                    user ? "PRESENTE" : "AUSENTE"
-                  }`
-                );
+
+                // Probar petición HTTP directa
+                fetch(API_ENDPOINTS.SAGAS_MOBILE_TEST, {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                    Accept: "application/json",
+                  },
+                  credentials: "include",
+                })
+                  .then((response) => response.json())
+                  .then((data) => {
+                    console.log("🔍 Respuesta del test móvil:", data);
+                    alert(
+                      `Test HTTP:\nSuccess: ${data.success}\nError: ${
+                        data.error || "Ninguno"
+                      }\nSagas: ${data.sagas ? data.sagas.length : 0}`
+                    );
+                  })
+                  .catch((error) => {
+                    console.error("❌ Error en test HTTP:", error);
+                    alert(`Error HTTP: ${error.message}`);
+                  });
               }}
               style={{
                 background: "white",
