@@ -458,7 +458,7 @@ nav a {
     width: 100%;
     background-color: var(--color-primary);
     margin: 0;
-    padding: 0;
+    padding-right: 86px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     height: 50px; /* Altura fija igual al userMenu */
     flex-shrink: 0;
@@ -522,7 +522,7 @@ nav a {
     justify-content: center !important;
     align-items: center !important;
     padding: 0 !important;
-    padding-right: 30px !important;
+
     margin: 0 !important;
     background-color: var(--color-primary) !important;
     text-align: center !important;
