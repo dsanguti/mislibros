@@ -3,6 +3,7 @@ const multer = require("multer");
 const jwt = require("jsonwebtoken");
 const db = require("../../db");
 const router = express.Router();
+const path = require("path"); // Added for path.basename
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -129,12 +130,34 @@ router.put(
           }
 
           // Mantener los valores actuales si no se proporcionan nuevos
-          const currentCover = req.files?.cover
-            ? req.files.cover[0].path
-            : results[0].cover;
-          const currentFile = req.files?.file
-            ? req.files.file[0].path
-            : results[0].file;
+          let currentCover = results[0].cover;
+          let currentFile = results[0].file;
+
+          // Si se subió una nueva imagen de portada, generar la URL correcta
+          if (req.files?.cover) {
+            const coverFileName = path.basename(req.files.cover[0].path);
+            const backendUrl = "https://mislibros-production.up.railway.app";
+            currentCover = `${backendUrl}/images/cover/${coverFileName}`;
+
+            console.log("Nueva imagen de portada:", {
+              originalPath: req.files.cover[0].path,
+              fileName: coverFileName,
+              newUrl: currentCover,
+            });
+          }
+
+          // Si se subió un nuevo archivo, generar la URL correcta
+          if (req.files?.file) {
+            const fileFileName = path.basename(req.files.file[0].path);
+            const backendUrl = "https://mislibros-production.up.railway.app";
+            currentFile = `${backendUrl}/uploads/books/${fileFileName}`;
+
+            console.log("Nuevo archivo:", {
+              originalPath: req.files.file[0].path,
+              fileName: fileFileName,
+              newUrl: currentFile,
+            });
+          }
 
           db.query(
             "SELECT coverGenero FROM genero WHERE id = ?",
