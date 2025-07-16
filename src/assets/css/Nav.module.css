@@ -476,7 +476,8 @@ nav a {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 16px;
+    padding: 0;
+    margin: 0;
     background-color: var(--color-primary);
     text-align: center;
     height: 50px; /* Altura fija igual al userMenu */
@@ -484,6 +485,7 @@ nav a {
     transition: background-color 0.2s ease;
     font-size: 1rem;
     font-weight: 500;
+    box-sizing: border-box;
   }
 
   .containerSalir:hover,
@@ -497,6 +499,18 @@ nav a {
   .userIcon,
   .keyIcon {
     display: none;
+  }
+
+  /* Estilos específicos para h4 en móvil */
+  .submenuUser li h4 {
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+    text-align: center;
+    width: 100%;
+    line-height: 50px; /* Alinear con la altura del contenedor */
+    display: block;
   }
 
   /* Asegurar que el contenedor de usuario tenga posición relativa */
