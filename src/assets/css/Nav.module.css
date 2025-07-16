@@ -486,6 +486,8 @@ nav a {
     font-size: 1rem;
     font-weight: 500;
     box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
   }
 
   .containerSalir:hover,
@@ -498,12 +500,17 @@ nav a {
   .logout,
   .userIcon,
   .keyIcon {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    visibility: hidden !important;
   }
 
   /* Estilos específicos para h4 en móvil */
   .submenuUser li h4 {
-    padding-right: 10px;
+    padding: 0;
     margin: 0;
     font-size: 1rem;
     color: white;
@@ -511,6 +518,8 @@ nav a {
     width: 100%;
     line-height: 50px; /* Alinear con la altura del contenedor */
     display: block;
+    position: relative;
+    z-index: 1;
   }
 
   /* Asegurar que el contenedor de usuario tenga posición relativa */
