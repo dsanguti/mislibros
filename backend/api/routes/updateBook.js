@@ -187,6 +187,19 @@ router.put(
 
           // Si se subió una nueva imagen de portada
           if (req.files && req.files.cover && req.files.cover[0]) {
+            console.log("=== DIAGNÓSTICO NODE_ENV ===");
+            console.log("NODE_ENV actual:", process.env.NODE_ENV);
+            console.log(
+              "¿Es producción?",
+              process.env.NODE_ENV === "production"
+            );
+            console.log(
+              "¿Es desarrollo?",
+              process.env.NODE_ENV === "development"
+            );
+            console.log("¿Está definido?", process.env.NODE_ENV ? "SÍ" : "NO");
+            console.log("================================================");
+
             if (process.env.NODE_ENV === "production") {
               // En producción: subir a Cloudinary
               try {
@@ -218,6 +231,7 @@ router.put(
               }
             } else {
               // En desarrollo: usar URL local
+              console.log("Usando almacenamiento local para desarrollo");
               const coverFileName = path.basename(req.files.cover[0].path);
               const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
               currentCover = `${backendUrl}/images/cover/${coverFileName}`;
@@ -225,26 +239,6 @@ router.put(
               console.log("Imagen guardada localmente:", currentCover);
             }
           }
-
-          // Logging detallado para diagnóstico
-          console.log("=== DIAGNÓSTICO ALMACENAMIENTO ===");
-          console.log("NODE_ENV:", process.env.NODE_ENV);
-          console.log("req.files:", req.files);
-          console.log("Variables de entorno Cloudinary:");
-          console.log(
-            "CLOUDINARY_CLOUD_NAME:",
-            process.env.CLOUDINARY_CLOUD_NAME ? "SET" : "NOT SET"
-          );
-          console.log(
-            "CLOUDINARY_API_KEY:",
-            process.env.CLOUDINARY_API_KEY ? "SET" : "NOT SET"
-          );
-          console.log(
-            "CLOUDINARY_API_SECRET:",
-            process.env.CLOUDINARY_API_SECRET ? "SET" : "NOT SET"
-          );
-          console.log("currentCover final:", currentCover);
-          console.log("================================================");
 
           // Si se subió un nuevo archivo, generar la URL correcta
           if (req.files && req.files.file && req.files.file[0]) {

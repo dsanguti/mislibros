@@ -162,6 +162,16 @@ router.post(
         }
 
         if (req.files.cover) {
+          console.log("=== DIAGNÓSTICO NODE_ENV ===");
+          console.log("NODE_ENV actual:", process.env.NODE_ENV);
+          console.log("¿Es producción?", process.env.NODE_ENV === "production");
+          console.log(
+            "¿Es desarrollo?",
+            process.env.NODE_ENV === "development"
+          );
+          console.log("¿Está definido?", process.env.NODE_ENV ? "SÍ" : "NO");
+          console.log("================================================");
+
           if (process.env.NODE_ENV === "production") {
             // En producción: subir a Cloudinary
             try {
@@ -190,6 +200,7 @@ router.post(
             }
           } else {
             // En desarrollo: usar URL local
+            console.log("Usando almacenamiento local para desarrollo");
             const coverFileName = path.basename(req.files.cover[0].path);
             const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
             coverPath = `${backendUrl}/images/cover/${coverFileName}`;
