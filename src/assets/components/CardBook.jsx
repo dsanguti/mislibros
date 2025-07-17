@@ -1,4 +1,5 @@
 import { toast } from "react-toastify";
+import { API_ENDPOINTS } from "../../config/api";
 import styles from "../css/CardBook.module.css";
 import Epub_Icon from "./icons/Epub_Icon";
 import Tooltip from "./Tooltip";
@@ -8,30 +9,55 @@ const CardBook = ({ book }) => {
     return <p>Selecciona un libro para ver los detalles</p>;
   }
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!book.file) {
       toast.error("Este libro no tiene un archivo disponible para descargar");
       return;
     }
 
     try {
+      // Obtener el token de autenticación
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        toast.error("No tienes permisos para descargar este archivo");
+        return;
+      }
+
+      // Usar el nuevo endpoint de descarga
+      const response = await fetch(
+        `${API_ENDPOINTS.DOWNLOAD_BOOK}/${book.id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+
+      // Convertir la respuesta a blob
+      const blob = await response.blob();
+
+      // Crear URL del blob
+      const blobUrl = window.URL.createObjectURL(blob);
+
       // Crear un enlace temporal
       const link = document.createElement("a");
-      link.href = book.file;
-
-      // Extraer el nombre del archivo de la URL
-      const fileName = book.file.split("/").pop() || `${book.titulo}.epub`;
-
-      // Establecer el nombre del archivo
-      link.setAttribute("download", fileName);
-
-      // Ocultar el enlace
+      link.href = blobUrl;
+      link.setAttribute("download", `${book.titulo}.epub`);
       link.style.display = "none";
 
       // Añadir al DOM, hacer clic y luego remover
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      // Limpiar la URL del blob
+      window.URL.revokeObjectURL(blobUrl);
 
       toast.success(`Descargando "${book.titulo}"`);
     } catch (error) {

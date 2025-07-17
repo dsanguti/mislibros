@@ -97,6 +97,7 @@ const addUserRoutes = require("./api/routes/add_user");
 const verifyEmailRoutes = require("./api/routes/verify_email");
 const forgotPasswordRoutes = require("./api/routes/forgot_password");
 const resetPasswordRoutes = require("./api/routes/reset_password");
+const downloadBookRoutes = require("./api/routes/download_book");
 
 // Registrar rutas
 app.use("/api", loginRoutes);
@@ -123,6 +124,7 @@ app.use("/api", addUserRoutes);
 app.use("/api", verifyEmailRoutes);
 app.use("/api", forgotPasswordRoutes);
 app.use("/api", resetPasswordRoutes);
+app.use("/api", downloadBookRoutes);
 
 // Inicio del servidor
 const server = app

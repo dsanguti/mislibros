@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
   ADD_BOOK: `${API_BASE_URL}/api/add_book`,
   UPDATE_BOOK: `${API_BASE_URL}/api/update_book`,
   DELETE_BOOK: `${API_BASE_URL}/api/delete_book`,
+  DOWNLOAD_BOOK: `${API_BASE_URL}/api/download-book`,
   EXTRACT_METADATA: `${API_BASE_URL}/api/extract_metadata`,
   EXTRACT_MOBI_METADATA: `${API_BASE_URL}/api/extract_mobi_metadata`,
   CLEANUP: `${API_BASE_URL}/api/cleanup`,
