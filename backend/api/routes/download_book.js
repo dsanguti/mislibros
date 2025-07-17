@@ -5,15 +5,6 @@ const path = require("path");
 const fs = require("fs");
 const router = express.Router();
 
-// Endpoint de prueba para verificar que el archivo está funcionando
-router.get("/download-test", (req, res) => {
-  res.json({
-    message: "Download endpoint is working",
-    timestamp: new Date().toISOString(),
-    routes: ["/download-book/:bookId", "/download-test"],
-  });
-});
-
 // Endpoint para descargar archivos de libros
 router.get("/download-book/:bookId", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
