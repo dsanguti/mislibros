@@ -59,7 +59,7 @@ const CardBook = ({ book }) => {
       // Limpiar la URL del blob
       window.URL.revokeObjectURL(blobUrl);
 
-      toast.success(`Descargando "${book.titulo}"`);
+      toast.success(`Descargando "${book.titulo}"`), {autoClose: 1000};
     } catch (error) {
       console.error("Error al descargar el libro:", error);
       toast.error("Ocurrió un error al intentar descargar el libro");
