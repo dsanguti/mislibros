@@ -73,6 +73,55 @@ app.get("/health", (req, res) => {
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Servir imágenes de uploads
 
+// Endpoint para actualizar URLs de archivos a Cloudinary
+app.post("/api/update-file-urls", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ error: "Token no proporcionado" });
+  }
+
+  const jwt = require("jsonwebtoken");
+  const db = require("./db");
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ error: "Token inválido" });
+    }
+
+    // Solo administradores pueden ejecutar esta acción
+    if (decoded.profile !== "Admin") {
+      return res
+        .status(403)
+        .json({ error: "Solo administradores pueden ejecutar esta acción" });
+    }
+
+    // Obtener todos los libros con URLs locales
+    const query =
+      "SELECT id, file, titulo FROM books WHERE file LIKE '%localhost%' OR file LIKE '%railway%'";
+
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error("Error al consultar libros:", err);
+        return res.status(500).json({ error: "Error interno del servidor" });
+      }
+
+      console.log(`Encontrados ${results.length} libros con URLs locales`);
+
+      // Por ahora, solo devolver la información
+      res.json({
+        message: "Libros encontrados con URLs locales",
+        count: results.length,
+        books: results.map((book) => ({
+          id: book.id,
+          titulo: book.titulo,
+          currentUrl: book.file,
+        })),
+      });
+    });
+  });
+});
+
 // Endpoint de descarga de libros (directo en server.js para asegurar funcionamiento)
 app.get("/api/download-book/:bookId", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
