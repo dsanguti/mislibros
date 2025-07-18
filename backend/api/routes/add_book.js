@@ -151,12 +151,22 @@ router.post(
               console.log("📁 Archivo original:", originalFileName);
               console.log("📁 Extensión detectada:", fileExtension);
 
+              // Generar un nombre único con la extensión correcta
+              const uniqueId =
+                Date.now() + "-" + Math.round(Math.random() * 1e9);
+              const publicId = `mislibros/books/${uniqueId}.${
+                fileExtension || "epub"
+              }`;
+
+              console.log("📁 Public ID generado:", publicId);
+
               const result = await cloudinary.uploader.upload(
                 req.files.file[0].path,
                 {
                   folder: "mislibros/books",
                   resource_type: "raw",
-                  format: fileExtension || "epub", // Usar la extensión original o epub por defecto
+                  public_id: publicId,
+                  format: fileExtension || "epub",
                 }
               );
 
