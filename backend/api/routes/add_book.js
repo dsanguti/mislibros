@@ -137,25 +137,42 @@ router.post(
         let coverPath = null;
 
         if (req.files.file) {
-          // Obtener el nombre real del archivo guardado
-          const fileFileName = path.basename(req.files.file[0].path);
-          // Crear la URL para la base de datos usando la URL del backend
-          const backendUrl =
-            process.env.NODE_ENV === "production"
-              ? "https://mislibros-production.up.railway.app"
-              : `http://localhost:${process.env.PORT || 8001}`;
-          filePath = `${backendUrl}/uploads/books/${fileFileName}`;
+          if (process.env.NODE_ENV === "production") {
+            // En producción: subir a Cloudinary
+            try {
+              console.log("Subiendo archivo de libro a Cloudinary...");
+              const result = await cloudinary.uploader.upload(
+                req.files.file[0].path,
+                {
+                  folder: "mislibros/books",
+                  resource_type: "raw",
+                  format: "epub"
+                }
+              );
 
-          console.log("=== DEBUG: Variables de entorno para archivos ===");
-          console.log("NODE_ENV:", process.env.NODE_ENV);
-          console.log("PORT:", process.env.PORT);
-          console.log("Backend URL calculada:", backendUrl);
-          console.log("File path final:", filePath);
-          console.log("================================================");
+              filePath = result.secure_url;
+              console.log("Archivo subido a Cloudinary:", filePath);
+
+              // Eliminar archivo temporal
+              fs.unlinkSync(req.files.file[0].path);
+            } catch (uploadError) {
+              console.error("Error al subir archivo a Cloudinary:", uploadError);
+              return res
+                .status(500)
+                .json({ error: "Error al subir el archivo del libro" });
+            }
+          } else {
+            // En desarrollo: usar URL local
+            const fileFileName = path.basename(req.files.file[0].path);
+            const backendUrl = `http://localhost:${process.env.PORT || 8001}`;
+            filePath = `${backendUrl}/uploads/books/${fileFileName}`;
+
+            console.log("Archivo guardado localmente:", filePath);
+          }
 
           console.log("Rutas de archivo:", {
             originalName: req.files.file[0].originalname,
-            savedFileName: fileFileName,
+            savedFileName: path.basename(req.files.file[0].path),
             dbPath: filePath,
             physicalPath: req.files.file[0].path,
           });

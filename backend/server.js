@@ -205,39 +205,46 @@ app.get("/api/download-book/:bookId", (req, res) => {
         return res.status(404).json({ error: "Archivo no disponible" });
       }
 
-      // Extraer el nombre del archivo de la URL
-      const fileName = path.basename(book.file);
-      const filePath = path.join(__dirname, "uploads/books", fileName);
+      // Verificar si es un archivo de Cloudinary o local
+      if (book.file.includes("cloudinary.com")) {
+        // Es un archivo de Cloudinary, redirigir directamente
+        console.log("Archivo de Cloudinary, redirigiendo...");
+        res.redirect(book.file);
+      } else {
+        // Es un archivo local
+        const fileName = path.basename(book.file);
+        const filePath = path.join(__dirname, "uploads/books", fileName);
 
-      console.log("File path:", filePath);
-      console.log("File exists:", fs.existsSync(filePath));
+        console.log("File path:", filePath);
+        console.log("File exists:", fs.existsSync(filePath));
 
-      // Verificar que el archivo existe
-      if (!fs.existsSync(filePath)) {
-        console.error("Archivo no encontrado:", filePath);
-        return res
-          .status(404)
-          .json({ error: "Archivo no encontrado en el servidor" });
-      }
-
-      // Configurar headers para la descarga
-      res.setHeader("Content-Type", "application/octet-stream");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${encodeURIComponent(book.titulo)}.epub"`
-      );
-
-      // Enviar el archivo
-      res.sendFile(filePath, (err) => {
-        if (err) {
-          console.error("Error al enviar archivo:", err);
-          if (!res.headersSent) {
-            res.status(500).json({ error: "Error al enviar el archivo" });
-          }
-        } else {
-          console.log("Archivo enviado correctamente");
+        // Verificar que el archivo existe
+        if (!fs.existsSync(filePath)) {
+          console.error("Archivo no encontrado:", filePath);
+          return res
+            .status(404)
+            .json({ error: "Archivo no encontrado en el servidor" });
         }
-      });
+
+        // Configurar headers para la descarga
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename="${encodeURIComponent(book.titulo)}.epub"`
+        );
+
+        // Enviar el archivo
+        res.sendFile(filePath, (err) => {
+          if (err) {
+            console.error("Error al enviar archivo:", err);
+            if (!res.headersSent) {
+              res.status(500).json({ error: "Error al enviar el archivo" });
+            }
+          } else {
+            console.log("Archivo enviado correctamente");
+          }
+        });
+      }
     });
   });
 });
