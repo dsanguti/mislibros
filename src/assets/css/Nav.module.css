@@ -469,7 +469,9 @@ nav a {
   .submenuUser li:first-child {
     border-top: none;
   }
-
+  .submenuUser li:hover {
+    background-color: var(--color-secundary);
+  }
   /* Contenedores de los elementos del submenú */
   .containerSalir,
   .containerGestor,
