@@ -162,6 +162,46 @@ app.get("/api/debug-cloudinary", (req, res) => {
   });
 });
 
+// Endpoint para listar recursos en Cloudinary
+app.get("/api/list-cloudinary-resources", (req, res) => {
+  console.log("=== LISTAR RECURSOS CLOUDINARY ===");
+
+  const cloudinary = require("cloudinary").v2;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  // Listar recursos en la carpeta mislibros/books
+  cloudinary.api.resources(
+    {
+      type: "upload",
+      resource_type: "raw",
+      prefix: "mislibros/books/",
+      max_results: 50,
+    },
+    (error, result) => {
+      if (error) {
+        console.error("❌ Error listando recursos:", error);
+        res.json({
+          status: "error",
+          message: "Error listando recursos de Cloudinary",
+          error: error.message,
+        });
+      } else {
+        console.log("✅ Recursos encontrados:", result.resources?.length || 0);
+        res.json({
+          status: "success",
+          message: "Recursos listados correctamente",
+          count: result.resources?.length || 0,
+          resources: result.resources || [],
+        });
+      }
+    }
+  );
+});
+
 // Endpoint de descarga de libros (directo en server.js para asegurar funcionamiento)
 app.get("/api/download-book/:bookId", (req, res) => {
   console.log("🚀 === ENDPOINT DE DESCARGA EJECUTADO ===");
