@@ -456,7 +456,9 @@ nav a {
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: transparent; /* Transparente para que no interfiera */
+    background-color: var(
+      --color-primary
+    ); /* Color primario para que no se vea el fondo */
     margin: 0;
     padding: 0; /* Sin padding para que el contenedor ocupe todo el espacio */
     border-top: 1px solid rgba(255, 255, 255, 0.2);
