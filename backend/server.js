@@ -208,14 +208,34 @@ app.get("/api/download-book/:bookId", (req, res) => {
         console.log("📁 Extensión detectada para Cloudinary:", fileExtension);
 
         // Descargar el archivo de Cloudinary
+        console.log("🔗 Intentando descargar desde URL:", book.file);
+
         fetch(book.file)
           .then((response) => {
+            console.log(
+              "📡 Respuesta de Cloudinary - Status:",
+              response.status
+            );
+            console.log(
+              "📡 Respuesta de Cloudinary - Headers:",
+              response.headers
+            );
+
             if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
+              console.error(
+                "❌ Error en respuesta de Cloudinary:",
+                response.status,
+                response.statusText
+              );
+              throw new Error(
+                `HTTP error! status: ${response.status} - ${response.statusText}`
+              );
             }
             return response.arrayBuffer();
           })
           .then((buffer) => {
+            console.log("📦 Buffer recibido, tamaño:", buffer.byteLength);
+
             // Configurar headers para la descarga
             res.setHeader("Content-Type", "application/octet-stream");
             res.setHeader(
@@ -227,11 +247,76 @@ app.get("/api/download-book/:bookId", (req, res) => {
 
             // Enviar el archivo
             res.send(new Uint8Array(buffer));
-            console.log("Archivo de Cloudinary enviado correctamente");
+            console.log("✅ Archivo de Cloudinary enviado correctamente");
           })
           .catch((error) => {
-            console.error("Error al descargar archivo de Cloudinary:", error);
-            res.status(500).json({ error: "Error al descargar el archivo" });
+            console.error(
+              "❌ Error al descargar archivo de Cloudinary:",
+              error
+            );
+
+            // Si es un error 401, intentar con una URL modificada
+            if (error.message.includes("401")) {
+              console.log("🔄 Intentando con URL modificada...");
+
+              // Intentar con una URL que incluya parámetros de transformación
+              const modifiedUrl = book.file.replace(
+                "/raw/upload/",
+                "/upload/fl_attachment/"
+              );
+              console.log("🔗 URL modificada:", modifiedUrl);
+
+              fetch(modifiedUrl)
+                .then((response) => {
+                  console.log(
+                    "📡 Respuesta de Cloudinary (modificada) - Status:",
+                    response.status
+                  );
+
+                  if (!response.ok) {
+                    throw new Error(
+                      `HTTP error! status: ${response.status} - ${response.statusText}`
+                    );
+                  }
+                  return response.arrayBuffer();
+                })
+                .then((buffer) => {
+                  console.log(
+                    "📦 Buffer recibido (modificada), tamaño:",
+                    buffer.byteLength
+                  );
+
+                  // Configurar headers para la descarga
+                  res.setHeader("Content-Type", "application/octet-stream");
+                  res.setHeader(
+                    "Content-Disposition",
+                    `attachment; filename="${encodeURIComponent(
+                      book.titulo
+                    )}${fileExtension}"`
+                  );
+
+                  // Enviar el archivo
+                  res.send(new Uint8Array(buffer));
+                  console.log(
+                    "✅ Archivo de Cloudinary enviado correctamente (URL modificada)"
+                  );
+                })
+                .catch((retryError) => {
+                  console.error(
+                    "❌ Error también con URL modificada:",
+                    retryError
+                  );
+                  res.status(500).json({
+                    error: "Error al descargar el archivo de Cloudinary",
+                    details: error.message,
+                  });
+                });
+            } else {
+              res.status(500).json({
+                error: "Error al descargar el archivo",
+                details: error.message,
+              });
+            }
           });
       } else {
         // Es un archivo local
