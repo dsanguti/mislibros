@@ -130,6 +130,9 @@ app.get("/api/download-book/:bookId", (req, res) => {
   console.log("=== DOWNLOAD BOOK REQUEST (DIRECT) ===");
   console.log("Book ID:", bookId);
   console.log("Token present:", !!token);
+  console.log("Full URL:", req.url);
+  console.log("Method:", req.method);
+  console.log("Headers:", req.headers);
 
   if (!token) {
     return res.status(401).json({ error: "Token no proporcionado" });
