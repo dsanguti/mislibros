@@ -46,8 +46,13 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.json());
 
-// Middleware para interceptar todas las peticiones
+// Middleware para interceptar todas las peticiones (excepto descarga de libros)
 app.use((req, res, next) => {
+  // No interceptar peticiones de descarga de libros para evitar conflictos
+  if (req.url.startsWith("/api/download-book/")) {
+    return next();
+  }
+
   console.log(`=== PETICIÓN RECIBIDA ===`);
   console.log(`Método: ${req.method}`);
   console.log(`URL: ${req.url}`);
