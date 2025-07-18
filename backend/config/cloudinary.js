@@ -131,10 +131,14 @@ const extractPublicId = (url) => {
     const publicIdParts = urlParts.slice(uploadIndex + 2);
     let publicId = publicIdParts.join("/");
 
-    // Remover la extensión del archivo si existe
-    const lastDotIndex = publicId.lastIndexOf(".");
-    if (lastDotIndex !== -1) {
-      publicId = publicId.substring(0, lastDotIndex);
+    // Para archivos raw, mantener la extensión
+    const isRawFile = url.includes("/raw/");
+    if (!isRawFile) {
+      // Remover la extensión del archivo si existe (solo para imágenes)
+      const lastDotIndex = publicId.lastIndexOf(".");
+      if (lastDotIndex !== -1) {
+        publicId = publicId.substring(0, lastDotIndex);
+      }
     }
 
     return publicId;
@@ -157,6 +161,17 @@ const deleteCloudinaryFile = async (url, resourceType = "image") => {
     console.log(
       `Eliminando archivo de Cloudinary: ${publicId} (tipo: ${resourceType})`
     );
+
+    // Verificar si el archivo existe antes de intentar eliminarlo
+    try {
+      const info = await cloudinary.api.resource(publicId, {
+        resource_type: resourceType,
+      });
+      console.log("✅ Archivo encontrado en Cloudinary:", info.public_id);
+    } catch (infoError) {
+      console.log("❌ Archivo no encontrado en Cloudinary:", infoError.message);
+      return false;
+    }
 
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,
