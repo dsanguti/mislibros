@@ -141,12 +141,22 @@ router.post(
             // En producción: subir a Cloudinary
             try {
               console.log("Subiendo archivo de libro a Cloudinary...");
+              // Detectar la extensión del archivo original
+              const originalFileName = req.files.file[0].originalname;
+              const fileExtension = path
+                .extname(originalFileName)
+                .toLowerCase()
+                .substring(1);
+
+              console.log("📁 Archivo original:", originalFileName);
+              console.log("📁 Extensión detectada:", fileExtension);
+
               const result = await cloudinary.uploader.upload(
                 req.files.file[0].path,
                 {
                   folder: "mislibros/books",
                   resource_type: "raw",
-                  format: "epub"
+                  format: fileExtension || "epub", // Usar la extensión original o epub por defecto
                 }
               );
 
@@ -156,7 +166,10 @@ router.post(
               // Eliminar archivo temporal
               fs.unlinkSync(req.files.file[0].path);
             } catch (uploadError) {
-              console.error("Error al subir archivo a Cloudinary:", uploadError);
+              console.error(
+                "Error al subir archivo a Cloudinary:",
+                uploadError
+              );
               return res
                 .status(500)
                 .json({ error: "Error al subir el archivo del libro" });
