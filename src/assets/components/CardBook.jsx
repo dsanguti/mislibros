@@ -45,10 +45,32 @@ const CardBook = ({ book }) => {
       // Crear URL del blob
       const blobUrl = window.URL.createObjectURL(blob);
 
+      // Detectar la extensión correcta del archivo
+      const getFileExtension = (fileUrl) => {
+        if (!fileUrl) return ".epub"; // extensión por defecto
+
+        // Extraer la extensión de la URL del archivo
+        const urlParts = fileUrl.split(".");
+        const extension = urlParts[urlParts.length - 1]?.toLowerCase();
+
+        // Validar que sea una extensión válida
+        if (
+          extension === "pdf" ||
+          extension === "epub" ||
+          extension === "mobi"
+        ) {
+          return `.${extension}`;
+        }
+
+        return ".epub"; // extensión por defecto si no se puede detectar
+      };
+
+      const fileExtension = getFileExtension(book.file);
+
       // Crear un enlace temporal
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${book.titulo}.epub`);
+      link.setAttribute("download", `${book.titulo}${fileExtension}`);
       link.style.display = "none";
 
       // Añadir al DOM, hacer clic y luego remover
@@ -59,7 +81,7 @@ const CardBook = ({ book }) => {
       // Limpiar la URL del blob
       window.URL.revokeObjectURL(blobUrl);
 
-      toast.success(`Descargando "${book.titulo}"`), {autoClose: 1000};
+      toast.success(`Descargando "${book.titulo}"`), { autoClose: 1000 };
     } catch (error) {
       console.error("Error al descargar el libro:", error);
       toast.error("Ocurrió un error al intentar descargar el libro");

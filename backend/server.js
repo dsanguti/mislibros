@@ -194,11 +194,35 @@ app.get("/api/download-book/:bookId", (req, res) => {
             .json({ error: "Archivo no encontrado en el servidor" });
         }
 
+        // Detectar la extensión correcta del archivo
+        const getFileExtension = (fileUrl) => {
+          if (!fileUrl) return ".epub"; // extensión por defecto
+
+          // Extraer la extensión de la URL del archivo
+          const urlParts = fileUrl.split(".");
+          const extension = urlParts[urlParts.length - 1]?.toLowerCase();
+
+          // Validar que sea una extensión válida
+          if (
+            extension === "pdf" ||
+            extension === "epub" ||
+            extension === "mobi"
+          ) {
+            return `.${extension}`;
+          }
+
+          return ".epub"; // extensión por defecto si no se puede detectar
+        };
+
+        const fileExtension = getFileExtension(book.file);
+
         // Configurar headers para la descarga
         res.setHeader("Content-Type", "application/octet-stream");
         res.setHeader(
           "Content-Disposition",
-          `attachment; filename="${encodeURIComponent(book.titulo)}.epub"`
+          `attachment; filename="${encodeURIComponent(
+            book.titulo
+          )}${fileExtension}"`
         );
 
         // Enviar el archivo
