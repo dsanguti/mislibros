@@ -464,7 +464,6 @@ nav a {
     flex-shrink: 0;
     position: relative;
     overflow: hidden;
-    pointer-events: none; /* Permite que el hover pase a través del li */
   }
 
   .submenuUser li:first-child {
@@ -485,13 +484,12 @@ nav a {
     text-align: center !important;
     height: 50px !important;
     cursor: pointer !important;
-    transition: background-color 0.2s ease !important;
+    transition: background-color 0.1s ease !important;
     font-size: 1rem !important;
     font-weight: 500 !important;
     box-sizing: border-box !important;
     position: relative !important;
     overflow: hidden !important;
-    pointer-events: auto !important; /* Permite que reciban el hover */
   }
 
   /* Hover para contenedores en móvil */
