@@ -47,11 +47,19 @@ const CardBook = ({ book }) => {
 
       // Detectar la extensión correcta del archivo
       const getFileExtension = (fileUrl) => {
-        if (!fileUrl) return ".epub"; // extensión por defecto
+        console.log("🔍 Debug - URL del archivo:", fileUrl);
+
+        if (!fileUrl) {
+          console.log("⚠️  No hay URL de archivo, usando .epub por defecto");
+          return ".epub"; // extensión por defecto
+        }
 
         // Extraer la extensión de la URL del archivo
         const urlParts = fileUrl.split(".");
         const extension = urlParts[urlParts.length - 1]?.toLowerCase();
+
+        console.log("🔍 Debug - URL parts:", urlParts);
+        console.log("🔍 Debug - Extensión detectada:", extension);
 
         // Validar que sea una extensión válida
         if (
@@ -59,19 +67,25 @@ const CardBook = ({ book }) => {
           extension === "epub" ||
           extension === "mobi"
         ) {
+          console.log("✅ Extensión válida detectada:", extension);
           return `.${extension}`;
         }
 
+        console.log("⚠️  Extensión no válida, usando .epub por defecto");
         return ".epub"; // extensión por defecto si no se puede detectar
       };
 
       const fileExtension = getFileExtension(book.file);
+      console.log("📁 Extensión final para descarga:", fileExtension);
 
       // Crear un enlace temporal
       const link = document.createElement("a");
       link.href = blobUrl;
-      link.setAttribute("download", `${book.titulo}${fileExtension}`);
+      const downloadFileName = `${book.titulo}${fileExtension}`;
+      link.setAttribute("download", downloadFileName);
       link.style.display = "none";
+
+      console.log("📥 Descargando archivo como:", downloadFileName);
 
       // Añadir al DOM, hacer clic y luego remover
       document.body.appendChild(link);
