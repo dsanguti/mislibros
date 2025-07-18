@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const path = require("path");
+const fetch = require("node-fetch");
 
 const app = express();
 const port = process.env.PORT || 8001;
@@ -175,9 +176,58 @@ app.get("/api/download-book/:bookId", (req, res) => {
 
       // Verificar si es un archivo de Cloudinary o local
       if (book.file.includes("cloudinary.com")) {
-        // Es un archivo de Cloudinary, redirigir directamente
-        console.log("Archivo de Cloudinary, redirigiendo...");
-        res.redirect(book.file);
+        // Es un archivo de Cloudinary, descargarlo y servirlo
+        console.log("Archivo de Cloudinary, descargando...");
+
+        // Detectar la extensión correcta del archivo
+        const getFileExtension = (fileUrl) => {
+          if (!fileUrl) return ".epub"; // extensión por defecto
+
+          // Extraer la extensión de la URL del archivo
+          const urlParts = fileUrl.split(".");
+          const extension = urlParts[urlParts.length - 1]?.toLowerCase();
+
+          // Validar que sea una extensión válida
+          if (
+            extension === "pdf" ||
+            extension === "epub" ||
+            extension === "mobi"
+          ) {
+            return `.${extension}`;
+          }
+
+          return ".epub"; // extensión por defecto si no se puede detectar
+        };
+
+        const fileExtension = getFileExtension(book.file);
+        console.log("📁 Extensión detectada para Cloudinary:", fileExtension);
+
+        // Descargar el archivo de Cloudinary
+        fetch(book.file)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.arrayBuffer();
+          })
+          .then((buffer) => {
+            // Configurar headers para la descarga
+            res.setHeader("Content-Type", "application/octet-stream");
+            res.setHeader(
+              "Content-Disposition",
+              `attachment; filename="${encodeURIComponent(
+                book.titulo
+              )}${fileExtension}"`
+            );
+
+            // Enviar el archivo
+            res.send(new Uint8Array(buffer));
+            console.log("Archivo de Cloudinary enviado correctamente");
+          })
+          .catch((error) => {
+            console.error("Error al descargar archivo de Cloudinary:", error);
+            res.status(500).json({ error: "Error al descargar el archivo" });
+          });
       } else {
         // Es un archivo local
         const fileName = path.basename(book.file);
