@@ -2,6 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const db = require("../../db");
 const router = express.Router();
+const { deleteCloudinaryFile } = require("../../config/cloudinary");
 
 router.delete("/delete_saga", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -55,9 +56,9 @@ router.delete("/delete_saga", (req, res) => {
 
     // Primero verificar si la saga existe y pertenece al usuario
     db.query(
-      "SELECT id, user_id FROM sagas WHERE id = ?",
+      "SELECT id, coverSaga, user_id FROM sagas WHERE id = ?",
       [sagaId],
-      (err, results) => {
+      async (err, results) => {
         if (err) {
           console.error("❌ Error al verificar la saga:", err);
           return res.status(500).json({ error: "Error al verificar la saga" });
@@ -125,7 +126,25 @@ router.delete("/delete_saga", (req, res) => {
             }
 
             // Función para eliminar la saga
-            function deleteSaga() {
+            async function deleteSaga() {
+              // Obtener la carátula de la saga para eliminarla de Cloudinary
+              const coverSaga = results[0].coverSaga;
+
+              // Eliminar la carátula de Cloudinary si existe
+              if (coverSaga && coverSaga.includes("cloudinary.com")) {
+                try {
+                  await deleteCloudinaryFile(coverSaga, "image");
+                  console.log(
+                    `✅ Carátula de saga eliminada de Cloudinary: ${coverSaga}`
+                  );
+                } catch (error) {
+                  console.error(
+                    `❌ Error al eliminar carátula de Cloudinary: ${coverSaga}`,
+                    error
+                  );
+                }
+              }
+
               db.query(
                 "DELETE FROM sagas WHERE id = ? AND user_id = ?",
                 [sagaId, userIdNum],

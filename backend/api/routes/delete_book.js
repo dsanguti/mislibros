@@ -4,6 +4,7 @@ const db = require("../../db");
 const fs = require("fs");
 const path = require("path");
 const router = express.Router();
+const { deleteCloudinaryFile } = require("../../config/cloudinary");
 
 router.delete("/delete_book/:id", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -47,7 +48,7 @@ router.delete("/delete_book/:id", (req, res) => {
     db.query(
       "SELECT id, file, cover, user_id FROM books WHERE id = ?",
       [bookId],
-      (err, results) => {
+      async (err, results) => {
         if (err) {
           console.error("❌ Error al verificar el libro:", err);
           return res.status(500).json({ error: "Error al verificar el libro" });
@@ -79,36 +80,57 @@ router.delete("/delete_book/:id", (req, res) => {
         const bookFile = results[0].file;
         const coverFile = results[0].cover;
 
-        // Función para eliminar un archivo
-        const deleteFile = (filePath) => {
+        // Función para eliminar archivos (locales y Cloudinary)
+        const deleteFile = async (filePath) => {
           if (!filePath) return;
 
-          // Extraer el nombre del archivo de la URL
-          const fileName = path.basename(filePath);
-          let fullPath;
-
-          if (filePath.includes("/images/cover/")) {
-            fullPath = path.join(__dirname, "../../images/cover", fileName);
-          } else if (filePath.includes("/uploads/books/")) {
-            fullPath = path.join(__dirname, "../../uploads/books", fileName);
-          }
-
-          if (fullPath && fs.existsSync(fullPath)) {
+          // Si es un archivo de Cloudinary, eliminarlo de ahí
+          if (filePath.includes("cloudinary.com")) {
             try {
-              fs.unlinkSync(fullPath);
-              console.log(`✅ Archivo eliminado: ${fullPath}`);
+              // Determinar el tipo de recurso basado en la URL
+              const resourceType = filePath.includes("/books/")
+                ? "raw"
+                : "image";
+              await deleteCloudinaryFile(filePath, resourceType);
+              console.log(`✅ Archivo eliminado de Cloudinary: ${filePath}`);
             } catch (error) {
               console.error(
-                `❌ Error al eliminar el archivo ${fullPath}:`,
+                `❌ Error al eliminar archivo de Cloudinary ${filePath}:`,
                 error
               );
+            }
+          } else {
+            // Es un archivo local, eliminarlo del sistema de archivos
+            const fileName = path.basename(filePath);
+            let fullPath;
+
+            if (filePath.includes("/images/cover/")) {
+              fullPath = path.join(__dirname, "../../images/cover", fileName);
+            } else if (filePath.includes("/uploads/books/")) {
+              fullPath = path.join(__dirname, "../../uploads/books", fileName);
+            }
+
+            if (fullPath && fs.existsSync(fullPath)) {
+              try {
+                fs.unlinkSync(fullPath);
+                console.log(`✅ Archivo local eliminado: ${fullPath}`);
+              } catch (error) {
+                console.error(
+                  `❌ Error al eliminar el archivo local ${fullPath}:`,
+                  error
+                );
+              }
             }
           }
         };
 
-        // Eliminar los archivos físicos
-        deleteFile(bookFile);
-        deleteFile(coverFile);
+        // Eliminar los archivos (locales y/o Cloudinary)
+        try {
+          await deleteFile(bookFile);
+          await deleteFile(coverFile);
+        } catch (error) {
+          console.error("Error al eliminar archivos:", error);
+        }
 
         // Proceder con la eliminación del registro en la base de datos
         db.query(
