@@ -73,38 +73,6 @@ app.get("/health", (req, res) => {
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Servir imágenes de uploads
 
-// Endpoint temporal para verificar libros
-app.get("/api/check-book/:bookId", (req, res) => {
-  const bookId = req.params.bookId;
-
-  const db = require("./db");
-
-  const query = "SELECT id, titulo, file, user_id FROM books WHERE id = ?";
-
-  db.query(query, [bookId], (err, results) => {
-    if (err) {
-      console.error("Error al consultar el libro:", err);
-      return res.status(500).json({ error: "Error interno del servidor" });
-    }
-
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Libro no encontrado" });
-    }
-
-    const book = results[0];
-
-    res.json({
-      book: {
-        id: book.id,
-        titulo: book.titulo,
-        file: book.file,
-        userId: book.user_id,
-        hasFile: !!book.file,
-      },
-    });
-  });
-});
-
 // Endpoint para actualizar URLs de archivos a Cloudinary
 app.post("/api/update-file-urls", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
