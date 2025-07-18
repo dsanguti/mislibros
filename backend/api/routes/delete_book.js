@@ -80,17 +80,30 @@ router.delete("/delete_book/:id", (req, res) => {
         const bookFile = results[0].file;
         const coverFile = results[0].cover;
 
+        console.log("📚 URLs de archivos del libro:");
+        console.log(`   📖 Archivo del libro: ${bookFile}`);
+        console.log(`   🖼️  Carátula: ${coverFile}`);
+
         // Función para eliminar archivos (locales y Cloudinary)
         const deleteFile = async (filePath) => {
-          if (!filePath) return;
+          if (!filePath) {
+            console.log("⚠️  No hay ruta de archivo para eliminar");
+            return;
+          }
+
+          console.log(`🔍 Procesando archivo: ${filePath}`);
 
           // Si es un archivo de Cloudinary, eliminarlo de ahí
           if (filePath.includes("cloudinary.com")) {
+            console.log("☁️  Detectado archivo de Cloudinary");
             try {
               // Determinar el tipo de recurso basado en la URL
               const resourceType = filePath.includes("/books/")
                 ? "raw"
                 : "image";
+              console.log(`📁 Tipo de recurso detectado: ${resourceType}`);
+              console.log(`🔗 URL completa: ${filePath}`);
+
               await deleteCloudinaryFile(filePath, resourceType);
               console.log(`✅ Archivo eliminado de Cloudinary: ${filePath}`);
             } catch (error) {
@@ -100,6 +113,7 @@ router.delete("/delete_book/:id", (req, res) => {
               );
             }
           } else {
+            console.log("💾 Detectado archivo local");
             // Es un archivo local, eliminarlo del sistema de archivos
             const fileName = path.basename(filePath);
             let fullPath;
@@ -120,6 +134,8 @@ router.delete("/delete_book/:id", (req, res) => {
                   error
                 );
               }
+            } else {
+              console.log(`⚠️  Archivo local no encontrado: ${fullPath}`);
             }
           }
         };
