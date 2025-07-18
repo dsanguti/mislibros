@@ -210,17 +210,35 @@ app.get("/api/download-book/:bookId", (req, res) => {
         // Extraer el public_id de la URL de Cloudinary
         const extractPublicId = (cloudinaryUrl) => {
           try {
+            console.log(
+              "🔍 URL original para extraer public_id:",
+              cloudinaryUrl
+            );
+
             // Ejemplo: https://res.cloudinary.com/do8zbut6y/raw/upload/v1752845688/mislibros/books/1752845687045-40336885.pdf
             const urlParts = cloudinaryUrl.split("/");
+            console.log("🔍 URL parts:", urlParts);
+
             const uploadIndex = urlParts.indexOf("upload");
+            console.log("🔍 Upload index:", uploadIndex);
+
             if (uploadIndex !== -1 && uploadIndex + 2 < urlParts.length) {
               // Tomar todo después de 'upload' excepto la versión
               const partsAfterUpload = urlParts.slice(uploadIndex + 2);
+              console.log("🔍 Parts after upload:", partsAfterUpload);
+
               // Remover la versión (v1752845688) si existe
               const withoutVersion = partsAfterUpload.filter(
                 (part) => !part.startsWith("v")
               );
-              return withoutVersion.join("/").replace(/\.[^/.]+$/, ""); // Remover extensión
+              console.log("🔍 Parts without version:", withoutVersion);
+
+              const publicId = withoutVersion
+                .join("/")
+                .replace(/\.[^/.]+$/, ""); // Remover extensión
+              console.log("🔍 Public ID final:", publicId);
+
+              return publicId;
             }
             return null;
           } catch (error) {
@@ -241,6 +259,17 @@ app.get("/api/download-book/:bookId", (req, res) => {
         const cloudinary = require("cloudinary").v2;
 
         // Configurar Cloudinary con las credenciales
+        console.log("🔧 Configurando Cloudinary...");
+        console.log("🔧 Cloud name:", process.env.CLOUDINARY_CLOUD_NAME);
+        console.log(
+          "🔧 API key:",
+          process.env.CLOUDINARY_API_KEY ? "Presente" : "Faltante"
+        );
+        console.log(
+          "🔧 API secret:",
+          process.env.CLOUDINARY_API_SECRET ? "Presente" : "Faltante"
+        );
+
         cloudinary.config({
           cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
           api_key: process.env.CLOUDINARY_API_KEY,
@@ -304,10 +333,62 @@ app.get("/api/download-book/:bookId", (req, res) => {
                 "❌ Error al descargar archivo de Cloudinary (firmada):",
                 error
               );
-              res.status(500).json({
-                error: "Error al descargar el archivo de Cloudinary",
-                details: error.message,
-              });
+
+              // Si falla la URL firmada, intentar con la URL original pero modificada
+              console.log("🔄 Intentando con URL original modificada...");
+
+              // Crear una URL que fuerce la descarga
+              const downloadUrl = book.file.replace(
+                "/raw/upload/",
+                "/upload/fl_attachment/"
+              );
+              console.log("🔗 URL de descarga alternativa:", downloadUrl);
+
+              fetch(downloadUrl)
+                .then((response) => {
+                  console.log(
+                    "📡 Respuesta de Cloudinary (alternativa) - Status:",
+                    response.status
+                  );
+
+                  if (!response.ok) {
+                    throw new Error(
+                      `HTTP error! status: ${response.status} - ${response.statusText}`
+                    );
+                  }
+                  return response.arrayBuffer();
+                })
+                .then((buffer) => {
+                  console.log(
+                    "📦 Buffer recibido (alternativa), tamaño:",
+                    buffer.byteLength
+                  );
+
+                  // Configurar headers para la descarga
+                  res.setHeader("Content-Type", "application/octet-stream");
+                  res.setHeader(
+                    "Content-Disposition",
+                    `attachment; filename="${encodeURIComponent(
+                      book.titulo
+                    )}${fileExtension}"`
+                  );
+
+                  // Enviar el archivo
+                  res.send(new Uint8Array(buffer));
+                  console.log(
+                    "✅ Archivo de Cloudinary enviado correctamente (URL alternativa)"
+                  );
+                })
+                .catch((retryError) => {
+                  console.error(
+                    "❌ Error también con URL alternativa:",
+                    retryError
+                  );
+                  res.status(500).json({
+                    error: "Error al descargar el archivo de Cloudinary",
+                    details: error.message,
+                  });
+                });
             });
         } catch (cloudinaryError) {
           console.error("❌ Error configurando Cloudinary:", cloudinaryError);
