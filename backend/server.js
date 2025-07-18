@@ -252,7 +252,17 @@ app.get("/api/download-book/:bookId", (req, res) => {
               cloudinaryUrl
             );
 
-            // Ejemplo: https://res.cloudinary.com/do8zbut6y/raw/upload/v1752845688/mislibros/books/1752845687045-40336885.pdf
+            // Usar una expresión regular para extraer el public_id
+            // Patrón: /upload/v[version]/[public_id].[extension]
+            const match = cloudinaryUrl.match(/\/upload\/v\d+\/([^.]+)\.\w+$/);
+
+            if (match) {
+              const publicId = match[1];
+              console.log("🔍 Public ID extraído con regex:", publicId);
+              return publicId;
+            }
+
+            // Fallback: método anterior
             const urlParts = cloudinaryUrl.split("/");
             console.log("🔍 URL parts:", urlParts);
 
@@ -270,10 +280,13 @@ app.get("/api/download-book/:bookId", (req, res) => {
               );
               console.log("🔍 Parts without version:", withoutVersion);
 
-              const publicId = withoutVersion
-                .join("/")
-                .replace(/\.[^/.]+$/, ""); // Remover extensión
-              console.log("🔍 Public ID final:", publicId);
+              // Unir las partes y remover la extensión del archivo
+              const fullPath = withoutVersion.join("/");
+              console.log("🔍 Full path before extension removal:", fullPath);
+
+              // Remover la extensión del archivo (última parte después del último punto)
+              const publicId = fullPath.replace(/\.[^/.]+$/, "");
+              console.log("🔍 Public ID final (fallback):", publicId);
 
               return publicId;
             }
