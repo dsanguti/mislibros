@@ -158,3 +158,96 @@ router.delete("/delete_book/:id", (req, res) => {
 });
 
 module.exports = router;
+
+// Endpoint de prueba para verificar Cloudinary
+router.get("/test-cloudinary/:url(*)", async (req, res) => {
+  try {
+    const { url } = req.params;
+    const { extractPublicId } = require("../../config/cloudinary");
+
+    console.log("🔍 Probando URL:", url);
+
+    const publicId = extractPublicId(url);
+    console.log("📋 Public ID extraído:", publicId);
+
+    if (!publicId) {
+      return res.json({
+        success: false,
+        message: "No se pudo extraer public_id de la URL",
+        url: url,
+      });
+    }
+
+    // Solo extraer el public_id, no eliminar
+    res.json({
+      success: true,
+      message: "Public ID extraído correctamente",
+      url: url,
+      publicId: publicId,
+    });
+  } catch (error) {
+    console.error("Error en test-cloudinary:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al procesar la URL",
+      error: error.message,
+    });
+  }
+});
+
+// Endpoint de debug para ver URLs de Cloudinary en la base de datos
+router.get("/debug-cloudinary-urls", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({ error: "Token no proporcionado" });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err) => {
+      if (err) {
+        return res.status(403).json({ error: "Token inválido" });
+      }
+
+      // Obtener libros con URLs de Cloudinary
+      db.query(
+        "SELECT id, titulo, cover, file FROM books WHERE cover LIKE '%cloudinary.com%' OR file LIKE '%cloudinary.com%'",
+        (err, bookResults) => {
+          if (err) {
+            console.error("Error al consultar libros:", err);
+            return res
+              .status(500)
+              .json({ error: "Error interno del servidor" });
+          }
+
+          // Obtener sagas con URLs de Cloudinary
+          db.query(
+            "SELECT id, nombre, coverSaga FROM sagas WHERE coverSaga LIKE '%cloudinary.com%'",
+            (err, sagaResults) => {
+              if (err) {
+                console.error("Error al consultar sagas:", err);
+                return res
+                  .status(500)
+                  .json({ error: "Error interno del servidor" });
+              }
+
+              res.json({
+                books: bookResults,
+                sagas: sagaResults,
+                totalBooks: bookResults.length,
+                totalSagas: sagaResults.length,
+              });
+            }
+          );
+        }
+      );
+    });
+  } catch (error) {
+    console.error("Error en debug-cloudinary-urls:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener URLs",
+      error: error.message,
+    });
+  }
+});
