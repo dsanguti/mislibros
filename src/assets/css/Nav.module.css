@@ -469,53 +469,12 @@ nav a {
   .submenuUser li:first-child {
     border-top: none;
   }
+
+  /* Hover para li del submenú en móvil */
   .submenuUser li:hover {
-    background-color: var(--color-secundary);
+    background-color: var(--color-secundary) !important;
   }
-  /* Contenedores de los elementos del submenú */
-  .containerSalir,
-  .containerGestor,
-  .containerKey {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    margin: 0;
-    background-color: var(--color-primary);
-    text-align: center;
-    height: 50px; /* Altura fija igual al userMenu */
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    font-size: 1rem;
-    font-weight: 500;
-    box-sizing: border-box;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .containerSalir:hover,
-  .containerGestor:hover,
-  .containerKey:hover {
-    background-color: var(--color-secundary);
-  }
-
-  /* Mostrar iconos en móvil */
-  .logout,
-  .userIcon,
-  .keyIcon {
-    display: none !important;
-    width: 1.7rem !important;
-    height: 1.7rem !important;
-    margin-right: 12px !important;
-    padding: 0 !important;
-    visibility: visible !important;
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-  }
-
-  /* Contenedores con iconos en móvil */
+  /* Contenedores de los elementos del submenú en móvil */
   .containerSalir,
   .containerGestor,
   .containerKey {
@@ -524,7 +483,6 @@ nav a {
     justify-content: center !important;
     align-items: center !important;
     padding: 0 !important;
-
     margin: 0 !important;
     background-color: var(--color-primary) !important;
     text-align: center !important;
@@ -536,6 +494,20 @@ nav a {
     box-sizing: border-box !important;
     position: relative !important;
     overflow: hidden !important;
+  }
+
+  /* Hover para contenedores en móvil */
+  .containerSalir:hover,
+  .containerGestor:hover,
+  .containerKey:hover {
+    background-color: var(--color-secundary) !important;
+  }
+
+  /* Ocultar iconos en móvil */
+  .logout,
+  .userIcon,
+  .keyIcon {
+    display: none !important;
   }
 
   /* Estilos específicos para h4 en móvil */
