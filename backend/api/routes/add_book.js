@@ -154,9 +154,7 @@ router.post(
               // Generar un nombre único con la extensión correcta
               const uniqueId =
                 Date.now() + "-" + Math.round(Math.random() * 1e9);
-              const publicId = `mislibros/books/${uniqueId}.${
-                fileExtension || "epub"
-              }`;
+              const publicId = `${uniqueId}.${fileExtension || "epub"}`;
 
               console.log("📁 Public ID generado:", publicId);
 
