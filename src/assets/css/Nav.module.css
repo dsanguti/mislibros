@@ -477,6 +477,7 @@ nav a {
   .containerGestor,
   .containerKey {
     width: 100% !important;
+    height: 100% !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
@@ -484,7 +485,6 @@ nav a {
     margin: 0 !important;
     background-color: var(--color-primary) !important;
     text-align: center !important;
-    height: 50px !important;
     cursor: pointer !important;
     transition: background-color 0.1s ease !important;
     font-size: 1rem !important;
