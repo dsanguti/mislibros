@@ -456,9 +456,9 @@ nav a {
     justify-content: center;
     align-items: center;
     width: 100%;
-    background-color: var(--color-primary);
+    background-color: transparent; /* Transparente para que no interfiera */
     margin: 0;
-    padding-right: 35px !important;
+    padding: 0; /* Sin padding para que el contenedor ocupe todo el espacio */
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     height: 50px; /* Altura fija igual al userMenu */
     flex-shrink: 0;
@@ -470,10 +470,6 @@ nav a {
     border-top: none;
   }
 
-  /* Hover para li del submenú en móvil */
-  .submenuUser li:hover {
-    background-color: var(--color-secundary) !important;
-  }
   /* Contenedores de los elementos del submenú en móvil */
   .containerSalir,
   .containerGestor,
