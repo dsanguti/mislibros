@@ -128,8 +128,45 @@ app.post("/api/update-file-urls", (req, res) => {
   });
 });
 
+// Endpoint de debug para verificar configuración
+app.get("/api/debug-cloudinary", (req, res) => {
+  console.log("=== DEBUG CLOUDINARY ===");
+  console.log("Cloud name:", process.env.CLOUDINARY_CLOUD_NAME);
+  console.log("API key presente:", !!process.env.CLOUDINARY_API_KEY);
+  console.log("API secret presente:", !!process.env.CLOUDINARY_API_SECRET);
+
+  const cloudinary = require("cloudinary").v2;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+
+  // Probar la API de Cloudinary
+  cloudinary.api.ping((error, result) => {
+    if (error) {
+      console.error("❌ Error en ping de Cloudinary:", error);
+      res.json({
+        status: "error",
+        message: "Error conectando con Cloudinary",
+        error: error.message,
+      });
+    } else {
+      console.log("✅ Ping exitoso de Cloudinary:", result);
+      res.json({
+        status: "success",
+        message: "Conexión exitosa con Cloudinary",
+        result,
+      });
+    }
+  });
+});
+
 // Endpoint de descarga de libros (directo en server.js para asegurar funcionamiento)
 app.get("/api/download-book/:bookId", (req, res) => {
+  console.log("🚀 === ENDPOINT DE DESCARGA EJECUTADO ===");
+  console.log("⏰ Timestamp:", new Date().toISOString());
+
   const token = req.headers.authorization?.split(" ")[1];
   const bookId = req.params.bookId;
 
