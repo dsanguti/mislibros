@@ -65,7 +65,7 @@ app.get("/health", (req, res) => {
     status: "OK",
     message: "Servidor funcionando correctamente",
     timestamp: new Date().toISOString(),
-    version: "1.0.1",
+    version: "1.0.2",
   });
 });
 
