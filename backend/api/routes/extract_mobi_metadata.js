@@ -140,15 +140,24 @@ router.post(
   verifyToken,
   (req, res, next) => {
     upload.single("file")(req, res, (err) => {
-      if (err instanceof multer.MulterError) {
-        if (err.code === "LIMIT_FILE_SIZE") {
-          return res.status(413).json({
-            message:
-              "El archivo es demasiado grande. El tamaño máximo permitido es 50MB.",
+      if (err) {
+        console.error("Error en multer:", err);
+        if (err instanceof multer.MulterError) {
+          if (err.code === "LIMIT_FILE_SIZE") {
+            return res.status(413).json({
+              message:
+                "El archivo es demasiado grande. El tamaño máximo permitido es 50MB.",
+            });
+          }
+          return res.status(400).json({
+            message: `Error al subir archivo: ${err.message}`,
           });
         }
+        return res.status(400).json({
+          message: `Error al procesar archivo: ${err.message}`,
+        });
       }
-      next(err);
+      next();
     });
   },
   async (req, res) => {
