@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
   UPDATE_FILE_URLS: `${API_BASE_URL}/api/update-file-urls`,
   EXTRACT_METADATA: `${API_BASE_URL}/api/extract_metadata`,
   EXTRACT_MOBI_METADATA: `${API_BASE_URL}/api/extract_mobi_metadata`,
+  TEST_UPLOAD: `${API_BASE_URL}/api/test_upload`,
   CLEANUP: `${API_BASE_URL}/api/cleanup`,
 
   // Sagas

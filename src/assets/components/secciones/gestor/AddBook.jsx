@@ -40,6 +40,34 @@ const AddBook = () => {
             // Para archivos EPUB, usar la ruta del backend (igual que PDF y MOBI)
             try {
               console.log("🚀 Iniciando procesamiento de EPUB desde móvil...");
+              setProgress(10);
+
+              // Primero hacer una prueba de conectividad
+              console.log("🧪 Probando conectividad...");
+              try {
+                const testResponse = await fetch(API_ENDPOINTS.TEST_UPLOAD, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                  body: JSON.stringify({ test: "conectividad" }),
+                  signal: AbortSignal.timeout(10000), // 10 segundos
+                });
+
+                if (testResponse.ok) {
+                  const testResult = await testResponse.json();
+                  console.log("✅ Prueba de conectividad exitosa:", testResult);
+                } else {
+                  console.warn(
+                    "⚠️ Prueba de conectividad falló:",
+                    testResponse.status
+                  );
+                }
+              } catch (testError) {
+                console.error("❌ Error en prueba de conectividad:", testError);
+              }
+
               setProgress(20);
               const formData = new FormData();
               formData.append("file", file);
@@ -56,8 +84,8 @@ const AddBook = () => {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                // Añadir timeout más largo para archivos grandes
-                signal: AbortSignal.timeout(120000), // 2 minutos
+                // Timeout más corto para detectar problemas rápidamente
+                signal: AbortSignal.timeout(60000), // 1 minuto
               });
 
               console.log(
@@ -76,7 +104,7 @@ const AddBook = () => {
               }
 
               const metadata = await response.json();
-              console.log("Metadatos extraídos del EPUB:", metadata);
+              console.log("✅ Metadatos extraídos del EPUB:", metadata);
 
               // Convertir la URL de la portada a Blob si existe
               let coverImage = null;

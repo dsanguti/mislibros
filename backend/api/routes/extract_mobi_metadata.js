@@ -69,6 +69,17 @@ const verifyToken = (req, res, next) => {
   next();
 };
 
+// Ruta de prueba para verificar que las peticiones llegan
+router.post("/test_upload", verifyToken, (req, res) => {
+  console.log("🧪 Endpoint de prueba alcanzado");
+  console.log("Headers:", req.headers);
+  console.log("Body:", req.body);
+  res.json({
+    message: "Endpoint de prueba funcionando",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Ruta para extraer metadatos de archivos PDF y EPUB
 router.post(
   "/extract_metadata",
@@ -310,7 +321,10 @@ router.post(
               cover = await book.getCover();
               console.log("Portada encontrada con getCover()");
             } catch (coverError) {
-              console.log("Error al obtener portada con getCover():", coverError);
+              console.log(
+                "Error al obtener portada con getCover():",
+                coverError
+              );
               console.log("getCover() falló, intentando otros métodos...");
             }
 
