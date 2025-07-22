@@ -55,6 +55,7 @@ const upload = multer({
     const fileName = file.originalname.toLowerCase();
     const isPdf = fileName.endsWith(".pdf");
     const isEpub = fileName.endsWith(".epub");
+    const isTxt = fileName.endsWith(".txt");
 
     // Verificar por MIME type (puede variar en móviles)
     const isPdfMime =
@@ -66,18 +67,22 @@ const upload = multer({
       file.mimetype === "application/octet-stream" ||
       file.mimetype.includes("epub") ||
       file.mimetype.includes("zip");
+    const isTxtMime =
+      file.mimetype === "text/plain" || file.mimetype === "text/txt";
 
     console.log("🔍 Verificación - Es PDF por extensión:", isPdf);
     console.log("🔍 Verificación - Es EPUB por extensión:", isEpub);
+    console.log("🔍 Verificación - Es TXT por extensión:", isTxt);
     console.log("🔍 Verificación - Es PDF por MIME:", isPdfMime);
     console.log("🔍 Verificación - Es EPUB por MIME:", isEpubMime);
+    console.log("🔍 Verificación - Es TXT por MIME:", isTxtMime);
 
-    if (isPdf || isEpub || isPdfMime || isEpubMime) {
+    if (isPdf || isEpub || isTxt || isPdfMime || isEpubMime || isTxtMime) {
       console.log("✅ Archivo aceptado");
       cb(null, true);
     } else {
       console.log("❌ Archivo rechazado");
-      cb(new Error("Solo se permiten archivos PDF y EPUB"), false);
+      cb(new Error("Solo se permiten archivos PDF, EPUB y TXT"), false);
     }
   },
 });
