@@ -47,6 +47,14 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
     data.append("nombre", formData.nombre);
     if (file) data.append("coverSaga", file);
 
+    // Debug logs
+    console.log("🔍 URL de actualización:", API_ENDPOINTS.UPDATE_SAGA);
+    console.log("🔍 Datos del formulario:", {
+      id: formData.id,
+      nombre: formData.nombre,
+      tieneArchivo: !!file,
+    });
+
     try {
       const response = await fetch(API_ENDPOINTS.UPDATE_SAGA, {
         method: "PUT",
@@ -56,7 +64,15 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
         },
       });
 
+      console.log("🔍 Respuesta del servidor:", {
+        status: response.status,
+        statusText: response.statusText,
+        url: response.url,
+      });
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error("❌ Error en la respuesta:", errorText);
         throw new Error("Error al actualizar la saga");
       }
 
@@ -82,7 +98,8 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
       setTimeout(() => {
         if (typeof onClose === "function") onClose();
       }, 2000);
-    } catch {
+    } catch (error) {
+      console.error("❌ Error completo:", error);
       toast.error("Hubo un problema al actualizar la saga.", {
         autoClose: 3000,
       });
