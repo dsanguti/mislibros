@@ -80,6 +80,38 @@ router.post("/test_upload", verifyToken, (req, res) => {
   });
 });
 
+// Ruta de prueba con archivo pequeño
+router.post(
+  "/test_file_upload",
+  verifyToken,
+  upload.single("file"),
+  (req, res) => {
+    console.log("🧪 Endpoint de prueba con archivo alcanzado");
+    console.log(
+      "Archivo recibido:",
+      req.file
+        ? {
+            originalname: req.file.originalname,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+          }
+        : "No hay archivo"
+    );
+
+    res.json({
+      message: "Archivo recibido correctamente",
+      file: req.file
+        ? {
+            name: req.file.originalname,
+            size: req.file.size,
+            type: req.file.mimetype,
+          }
+        : null,
+      timestamp: new Date().toISOString(),
+    });
+  }
+);
+
 // Ruta para extraer metadatos de archivos PDF y EPUB
 router.post(
   "/extract_metadata",

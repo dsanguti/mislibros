@@ -58,14 +58,62 @@ const AddBook = () => {
                 if (testResponse.ok) {
                   const testResult = await testResponse.json();
                   console.log("✅ Prueba de conectividad exitosa:", testResult);
+                  toast.info("✅ Conectividad verificada", { autoClose: 2000 });
                 } else {
                   console.warn(
                     "⚠️ Prueba de conectividad falló:",
                     testResponse.status
                   );
+                  toast.warning("⚠️ Problema de conectividad", {
+                    autoClose: 3000,
+                  });
                 }
               } catch (testError) {
                 console.error("❌ Error en prueba de conectividad:", testError);
+                toast.error("❌ Error de conectividad", { autoClose: 3000 });
+              }
+
+              // Prueba con archivo pequeño
+              console.log("🧪 Probando subida de archivo pequeño...");
+              try {
+                const testFile = new File(["test content"], "test.txt", {
+                  type: "text/plain",
+                });
+                const testFormData = new FormData();
+                testFormData.append("file", testFile);
+
+                const testFileResponse = await fetch(
+                  API_ENDPOINTS.TEST_FILE_UPLOAD,
+                  {
+                    method: "POST",
+                    body: testFormData,
+                    headers: {
+                      Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                    signal: AbortSignal.timeout(15000), // 15 segundos
+                  }
+                );
+
+                if (testFileResponse.ok) {
+                  const testFileResult = await testFileResponse.json();
+                  console.log("✅ Prueba de archivo exitosa:", testFileResult);
+                  toast.info("✅ Subida de archivos verificada", {
+                    autoClose: 2000,
+                  });
+                } else {
+                  console.warn(
+                    "⚠️ Prueba de archivo falló:",
+                    testFileResponse.status
+                  );
+                  toast.warning("⚠️ Problema con subida de archivos", {
+                    autoClose: 3000,
+                  });
+                }
+              } catch (testFileError) {
+                console.error("❌ Error en prueba de archivo:", testFileError);
+                toast.error("❌ Error con subida de archivos", {
+                  autoClose: 3000,
+                });
               }
 
               setProgress(20);
