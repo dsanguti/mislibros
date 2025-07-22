@@ -47,36 +47,17 @@ const upload = multer({
     fileSize: 50 * 1024 * 1024, // 50MB máximo
   },
   fileFilter: function (req, file, cb) {
-    console.log("🔍 Filtro de archivo - Nombre:", file.originalname);
-    console.log("🔍 Filtro de archivo - MIME type:", file.mimetype);
-
-    // Verificar por extensión del archivo (más confiable)
-    const fileName = file.originalname.toLowerCase();
-    const isPdf = fileName.endsWith(".pdf");
-    const isEpub = fileName.endsWith(".epub");
-
-    // Verificar por MIME type (puede variar en móviles)
-    const isPdfMime =
+    if (
       file.mimetype === "application/pdf" ||
-      file.mimetype === "application/octet-stream" ||
-      file.mimetype.includes("pdf");
-    const isEpubMime =
       file.mimetype === "application/epub+zip" ||
-      file.mimetype === "application/octet-stream" ||
-      file.mimetype.includes("epub") ||
-      file.mimetype.includes("zip");
-
-    console.log("🔍 Verificación - Es PDF por extensión:", isPdf);
-    console.log("🔍 Verificación - Es EPUB por extensión:", isEpub);
-    console.log("🔍 Verificación - Es PDF por MIME:", isPdfMime);
-    console.log("🔍 Verificación - Es EPUB por MIME:", isEpubMime);
-
-    if (isPdf || isEpub || isPdfMime || isEpubMime) {
-      console.log("✅ Archivo aceptado");
+      file.mimetype === "text/plain" ||
+      file.originalname.toLowerCase().endsWith(".pdf") ||
+      file.originalname.toLowerCase().endsWith(".epub") ||
+      file.originalname.toLowerCase().endsWith(".txt")
+    ) {
       cb(null, true);
     } else {
-      console.log("❌ Archivo rechazado");
-      cb(new Error("Solo se permiten archivos PDF y EPUB"), false);
+      cb(new Error("Solo se permiten archivos PDF, EPUB y TXT"), false);
     }
   },
 });
