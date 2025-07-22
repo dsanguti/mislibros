@@ -44,6 +44,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB máximo
+  },
   fileFilter: function (req, file, cb) {
     if (
       file.mimetype === "application/pdf" ||
@@ -71,7 +74,19 @@ const verifyToken = (req, res, next) => {
 router.post(
   "/extract_metadata",
   verifyToken,
-  upload.single("file"),
+  (req, res, next) => {
+    upload.single("file")(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(413).json({
+            message:
+              "El archivo es demasiado grande. El tamaño máximo permitido es 50MB.",
+          });
+        }
+      }
+      next(err);
+    });
+  },
   async (req, res) => {
     const tempFiles = [];
     try {

@@ -1,11 +1,10 @@
-import * as epubjs from "epubjs";
 import * as pdfjsLib from "pdfjs-dist";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "react-toastify";
+import { API_ENDPOINTS } from "../../../../config/api";
 import style from "../../../css/AddBook.module.css";
 import AddBookForm from "./AddBookForm";
-import { API_ENDPOINTS } from "../../../../config/api";
 
 // Configurar el worker de PDF.js
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -38,253 +37,76 @@ const AddBook = () => {
 
           // Extraer metadatos según el tipo de archivo
           if (file.type === "application/epub+zip") {
-            // Función para extraer metadatos de un archivo EPUB
-            const extractEpubMetadata = async (file) => {
-              try {
-                setProgress(20);
-                const arrayBuffer = await file.arrayBuffer();
-                setProgress(40);
-                const book = new epubjs.Book(arrayBuffer);
-                await book.ready;
-                setProgress(60);
+            // Para archivos EPUB, usar la ruta del backend (igual que PDF y MOBI)
+            try {
+              setProgress(20);
+              const formData = new FormData();
+              formData.append("file", file);
 
-                // Obtener los metadatos de manera más robusta
-                const metadata = {
-                  title: "",
-                  author: "",
-                  sinopsis: "",
-                };
+              const response = await fetch(API_ENDPOINTS.EXTRACT_METADATA, {
+                method: "POST",
+                body: formData,
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+              });
 
-                try {
-                  // Intentar obtener los metadatos de diferentes maneras
-                  console.log("Objeto book completo:", book);
-
-                  // Método 1: Usar book.metadata
-                  const bookMetadata = await book.metadata;
-                  console.log("Método 1 - book.metadata:", bookMetadata);
-
-                  // Método 2: Usar book.package.metadata
-                  const packageMetadata = book.package?.metadata;
-                  console.log(
-                    "Método 2 - book.package.metadata:",
-                    packageMetadata
-                  );
-
-                  // Método 3: Intentar extraer sinopsis del primer capítulo
-                  let chapterContent = "";
-                  try {
-                    console.log(
-                      "Intentando extraer sinopsis del primer capítulo..."
-                    );
-
-                    // Esperar a que el libro esté completamente cargado
-                    await book.ready;
-                    console.log("Libro listo para extraer contenido");
-
-                    // Obtener la navegación
-                    const navigation = await book.navigation;
-                    console.log("Navegación del libro:", navigation);
-
-                    if (navigation && navigation.toc) {
-                      // Buscar el primer elemento que no sea la portada o página de título
-                      const firstContentChapter = navigation.toc.find(
-                        (item) =>
-                          item.href &&
-                          !item.href.includes("cover") &&
-                          !item.href.includes("titlepage")
-                      );
-
-                      if (firstContentChapter) {
-                        console.log(
-                          "Primer capítulo de contenido encontrado:",
-                          firstContentChapter
-                        );
-
-                        // Intentar obtener el contenido usando el método spine
-                        const spineItem = book.spine.get(
-                          firstContentChapter.href
-                        );
-                        console.log(
-                          "Elemento del spine encontrado:",
-                          spineItem
-                        );
-
-                        if (spineItem) {
-                          try {
-                            // Cargar el contenido del capítulo
-                            const content = await spineItem.load();
-                            console.log("Contenido cargado:", content);
-
-                            if (content && content.document) {
-                              // Obtener el texto directamente del documento
-                              let text = "";
-
-                              // Intentar obtener el texto de diferentes maneras
-                              try {
-                                // Método 1: Usar textContent directamente
-                                text = content.document.body.textContent;
-                              } catch (e) {
-                                console.warn(
-                                  "Error al obtener textContent:",
-                                  e
-                                );
-
-                                try {
-                                  // Método 2: Usar innerText
-                                  text = content.document.body.innerText;
-                                } catch (e) {
-                                  console.warn(
-                                    "Error al obtener innerText:",
-                                    e
-                                  );
-
-                                  // Método 3: Extraer texto de nodos de texto
-                                  const textNodes = [];
-                                  const walk = document.createTreeWalker(
-                                    content.document.body,
-                                    NodeFilter.SHOW_TEXT,
-                                    null,
-                                    false
-                                  );
-
-                                  let node;
-                                  while ((node = walk.nextNode())) {
-                                    textNodes.push(node.textContent);
-                                  }
-
-                                  text = textNodes.join(" ");
-                                }
-                              }
-
-                              // Limpiar el texto
-                              text = text
-                                .replace(/\s+/g, " ")
-                                .trim()
-                                .replace(/v\s*\d+\.\d+/gi, "");
-
-                              console.log(
-                                "Texto extraído (primeros 200 caracteres):",
-                                text.substring(0, 200)
-                              );
-
-                              // Tomar los primeros 500 caracteres como sinopsis
-                              chapterContent = text.substring(0, 500) + "...";
-                              console.log("Sinopsis final:", chapterContent);
-                            }
-                          } catch (loadError) {
-                            console.warn(
-                              "Error al cargar el contenido del capítulo:",
-                              loadError
-                            );
-                          }
-                        }
-                      }
-                    }
-                  } catch (chapterError) {
-                    console.warn(
-                      "Error al extraer contenido del primer capítulo:",
-                      chapterError
-                    );
-                  }
-
-                  // Intentar extraer información de todas las fuentes posibles
-                  if (bookMetadata) {
-                    metadata.title =
-                      bookMetadata.title || bookMetadata["dc:title"] || "";
-                    metadata.author =
-                      bookMetadata.creator ||
-                      bookMetadata["dc:creator"] ||
-                      bookMetadata.author ||
-                      "";
-                    metadata.sinopsis =
-                      bookMetadata.description ||
-                      bookMetadata["dc:description"] ||
-                      bookMetadata.summary ||
-                      "";
-                  }
-
-                  if (packageMetadata) {
-                    metadata.title =
-                      metadata.title ||
-                      packageMetadata.title ||
-                      packageMetadata["dc:title"] ||
-                      "";
-                    metadata.author =
-                      metadata.author ||
-                      packageMetadata.creator ||
-                      packageMetadata["dc:creator"] ||
-                      packageMetadata.author ||
-                      "";
-                    metadata.sinopsis =
-                      metadata.sinopsis ||
-                      packageMetadata.description ||
-                      packageMetadata["dc:description"] ||
-                      packageMetadata.summary ||
-                      "";
-                  }
-
-                  // Si aún no tenemos sinopsis, añadir un mensaje informativo
-                  if (!metadata.sinopsis) {
-                    metadata.sinopsis =
-                      "No se pudo extraer la sinopsis del archivo EPUB. Por favor, añade una descripción manualmente.";
-                    console.log("No se encontró sinopsis en los metadatos");
-                  }
-
-                  // Si aún no tenemos título, usar el nombre del archivo
-                  if (!metadata.title) {
-                    metadata.title = file.name.replace(/\.[^/.]+$/, "");
-                  }
-
-                  // Si aún no tenemos autor, usar un valor por defecto
-                  if (!metadata.author) {
-                    metadata.author = "Autor desconocido";
-                  }
-
-                  console.log("Metadatos procesados:", metadata);
-                } catch (metadataError) {
-                  console.warn("Error al obtener metadatos:", metadataError);
-                }
-
-                setProgress(80);
-
-                // Extraer la carátula
-                let coverImage = null;
-                try {
-                  console.log("Intentando extraer carátula...");
-                  const cover = await book.coverUrl();
-                  console.log("URL de la carátula:", cover);
-
-                  if (cover) {
-                    console.log("Descargando imagen de la carátula...");
-                    const response = await fetch(cover);
-                    const coverBuffer = await response.arrayBuffer();
-                    coverImage = arrayBufferToBlob(coverBuffer, "image/jpeg");
-                    console.log("Carátula extraída correctamente");
-                  } else {
-                    console.log("No se encontró URL de carátula");
-                  }
-                } catch (coverError) {
-                  console.warn(
-                    "No se pudo extraer la carátula del EPUB:",
-                    coverError
-                  );
-                }
-
-                return {
-                  title: metadata.title,
-                  author: metadata.author,
-                  sinopsis: metadata.sinopsis,
-                  cover: coverImage,
-                };
-              } catch (error) {
-                console.error("Error al extraer metadatos del EPUB:", error);
+              if (!response.ok) {
+                const errorData = await response.json();
                 throw new Error(
-                  "No se pudieron extraer los metadatos del archivo EPUB"
+                  errorData.message ||
+                    "Error al extraer metadatos del archivo EPUB"
                 );
               }
-            };
 
-            extractedMetadata = await extractEpubMetadata(file);
+              const metadata = await response.json();
+              console.log("Metadatos extraídos del EPUB:", metadata);
+
+              // Convertir la URL de la portada a Blob si existe
+              let coverImage = null;
+              if (metadata.cover) {
+                try {
+                  const coverResponse = await fetch(
+                    `${API_ENDPOINTS.IMAGES}${metadata.cover}`
+                  );
+                  const coverBuffer = await coverResponse.arrayBuffer();
+                  coverImage = arrayBufferToBlob(coverBuffer, "image/jpeg");
+                } catch (coverError) {
+                  console.warn("Error al cargar la portada:", coverError);
+                }
+              }
+
+              extractedMetadata = {
+                title: metadata.title || file.name.replace(/\.[^/.]+$/, ""),
+                author: metadata.author || "Autor desconocido",
+                sinopsis:
+                  metadata.sinopsis ||
+                  "No se pudo extraer la sinopsis del archivo EPUB.",
+                cover: coverImage,
+              };
+
+              setProgress(100);
+
+              // Limpiar archivos temporales después de procesarlos
+              try {
+                await fetch(API_ENDPOINTS.CLEANUP, {
+                  method: "DELETE",
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                });
+              } catch (cleanupError) {
+                console.warn(
+                  "Error al limpiar archivos temporales:",
+                  cleanupError
+                );
+              }
+            } catch (error) {
+              console.error("Error al procesar el archivo EPUB:", error);
+              throw new Error(
+                "No se pudieron extraer los metadatos del archivo EPUB"
+              );
+            }
           } else if (file.type === "application/pdf") {
             // Para archivos PDF, usar la ruta del backend
             try {
@@ -292,16 +114,15 @@ const AddBook = () => {
               const formData = new FormData();
               formData.append("file", file);
 
-              const response = await fetch(
-                API_ENDPOINTS.EXTRACT_METADATA,
-                {
-                  method: "POST",
-                  body: formData,
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              );
+              const response = await fetch(API_ENDPOINTS.EXTRACT_METADATA, {
+                method: "POST",
+                body: formData,
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                // Añadir timeout más largo para archivos grandes
+                signal: AbortSignal.timeout(120000), // 2 minutos
+              });
 
               if (!response.ok) {
                 const errorData = await response.json();
@@ -366,16 +187,15 @@ const AddBook = () => {
               const formData = new FormData();
               formData.append("file", file);
 
-              const response = await fetch(
-                API_ENDPOINTS.EXTRACT_MOBI_METADATA,
-                {
-                  method: "POST",
-                  body: formData,
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-              );
+              const response = await fetch(API_ENDPOINTS.EXTRACT_METADATA, {
+                method: "POST",
+                body: formData,
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                // Añadir timeout más largo para archivos grandes
+                signal: AbortSignal.timeout(120000), // 2 minutos
+              });
 
               if (!response.ok) {
                 throw new Error("Error al extraer metadatos del archivo MOBI");
@@ -423,8 +243,31 @@ const AddBook = () => {
           toast.success("Metadatos extraídos correctamente");
         } catch (error) {
           console.error("Error al procesar el archivo:", error);
-          setError(error.message || "Error al procesar el archivo");
-          toast.error(error.message || "Error al procesar el archivo");
+
+          // Mensajes de error más específicos para dispositivos móviles
+          let errorMessage = "Error al procesar el archivo";
+
+          if (error.name === "AbortError" || error.name === "TimeoutError") {
+            errorMessage =
+              "El archivo es demasiado grande o la conexión es lenta. Intenta con un archivo más pequeño o mejora tu conexión.";
+          } else if (
+            error.message.includes("NetworkError") ||
+            error.message.includes("Failed to fetch")
+          ) {
+            errorMessage =
+              "Error de conexión. Verifica tu conexión a internet e intenta de nuevo.";
+          } else if (
+            error.message.includes("413") ||
+            error.message.includes("Payload Too Large")
+          ) {
+            errorMessage =
+              "El archivo es demasiado grande. Intenta con un archivo más pequeño.";
+          } else {
+            errorMessage = error.message || "Error al procesar el archivo";
+          }
+
+          setError(errorMessage);
+          toast.error(errorMessage);
         } finally {
           setLoading(false);
           setProgress(0);
