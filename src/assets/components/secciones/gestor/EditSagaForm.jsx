@@ -32,6 +32,7 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
   };
 
   const handleSubmit = async (e) => {
+    console.log("🚀 handleSubmit ejecutándose...");
     e.preventDefault();
     const token = localStorage.getItem("token");
 
@@ -131,10 +132,18 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
           onChange={handleChange}
         />
         <div className={style.buttonContainerEditSaga}>
-          <button className={style.buttonFormCancel} onClick={onClose}>
+          <button
+            className={style.buttonFormCancel}
+            type="button"
+            onClick={onClose}
+          >
             Cancelar
           </button>
-          <button className={style.buttonFormEdit} type="submit">
+          <button
+            className={style.buttonFormEdit}
+            type="submit"
+            onClick={() => console.log("🖱️ Botón Guardar Cambios clickeado")}
+          >
             Guardar Cambios
           </button>
         </div>
