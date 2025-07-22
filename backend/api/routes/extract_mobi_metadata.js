@@ -343,8 +343,19 @@ router.post(
         console.log("Leyendo archivo EPUB...");
 
         try {
-          // Importar epub2 dentro de la función para evitar problemas de scope
-          const Epub2 = require("epub2");
+          // Probar diferentes formas de importar epub2
+          let Epub2;
+          try {
+            Epub2 = require("epub2");
+          } catch (importError) {
+            console.error("Error importando epub2:", importError);
+            // Fallback: usar require directo
+            Epub2 = require("epub2");
+          }
+
+          console.log("Epub2 importado:", typeof Epub2);
+          console.log("Epub2 constructor:", Epub2);
+
           const book = new Epub2(filePath);
           const epubMetadata = await book.getMetadata();
 
