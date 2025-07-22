@@ -77,11 +77,11 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
         throw new Error("Error al actualizar la saga");
       }
 
-      const data = await response.json();
+      const responseData = await response.json();
       const updatedSaga = {
-        id: data.id,
-        nombre: data.nombre,
-        coverSaga: data.coverSaga,
+        id: responseData.id,
+        nombre: responseData.nombre,
+        coverSaga: responseData.coverSaga,
       };
 
       // Disparar evento de actualización
@@ -89,11 +89,11 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
 
       onUpdate(updatedSaga);
       setFormData({
-        id: data.id,
-        nombre: data.nombre,
-        coverSaga: data.coverSaga,
+        id: responseData.id,
+        nombre: responseData.nombre,
+        coverSaga: responseData.coverSaga,
       });
-      setPreview(data.coverSaga);
+      setPreview(responseData.coverSaga);
       setFile(null);
       toast.success("Saga actualizada correctamente", { autoClose: 2000 });
       setTimeout(() => {
