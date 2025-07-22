@@ -39,9 +39,16 @@ const AddBook = () => {
           if (file.type === "application/epub+zip") {
             // Para archivos EPUB, usar la ruta del backend (igual que PDF y MOBI)
             try {
+              console.log("🚀 Iniciando procesamiento de EPUB desde móvil...");
               setProgress(20);
               const formData = new FormData();
               formData.append("file", file);
+
+              console.log(
+                "📤 Enviando petición a:",
+                API_ENDPOINTS.EXTRACT_METADATA
+              );
+              console.log("📁 Archivo:", file.name, "Tamaño:", file.size);
 
               const response = await fetch(API_ENDPOINTS.EXTRACT_METADATA, {
                 method: "POST",
@@ -49,10 +56,19 @@ const AddBook = () => {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
+                // Añadir timeout más largo para archivos grandes
+                signal: AbortSignal.timeout(120000), // 2 minutos
               });
+
+              console.log(
+                "📥 Respuesta recibida:",
+                response.status,
+                response.statusText
+              );
 
               if (!response.ok) {
                 const errorData = await response.json();
+                console.error("❌ Error en la respuesta:", errorData);
                 throw new Error(
                   errorData.message ||
                     "Error al extraer metadatos del archivo EPUB"
