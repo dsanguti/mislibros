@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import style from "../../../css/Gestor.module.css";
 import { API_ENDPOINTS } from "../../../../config/api";
+import style from "../../../css/Gestor.module.css";
 
 const EditSagaForm = ({ saga, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
@@ -48,16 +48,13 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
     if (file) data.append("coverSaga", file);
 
     try {
-      const response = await fetch(
-        `${API_ENDPOINTS.UPDATE_SAGA}/${formData.id}`,
-        {
-          method: "PUT",
-          body: data,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(API_ENDPOINTS.UPDATE_SAGA, {
+        method: "PUT",
+        body: data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Error al actualizar la saga");
