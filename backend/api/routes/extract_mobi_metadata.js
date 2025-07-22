@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const { fromPath } = require("pdf2pic");
+const { Buffer } = require("buffer");
 const router = express.Router();
 
 // Asegurar que el directorio temporal existe
@@ -50,14 +51,12 @@ const upload = multer({
     if (
       file.mimetype === "application/pdf" ||
       file.mimetype === "application/epub+zip" ||
-      file.mimetype === "text/plain" ||
       file.originalname.toLowerCase().endsWith(".pdf") ||
-      file.originalname.toLowerCase().endsWith(".epub") ||
-      file.originalname.toLowerCase().endsWith(".txt")
+      file.originalname.toLowerCase().endsWith(".epub")
     ) {
       cb(null, true);
     } else {
-      cb(new Error("Solo se permiten archivos PDF, EPUB y TXT"), false);
+      cb(new Error("Solo se permiten archivos PDF y EPUB"), false);
     }
   },
 });
@@ -70,49 +69,6 @@ const verifyToken = (req, res, next) => {
   }
   next();
 };
-
-// Ruta de prueba para verificar que las peticiones llegan
-router.post("/test_upload", verifyToken, (req, res) => {
-  console.log("🧪 Endpoint de prueba alcanzado");
-  console.log("Headers:", req.headers);
-  console.log("Body:", req.body);
-  res.json({
-    message: "Endpoint de prueba funcionando",
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// Ruta de prueba con archivo pequeño
-router.post(
-  "/test_file_upload",
-  verifyToken,
-  upload.single("file"),
-  (req, res) => {
-    console.log("🧪 Endpoint de prueba con archivo alcanzado");
-    console.log(
-      "Archivo recibido:",
-      req.file
-        ? {
-            originalname: req.file.originalname,
-            size: req.file.size,
-            mimetype: req.file.mimetype,
-          }
-        : "No hay archivo"
-    );
-
-    res.json({
-      message: "Archivo recibido correctamente",
-      file: req.file
-        ? {
-            name: req.file.originalname,
-            size: req.file.size,
-            type: req.file.mimetype,
-          }
-        : null,
-      timestamp: new Date().toISOString(),
-    });
-  }
-);
 
 // Ruta para extraer metadatos de archivos PDF y EPUB
 router.post(
@@ -247,202 +203,41 @@ router.post(
           console.error("Stack trace:", error.stack);
         }
       } else if (req.file.mimetype === "application/epub+zip") {
-        // Procesar EPUB usando epub2 (compatible con Node.js)
+        // Procesar EPUB
         console.log("Leyendo archivo EPUB...");
-        const epub2 = require("epub2");
+        const epubjs = require("epubjs");
+        const book = new epubjs.Book(filePath);
+        await book.ready;
 
+        const bookMetadata = await book.metadata;
+        metadata = {
+          title:
+            bookMetadata.title || req.file.originalname.replace(".epub", ""),
+          author: bookMetadata.creator || "Autor desconocido",
+          sinopsis: bookMetadata.description || "Sin descripción disponible",
+          cover: null,
+        };
+
+        // Extraer portada del EPUB
         try {
-          const book = new epub2(filePath);
-          const epubMetadata = await book.getMetadata();
+          console.log("Buscando portada...");
+          const cover = await book.coverUrl();
+          if (cover) {
+            console.log("Portada encontrada, extrayendo...");
+            const coverFileName = `cover-${
+              path.parse(req.file.filename).name
+            }.jpg`;
+            const coverPath = path.join(path.dirname(filePath), coverFileName);
+            tempFiles.push(coverPath);
 
-          console.log("=== METADATOS COMPLETOS DEL EPUB ===");
-          console.log(
-            "epubMetadata completo:",
-            JSON.stringify(epubMetadata, null, 2)
-          );
-          console.log("Claves disponibles:", Object.keys(epubMetadata));
-          console.log("=====================================");
-
-          let title = "";
-          let author = "";
-          let sinopsis = "";
-
-          // Extraer título
-          if (epubMetadata.title) {
-            title = epubMetadata.title;
-          } else if (epubMetadata["dc:title"]) {
-            title = epubMetadata["dc:title"];
-          } else if (epubMetadata["title"]) {
-            title = epubMetadata["title"];
-          } else if (epubMetadata["name"]) {
-            title = epubMetadata["name"];
-          } else {
-            title = req.file.originalname.replace(".epub", "");
+            const response = await fetch(cover);
+            const coverBuffer = await response.arrayBuffer();
+            fs.writeFileSync(coverPath, Buffer.from(coverBuffer));
+            metadata.cover = `/uploads/temp/${coverFileName}`;
+            console.log("Portada extraída correctamente");
           }
-
-          // Extraer autor
-          if (epubMetadata.creator) {
-            author = epubMetadata.creator;
-          } else if (epubMetadata["dc:creator"]) {
-            author = epubMetadata["dc:creator"];
-          } else if (epubMetadata.author) {
-            author = epubMetadata.author;
-          } else if (epubMetadata["author"]) {
-            author = epubMetadata["author"];
-          } else if (epubMetadata["contributor"]) {
-            author = epubMetadata["contributor"];
-          } else if (epubMetadata["dc:contributor"]) {
-            author = epubMetadata["dc:contributor"];
-          } else {
-            author = "Autor desconocido";
-          }
-
-          // Extraer sinopsis
-          if (epubMetadata.description) {
-            sinopsis = epubMetadata.description;
-          } else if (epubMetadata["dc:description"]) {
-            sinopsis = epubMetadata["dc:description"];
-          } else if (epubMetadata["summary"]) {
-            sinopsis = epubMetadata["summary"];
-          } else if (epubMetadata["abstract"]) {
-            sinopsis = epubMetadata["abstract"];
-          } else if (epubMetadata["dc:abstract"]) {
-            sinopsis = epubMetadata["dc:abstract"];
-          } else {
-            // Intentar extraer sinopsis del contenido del libro
-            try {
-              console.log("Intentando extraer sinopsis del contenido...");
-              const spine = await book.getSpine();
-              if (spine && spine.length > 0) {
-                const firstChapter = spine[0];
-                const content = await book.getChapter(firstChapter.id);
-                if (content) {
-                  // Limpiar HTML y obtener texto
-                  const textContent = content
-                    .replace(/<[^>]*>/g, " ")
-                    .replace(/\s+/g, " ")
-                    .trim();
-                  sinopsis = textContent.substring(0, 500) + "...";
-                  console.log(
-                    "Sinopsis extraída del contenido:",
-                    sinopsis.substring(0, 100) + "..."
-                  );
-                }
-              }
-            } catch (contentError) {
-              console.error(
-                "Error al extraer sinopsis del contenido:",
-                contentError
-              );
-              sinopsis = "Sin descripción disponible";
-            }
-          }
-
-          metadata = {
-            title: title,
-            author: author,
-            sinopsis: sinopsis,
-            cover: null,
-          };
-
-          // Intentar extraer la portada
-          try {
-            console.log("Buscando portada...");
-            let cover = null;
-
-            // Método 1: Intentar obtener la portada directamente
-            try {
-              cover = await book.getCover();
-              console.log("Portada encontrada con getCover()");
-            } catch (coverError) {
-              console.log(
-                "Error al obtener portada con getCover():",
-                coverError
-              );
-              console.log("getCover() falló, intentando otros métodos...");
-            }
-
-            // Método 2: Buscar en los metadatos
-            if (!cover && epubMetadata.cover) {
-              try {
-                cover = await book.getResource(epubMetadata.cover);
-                console.log("Portada encontrada en metadatos.cover");
-              } catch (coverError) {
-                console.log(
-                  "Error al obtener portada de metadatos.cover:",
-                  coverError.message
-                );
-              }
-            }
-
-            // Método 3: Buscar en manifest
-            if (!cover) {
-              try {
-                const manifest = await book.getManifest();
-                console.log("Manifest disponible:", Object.keys(manifest));
-
-                // Buscar elementos que parezcan portadas
-                for (const [id, item] of Object.entries(manifest)) {
-                  if (
-                    item.href &&
-                    (item.href.toLowerCase().includes("cover") ||
-                      item.href.toLowerCase().includes("title") ||
-                      item.href.toLowerCase().includes("front") ||
-                      item.mediaType === "image/jpeg" ||
-                      item.mediaType === "image/png")
-                  ) {
-                    console.log(
-                      `Intentando portada desde manifest: ${id} -> ${item.href}`
-                    );
-                    try {
-                      cover = await book.getResource(item.href);
-                      console.log("Portada encontrada en manifest");
-                      break;
-                    } catch (coverError) {
-                      console.log(
-                        `Error al obtener portada de ${item.href}:`,
-                        coverError.message
-                      );
-                    }
-                  }
-                }
-              } catch (manifestError) {
-                console.log(
-                  "Error al obtener manifest:",
-                  manifestError.message
-                );
-              }
-            }
-
-            if (cover) {
-              console.log("Portada encontrada, extrayendo...");
-              const coverFileName = `cover-${
-                path.parse(req.file.filename).name
-              }.jpg`;
-              const coverPath = path.join(
-                path.dirname(filePath),
-                coverFileName
-              );
-              tempFiles.push(coverPath);
-
-              fs.writeFileSync(coverPath, cover);
-              metadata.cover = `/uploads/temp/${coverFileName}`;
-              console.log("Portada extraída correctamente");
-            } else {
-              console.log("No se encontró portada en ningún método");
-            }
-          } catch (coverError) {
-            console.error("Error al extraer la portada:", coverError);
-          }
-        } catch (epubError) {
-          console.error("Error al procesar EPUB:", epubError);
-          // Fallback: usar información básica del archivo
-          metadata = {
-            title: req.file.originalname.replace(".epub", ""),
-            author: "Autor desconocido",
-            sinopsis: "Sin descripción disponible",
-            cover: null,
-          };
+        } catch (error) {
+          console.error("Error al extraer la portada:", error);
         }
       }
 
