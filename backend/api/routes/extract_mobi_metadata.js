@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const { fromPath } = require("pdf2pic");
+const epub2 = require("epub2");
 const router = express.Router();
 
 // Asegurar que el directorio temporal existe
@@ -268,7 +269,6 @@ router.post(
       } else if (req.file.mimetype === "application/epub+zip") {
         // Procesar EPUB usando epub2 (compatible con Node.js)
         console.log("Leyendo archivo EPUB...");
-        const epub2 = require("epub2");
 
         try {
           const book = new epub2(filePath);
