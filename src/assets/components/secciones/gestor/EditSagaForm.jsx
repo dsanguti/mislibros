@@ -32,7 +32,6 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
   };
 
   const handleSubmit = async (e) => {
-    console.log("🚀 handleSubmit ejecutándose...");
     e.preventDefault();
     const token = localStorage.getItem("token");
 
@@ -43,64 +42,43 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
       return;
     }
 
-    const data = new FormData();
-    data.append("id", Number(formData.id));
-    data.append("nombre", formData.nombre);
-    if (file) data.append("coverSaga", file);
-
-    // Debug logs
-    console.log("🔍 URL de actualización:", API_ENDPOINTS.UPDATE_SAGA);
-    console.log("🔍 Datos del formulario:", {
-      id: formData.id,
-      nombre: formData.nombre,
-      tieneArchivo: !!file,
-    });
+    const formDataToSend = new FormData();
+    formDataToSend.append("id", Number(formData.id));
+    formDataToSend.append("nombre", formData.nombre);
+    if (file) formDataToSend.append("coverSaga", file);
 
     try {
       const response = await fetch(API_ENDPOINTS.UPDATE_SAGA, {
         method: "PUT",
-        body: data,
+        body: formDataToSend,
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log("🔍 Respuesta del servidor:", {
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url,
-      });
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error("❌ Error en la respuesta:", errorText);
         throw new Error("Error al actualizar la saga");
       }
 
-      const responseData = await response.json();
-      const updatedSaga = {
-        id: responseData.id,
-        nombre: responseData.nombre,
-        coverSaga: responseData.coverSaga,
-      };
+      const result = await response.json();
 
       // Disparar evento de actualización
       window.dispatchEvent(new Event("sagaUpdated"));
 
-      onUpdate(updatedSaga);
+      onUpdate(result);
       setFormData({
-        id: responseData.id,
-        nombre: responseData.nombre,
-        coverSaga: responseData.coverSaga,
+        id: result.id,
+        nombre: result.nombre,
+        coverSaga: result.coverSaga,
       });
-      setPreview(responseData.coverSaga);
+      setPreview(result.coverSaga);
       setFile(null);
       toast.success("Saga actualizada correctamente", { autoClose: 2000 });
       setTimeout(() => {
         if (typeof onClose === "function") onClose();
       }, 2000);
     } catch (error) {
-      console.error("❌ Error completo:", error);
+      console.error("Error al actualizar saga:", error);
       toast.error("Hubo un problema al actualizar la saga.", {
         autoClose: 3000,
       });
@@ -111,13 +89,7 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
     <div className={style.formContainer}>
       <h2 className={style.myTittleForm}>Editar Saga</h2>
 
-      <form
-        className={style.formEdit}
-        onSubmit={(e) => {
-          console.log("📝 Formulario onSubmit ejecutándose...");
-          handleSubmit(e);
-        }}
-      >
+      <form className={style.formEdit} onSubmit={handleSubmit}>
         <label className={style.labelForm}>Carátula:</label>
         <div className={style.containerCoverPreview}>
           {preview && (
