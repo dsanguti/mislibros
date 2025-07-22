@@ -107,12 +107,30 @@ router.post("/test_upload", verifyToken, (req, res) => {
   });
 });
 
-// Ruta de prueba con archivo pequeño
+// Ruta de prueba con archivo pequeño - Versión simplificada
 router.post(
   "/test_file_upload",
   verifyToken,
   (req, res, next) => {
-    upload.single("file")(req, res, (err) => {
+    // Usar multer sin filtros para la prueba
+    const testUpload = multer({
+      storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+          const tempDir = ensureTempDirectoryExists();
+          cb(null, tempDir);
+        },
+        filename: function (req, file, cb) {
+          const uniqueSuffix =
+            Date.now() + "-" + Math.round(Math.random() * 1e9);
+          cb(null, "test-" + uniqueSuffix + path.extname(file.originalname));
+        },
+      }),
+      limits: {
+        fileSize: 1 * 1024 * 1024, // 1MB máximo para pruebas
+      },
+    }).single("file");
+
+    testUpload(req, res, (err) => {
       if (err) {
         console.error("Error en multer (test):", err);
         if (err instanceof multer.MulterError) {
@@ -145,6 +163,19 @@ router.post(
             }
           : "No hay archivo"
       );
+
+      // Limpiar archivo de prueba
+      if (req.file && req.file.path) {
+        try {
+          fs.unlinkSync(req.file.path);
+          console.log("🧹 Archivo de prueba eliminado:", req.file.path);
+        } catch (cleanupError) {
+          console.warn(
+            "⚠️ No se pudo eliminar archivo de prueba:",
+            cleanupError
+          );
+        }
+      }
 
       res.json({
         message: "Archivo recibido correctamente",
