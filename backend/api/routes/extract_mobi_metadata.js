@@ -4,7 +4,6 @@ const path = require("path");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const { fromPath } = require("pdf2pic");
-const epub2 = require("epub2");
 const router = express.Router();
 
 // Asegurar que el directorio temporal existe
@@ -344,7 +343,9 @@ router.post(
         console.log("Leyendo archivo EPUB...");
 
         try {
-          const book = new epub2(filePath);
+          // Importar epub2 dentro de la función para evitar problemas de scope
+          const Epub2 = require("epub2");
+          const book = new Epub2(filePath);
           const epubMetadata = await book.getMetadata();
 
           console.log("=== METADATOS COMPLETOS DEL EPUB ===");
