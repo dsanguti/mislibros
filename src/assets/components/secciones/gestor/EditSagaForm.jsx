@@ -111,7 +111,13 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
     <div className={style.formContainer}>
       <h2 className={style.myTittleForm}>Editar Saga</h2>
 
-      <form className={style.formEdit} onSubmit={handleSubmit}>
+      <form
+        className={style.formEdit}
+        onSubmit={(e) => {
+          console.log("📝 Formulario onSubmit ejecutándose...");
+          handleSubmit(e);
+        }}
+      >
         <label className={style.labelForm}>Carátula:</label>
         <div className={style.containerCoverPreview}>
           {preview && (
@@ -139,11 +145,7 @@ const EditSagaForm = ({ saga, onClose, onUpdate }) => {
           >
             Cancelar
           </button>
-          <button
-            className={style.buttonFormEdit}
-            type="submit"
-            onClick={() => console.log("🖱️ Botón Guardar Cambios clickeado")}
-          >
+          <button className={style.buttonFormEdit} type="submit">
             Guardar Cambios
           </button>
         </div>
