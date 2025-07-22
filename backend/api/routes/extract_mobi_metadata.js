@@ -106,31 +106,59 @@ router.post("/test_upload", verifyToken, (req, res) => {
 router.post(
   "/test_file_upload",
   verifyToken,
-  upload.single("file"),
-  (req, res) => {
-    console.log("🧪 Endpoint de prueba con archivo alcanzado");
-    console.log(
-      "Archivo recibido:",
-      req.file
-        ? {
-            originalname: req.file.originalname,
-            size: req.file.size,
-            mimetype: req.file.mimetype,
+  (req, res, next) => {
+    upload.single("file")(req, res, (err) => {
+      if (err) {
+        console.error("Error en multer (test):", err);
+        if (err instanceof multer.MulterError) {
+          if (err.code === "LIMIT_FILE_SIZE") {
+            return res.status(413).json({
+              message: "El archivo es demasiado grande para la prueba",
+            });
           }
-        : "No hay archivo"
-    );
-
-    res.json({
-      message: "Archivo recibido correctamente",
-      file: req.file
-        ? {
-            name: req.file.originalname,
-            size: req.file.size,
-            type: req.file.mimetype,
-          }
-        : null,
-      timestamp: new Date().toISOString(),
+          return res.status(400).json({
+            message: `Error al subir archivo de prueba: ${err.message}`,
+          });
+        }
+        return res.status(400).json({
+          message: `Error al procesar archivo de prueba: ${err.message}`,
+        });
+      }
+      next();
     });
+  },
+  (req, res) => {
+    try {
+      console.log("🧪 Endpoint de prueba con archivo alcanzado");
+      console.log(
+        "Archivo recibido:",
+        req.file
+          ? {
+              originalname: req.file.originalname,
+              size: req.file.size,
+              mimetype: req.file.mimetype,
+            }
+          : "No hay archivo"
+      );
+
+      res.json({
+        message: "Archivo recibido correctamente",
+        file: req.file
+          ? {
+              name: req.file.originalname,
+              size: req.file.size,
+              type: req.file.mimetype,
+            }
+          : null,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Error en endpoint de prueba:", error);
+      res.status(500).json({
+        message: "Error interno en el servidor",
+        error: error.message,
+      });
+    }
   }
 );
 
