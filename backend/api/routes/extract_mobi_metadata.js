@@ -54,7 +54,6 @@ const upload = multer({
     const fileName = file.originalname.toLowerCase();
     const isPdf = fileName.endsWith(".pdf");
     const isEpub = fileName.endsWith(".epub");
-    const isTxt = fileName.endsWith(".txt");
 
     // Verificar por MIME type (puede variar en móviles)
     const isPdfMime =
@@ -66,22 +65,18 @@ const upload = multer({
       file.mimetype === "application/octet-stream" ||
       file.mimetype.includes("epub") ||
       file.mimetype.includes("zip");
-    const isTxtMime =
-      file.mimetype === "text/plain" || file.mimetype === "text/txt";
 
     console.log("🔍 Verificación - Es PDF por extensión:", isPdf);
     console.log("🔍 Verificación - Es EPUB por extensión:", isEpub);
-    console.log("🔍 Verificación - Es TXT por extensión:", isTxt);
     console.log("🔍 Verificación - Es PDF por MIME:", isPdfMime);
     console.log("🔍 Verificación - Es EPUB por MIME:", isEpubMime);
-    console.log("🔍 Verificación - Es TXT por MIME:", isTxtMime);
 
-    if (isPdf || isEpub || isTxt || isPdfMime || isEpubMime || isTxtMime) {
+    if (isPdf || isEpub || isPdfMime || isEpubMime) {
       console.log("✅ Archivo aceptado");
       cb(null, true);
     } else {
       console.log("❌ Archivo rechazado");
-      cb(new Error("Solo se permiten archivos PDF, EPUB y TXT"), false);
+      cb(new Error("Solo se permiten archivos PDF y EPUB"), false);
     }
   },
 });
@@ -106,94 +101,35 @@ router.post("/test_upload", verifyToken, (req, res) => {
   });
 });
 
-// Ruta de prueba con archivo pequeño - Versión simplificada
+// Ruta de prueba con archivo pequeño
 router.post(
   "/test_file_upload",
   verifyToken,
-  (req, res, next) => {
-    // Usar multer sin filtros para la prueba
-    const testUpload = multer({
-      storage: multer.diskStorage({
-        destination: function (req, file, cb) {
-          const tempDir = ensureTempDirectoryExists();
-          cb(null, tempDir);
-        },
-        filename: function (req, file, cb) {
-          const uniqueSuffix =
-            Date.now() + "-" + Math.round(Math.random() * 1e9);
-          cb(null, "test-" + uniqueSuffix + path.extname(file.originalname));
-        },
-      }),
-      limits: {
-        fileSize: 1 * 1024 * 1024, // 1MB máximo para pruebas
-      },
-    }).single("file");
-
-    testUpload(req, res, (err) => {
-      if (err) {
-        console.error("Error en multer (test):", err);
-        if (err instanceof multer.MulterError) {
-          if (err.code === "LIMIT_FILE_SIZE") {
-            return res.status(413).json({
-              message: "El archivo es demasiado grande para la prueba",
-            });
-          }
-          return res.status(400).json({
-            message: `Error al subir archivo de prueba: ${err.message}`,
-          });
-        }
-        return res.status(400).json({
-          message: `Error al procesar archivo de prueba: ${err.message}`,
-        });
-      }
-      next();
-    });
-  },
+  upload.single("file"),
   (req, res) => {
-    try {
-      console.log("🧪 Endpoint de prueba con archivo alcanzado");
-      console.log(
-        "Archivo recibido:",
-        req.file
-          ? {
-              originalname: req.file.originalname,
-              size: req.file.size,
-              mimetype: req.file.mimetype,
-            }
-          : "No hay archivo"
-      );
+    console.log("🧪 Endpoint de prueba con archivo alcanzado");
+    console.log(
+      "Archivo recibido:",
+      req.file
+        ? {
+            originalname: req.file.originalname,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+          }
+        : "No hay archivo"
+    );
 
-      // Limpiar archivo de prueba
-      if (req.file && req.file.path) {
-        try {
-          fs.unlinkSync(req.file.path);
-          console.log("🧹 Archivo de prueba eliminado:", req.file.path);
-        } catch (cleanupError) {
-          console.warn(
-            "⚠️ No se pudo eliminar archivo de prueba:",
-            cleanupError
-          );
-        }
-      }
-
-      res.json({
-        message: "Archivo recibido correctamente",
-        file: req.file
-          ? {
-              name: req.file.originalname,
-              size: req.file.size,
-              type: req.file.mimetype,
-            }
-          : null,
-        timestamp: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("Error en endpoint de prueba:", error);
-      res.status(500).json({
-        message: "Error interno en el servidor",
-        error: error.message,
-      });
-    }
+    res.json({
+      message: "Archivo recibido correctamente",
+      file: req.file
+        ? {
+            name: req.file.originalname,
+            size: req.file.size,
+            type: req.file.mimetype,
+          }
+        : null,
+      timestamp: new Date().toISOString(),
+    });
   }
 );
 
@@ -203,24 +139,15 @@ router.post(
   verifyToken,
   (req, res, next) => {
     upload.single("file")(req, res, (err) => {
-      if (err) {
-        console.error("Error en multer:", err);
-        if (err instanceof multer.MulterError) {
-          if (err.code === "LIMIT_FILE_SIZE") {
-            return res.status(413).json({
-              message:
-                "El archivo es demasiado grande. El tamaño máximo permitido es 50MB.",
-            });
-          }
-          return res.status(400).json({
-            message: `Error al subir archivo: ${err.message}`,
+      if (err instanceof multer.MulterError) {
+        if (err.code === "LIMIT_FILE_SIZE") {
+          return res.status(413).json({
+            message:
+              "El archivo es demasiado grande. El tamaño máximo permitido es 50MB.",
           });
         }
-        return res.status(400).json({
-          message: `Error al procesar archivo: ${err.message}`,
-        });
       }
-      next();
+      next(err);
     });
   },
   async (req, res) => {
@@ -341,12 +268,9 @@ router.post(
       } else if (req.file.mimetype === "application/epub+zip") {
         // Procesar EPUB usando epub2 (compatible con Node.js)
         console.log("Leyendo archivo EPUB...");
+        const epub2 = require("epub2");
 
         try {
-          // Procesar EPUB usando epub2 (compatible con Node.js)
-          console.log("Leyendo archivo EPUB...");
-          const epub2 = require("epub2");
-
           const book = new epub2(filePath);
           const epubMetadata = await book.getMetadata();
 
