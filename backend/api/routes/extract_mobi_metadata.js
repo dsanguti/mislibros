@@ -204,9 +204,15 @@ router.post(
         }
       } else if (req.file.mimetype === "application/epub+zip") {
         // Procesar EPUB
-        console.log("Leyendo archivo EPUB...");
+        console.log("🚀 Iniciando procesamiento de EPUB en producción...");
+        console.log("📁 Archivo:", req.file.originalname);
+        console.log("📏 Tamaño:", req.file.size);
+        console.log("📍 Ruta:", filePath);
+
         const epub = require("epub");
+        console.log("✅ Librería epub cargada correctamente");
         const book = new epub(filePath);
+        console.log("✅ Objeto EPUB creado correctamente");
 
         return new Promise(() => {
           book.on("end", () => {
