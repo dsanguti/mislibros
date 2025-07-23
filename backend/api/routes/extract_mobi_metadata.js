@@ -4,7 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const pdfParse = require("pdf-parse");
 const { fromPath } = require("pdf2pic");
-const { Buffer } = require("buffer");
+
 const router = express.Router();
 
 // Asegurar que el directorio temporal existe
@@ -205,44 +205,265 @@ router.post(
       } else if (req.file.mimetype === "application/epub+zip") {
         // Procesar EPUB
         console.log("Leyendo archivo EPUB...");
-        const epubjs = require("epubjs");
-        const book = new epubjs.Book(filePath);
-        await book.ready;
+        const epub = require("epub");
+        const book = new epub(filePath);
 
-        const bookMetadata = await book.metadata;
-        metadata = {
-          title:
-            bookMetadata.title || req.file.originalname.replace(".epub", ""),
-          author: bookMetadata.creator || "Autor desconocido",
-          sinopsis: bookMetadata.description || "Sin descripción disponible",
-          cover: null,
-        };
+        return new Promise(() => {
+          book.on("end", () => {
+            const metadata = book.metadata;
 
-        // Extraer portada del EPUB
-        try {
-          console.log("Buscando portada...");
-          const cover = await book.coverUrl();
-          if (cover) {
-            console.log("Portada encontrada, extrayendo...");
-            const coverFileName = `cover-${
-              path.parse(req.file.filename).name
-            }.jpg`;
-            const coverPath = path.join(path.dirname(filePath), coverFileName);
-            tempFiles.push(coverPath);
+            const extractedMetadata = {
+              title:
+                metadata.title || req.file.originalname.replace(".epub", ""),
+              author: metadata.creator || "Autor desconocido",
+              sinopsis: metadata.description || "Sin descripción disponible",
+              cover: null,
+            };
 
-            const response = await fetch(cover);
-            const coverBuffer = await response.arrayBuffer();
-            fs.writeFileSync(coverPath, Buffer.from(coverBuffer));
-            metadata.cover = `/uploads/temp/${coverFileName}`;
-            console.log("Portada extraída correctamente");
-          }
-        } catch (error) {
-          console.error("Error al extraer la portada:", error);
-        }
+            // Extraer portada del EPUB
+            console.log("Verificando si el EPUB tiene portada...");
+
+            // Intentar diferentes métodos para obtener la portada
+            let coverResource = null;
+
+            // Buscar la portada en el manifest
+            if (book.manifest) {
+              console.log("🔍 DEBUG: Manifest completo:", book.manifest);
+              const imageResources = [];
+
+              for (const [id, item] of Object.entries(book.manifest)) {
+                if (
+                  item["media-type"] &&
+                  item["media-type"].startsWith("image/")
+                ) {
+                  imageResources.push({ id, item });
+                  console.log("🔍 DEBUG: Imagen encontrada:", id, item);
+                }
+              }
+
+              console.log(
+                "🔍 DEBUG: Total de imágenes encontradas:",
+                imageResources.length
+              );
+
+              // Buscar específicamente la portada
+              coverResource = null;
+
+              // Prioridad 1: Buscar por ID que contenga "cover"
+              for (const { id, item } of imageResources) {
+                if (id.toLowerCase().includes("cover")) {
+                  coverResource = item;
+                  console.log("✅ Portada encontrada por ID 'cover':", id);
+                  break;
+                }
+              }
+
+              // Prioridad 2: Buscar por href que contenga "cover"
+              if (!coverResource) {
+                for (const { id, item } of imageResources) {
+                  if (item.href && item.href.toLowerCase().includes("cover")) {
+                    coverResource = item;
+                    console.log("✅ Portada encontrada por href 'cover':", id);
+                    break;
+                  }
+                }
+              }
+
+              // Prioridad 3: Buscar por propiedades específicas de portada
+              if (!coverResource) {
+                for (const { id, item } of imageResources) {
+                  if (
+                    item.properties &&
+                    item.properties.includes("cover-image")
+                  ) {
+                    coverResource = item;
+                    console.log(
+                      "✅ Portada encontrada por properties 'cover-image':",
+                      id
+                    );
+                    break;
+                  }
+                }
+              }
+
+              // Prioridad 4: Tomar la primera imagen si no se encuentra nada específico
+              if (!coverResource && imageResources.length > 0) {
+                coverResource = imageResources[0].item;
+                console.log(
+                  "⚠️ Usando primera imagen como portada:",
+                  imageResources[0].id
+                );
+              }
+            }
+
+            if (coverResource) {
+              try {
+                console.log("✅ Extrayendo portada...");
+                console.log("🔍 DEBUG: Cover resource:", coverResource);
+
+                const coverFileName = `cover-${
+                  path.parse(req.file.filename).name
+                }.jpg`;
+                const coverPath = path.join(
+                  path.dirname(filePath),
+                  coverFileName
+                );
+                tempFiles.push(coverPath);
+
+                // Intentar diferentes métodos para obtener el contenido de la imagen
+                console.log(
+                  "🔍 DEBUG: Intentando obtener contenido de la imagen..."
+                );
+
+                let imageContent = null;
+
+                // Método 1: Intentar con book.get
+                if (book.get) {
+                  try {
+                    imageContent = book.get(coverResource.id);
+                    console.log("✅ Contenido obtenido con book.get");
+                  } catch (error) {
+                    console.log("❌ Error con book.get:", error.message);
+                  }
+                }
+
+                // Método 2: Intentar con book.getChapterRaw
+                if (!imageContent && book.getChapterRaw) {
+                  try {
+                    imageContent = book.getChapterRaw(coverResource.href);
+                    console.log("✅ Contenido obtenido con book.getChapterRaw");
+                  } catch (error) {
+                    console.log(
+                      "❌ Error con book.getChapterRaw:",
+                      error.message
+                    );
+                  }
+                }
+
+                // Método 3: Intentar acceder directamente al recurso
+                if (!imageContent && coverResource.data) {
+                  imageContent = coverResource.data;
+                  console.log("✅ Contenido obtenido directamente del recurso");
+                }
+
+                // Método 4: Intentar con book.flow
+                if (!imageContent && book.flow) {
+                  try {
+                    const flowItem = book.flow.find(
+                      (item) => item.href === coverResource.href
+                    );
+                    if (flowItem && flowItem.data) {
+                      imageContent = flowItem.data;
+                      console.log("✅ Contenido obtenido de book.flow");
+                    }
+                  } catch (error) {
+                    console.log("❌ Error con book.flow:", error.message);
+                  }
+                }
+
+                // Método 5: Usar book.zip para extraer directamente el archivo
+                if (!imageContent && book.zip) {
+                  try {
+                    console.log("🔍 DEBUG: Intentando extraer con book.zip...");
+                    const zip = book.zip;
+                    console.log(
+                      "🔍 DEBUG: Métodos disponibles en zip:",
+                      Object.getOwnPropertyNames(zip)
+                    );
+                    console.log("🔍 DEBUG: Tipo de zip:", typeof zip);
+
+                    // Usar admZip para extraer la imagen
+                    if (zip.admZip) {
+                      try {
+                        const fileName = coverResource.href;
+
+                        if (zip.names.includes(fileName)) {
+                          const zipEntry = zip.admZip.getEntry(fileName);
+                          if (zipEntry) {
+                            imageContent = zipEntry.getData();
+                            console.log("Contenido extraído con admZip");
+                          }
+                        } else {
+                          // Intentar con diferentes variaciones del nombre
+                          const variations = [
+                            fileName,
+                            fileName.replace("OEBPS/", ""),
+                            fileName.replace("OEBPS/Images/", "Images/"),
+                            fileName.replace("OEBPS/Images/", ""),
+                          ];
+
+                          for (const variation of variations) {
+                            if (zip.names.includes(variation)) {
+                              const zipEntry = zip.admZip.getEntry(variation);
+                              if (zipEntry) {
+                                imageContent = zipEntry.getData();
+                                console.log(
+                                  "Contenido extraído con admZip (variación)"
+                                );
+                                break;
+                              }
+                            }
+                          }
+                        }
+                      } catch (error) {
+                        console.error(
+                          "Error al extraer portada:",
+                          error.message
+                        );
+                      }
+                    }
+                  } catch (error) {
+                    console.log("❌ Error con book.zip:", error.message);
+                  }
+                }
+
+                if (imageContent) {
+                  console.log(
+                    "🔍 DEBUG: Contenido de imagen obtenido:",
+                    typeof imageContent,
+                    imageContent ? imageContent.length : "N/A"
+                  );
+                  fs.writeFileSync(coverPath, imageContent);
+                  extractedMetadata.cover = `/uploads/temp/${coverFileName}`;
+                  console.log(
+                    "✅ Portada extraída correctamente en:",
+                    extractedMetadata.cover
+                  );
+                } else {
+                  console.log(
+                    "❌ No se pudo obtener el contenido de la imagen con ningún método"
+                  );
+                  console.log(
+                    "🔍 DEBUG: Métodos disponibles en book:",
+                    Object.getOwnPropertyNames(book)
+                  );
+                }
+              } catch (error) {
+                console.error("❌ Error al extraer la portada:", error);
+              }
+            } else {
+              console.log("ℹ️ Este EPUB no tiene portada incluida");
+            }
+
+            console.log("Metadatos extraídos:", extractedMetadata);
+            res.json(extractedMetadata);
+          });
+
+          book.on("error", (error) => {
+            console.error("❌ Error al procesar EPUB:", error);
+            res
+              .status(500)
+              .json({ message: "Error al procesar el archivo EPUB" });
+          });
+
+          console.log("🔍 DEBUG: Iniciando parse del EPUB...");
+          book.parse();
+        });
+      } else {
+        // Para archivos PDF, continuar con el flujo normal
+        console.log("Metadatos extraídos:", metadata);
+        res.json(metadata);
       }
-
-      console.log("Metadatos extraídos:", metadata);
-      res.json(metadata);
     } catch (error) {
       console.error("Error al procesar el archivo:", error);
       res.status(500).json({ message: "Error al procesar el archivo" });

@@ -395,14 +395,29 @@ app.get("/api/download-book/:bookId", (req, res) => {
 
               console.log("📋 Información del recurso obtenida:", result);
 
-              // Intentar descargar usando la URL del recurso
-              const resourceUrl = result.secure_url;
-              console.log("🔗 URL del recurso:", resourceUrl);
+              // Usar cloudinary.url() para crear una URL de descarga directa
+              console.log("🔗 Creando URL de descarga directa...");
 
-              fetch(resourceUrl)
+              // Crear una URL de descarga directa usando cloudinary.url() con parámetros específicos
+              const downloadUrl = cloudinary.url(publicId, {
+                resource_type: "raw",
+                type: "upload",
+                flags: "attachment",
+                secure: true,
+              });
+
+              console.log("🔗 URL de descarga directa:", downloadUrl);
+
+              // Intentar descargar usando fetch con headers específicos
+              fetch(downloadUrl, {
+                headers: {
+                  "User-Agent":
+                    "Mozilla/5.0 (compatible; CloudinaryDownloader/1.0)",
+                },
+              })
                 .then((response) => {
                   console.log(
-                    "📡 Respuesta de Cloudinary (recurso) - Status:",
+                    "📡 Respuesta de Cloudinary (descarga directa) - Status:",
                     response.status
                   );
 
@@ -415,7 +430,7 @@ app.get("/api/download-book/:bookId", (req, res) => {
                 })
                 .then((buffer) => {
                   console.log(
-                    "📦 Buffer recibido (recurso), tamaño:",
+                    "📦 Buffer recibido (descarga directa), tamaño:",
                     buffer.byteLength
                   );
 
@@ -431,34 +446,23 @@ app.get("/api/download-book/:bookId", (req, res) => {
                   // Enviar el archivo
                   res.send(new Uint8Array(buffer));
                   console.log(
-                    "✅ Archivo de Cloudinary enviado correctamente (SDK)"
+                    "✅ Archivo de Cloudinary enviado correctamente (descarga directa)"
                   );
                 })
                 .catch((fetchError) => {
-                  console.error(
-                    "❌ Error descargando desde URL del recurso:",
-                    fetchError
-                  );
+                  console.error("❌ Error descargando archivo:", fetchError);
 
-                  // Si falla, intentar con la URL original pero con autenticación
-                  console.log(
-                    "🔄 Intentando con URL original y autenticación..."
-                  );
+                  // Si falla, intentar con una URL modificada
+                  console.log("🔄 Intentando con URL modificada...");
 
-                  // Crear una URL con autenticación usando cloudinary.url()
-                  const authenticatedUrl = cloudinary.url(publicId, {
-                    resource_type: "raw",
-                    type: "upload",
-                    sign_url: true,
-                    secure: true,
-                  });
+                  // Crear una URL que fuerce la descarga
+                  const forceDownloadUrl = book.file + "?fl_attachment&dl=1";
+                  console.log("🔗 URL forzada:", forceDownloadUrl);
 
-                  console.log("🔗 URL autenticada:", authenticatedUrl);
-
-                  fetch(authenticatedUrl)
+                  fetch(forceDownloadUrl)
                     .then((response) => {
                       console.log(
-                        "📡 Respuesta de Cloudinary (autenticada) - Status:",
+                        "📡 Respuesta de Cloudinary (forzada) - Status:",
                         response.status
                       );
 
@@ -471,7 +475,7 @@ app.get("/api/download-book/:bookId", (req, res) => {
                     })
                     .then((buffer) => {
                       console.log(
-                        "📦 Buffer recibido (autenticada), tamaño:",
+                        "📦 Buffer recibido (forzada), tamaño:",
                         buffer.byteLength
                       );
 
@@ -487,13 +491,13 @@ app.get("/api/download-book/:bookId", (req, res) => {
                       // Enviar el archivo
                       res.send(new Uint8Array(buffer));
                       console.log(
-                        "✅ Archivo de Cloudinary enviado correctamente (autenticada)"
+                        "✅ Archivo de Cloudinary enviado correctamente (forzada)"
                       );
                     })
-                    .catch((authError) => {
+                    .catch((forceError) => {
                       console.error(
-                        "❌ Error también con URL autenticada:",
-                        authError
+                        "❌ Error también con URL forzada:",
+                        forceError
                       );
                       res.status(500).json({
                         error: "Error al descargar el archivo de Cloudinary",
