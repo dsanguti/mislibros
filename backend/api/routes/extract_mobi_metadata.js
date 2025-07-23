@@ -257,7 +257,21 @@ router.post(
                 );
                 console.log("🔍 Tipo de datos:", typeof jsonData);
                 console.log("🔍 ¿Es array?:", Array.isArray(jsonData));
-                if (Array.isArray(jsonData)) {
+                console.log("🔍 Constructor:", jsonData.constructor.name);
+                console.log(
+                  "🔍 ¿Tiene length?:",
+                  typeof jsonData.length === "number"
+                );
+
+                // Verificación más robusta para arrays grandes
+                const isArray =
+                  Array.isArray(jsonData) ||
+                  jsonData.constructor.name === "Array" ||
+                  (typeof jsonData.length === "number" && jsonData.length > 0);
+
+                console.log("🔍 ¿Es array (verificación robusta)?:", isArray);
+
+                if (isArray) {
                   console.log("🔍 Tamaño del array:", jsonData.length);
                   console.log(
                     "🔍 Primeros 10 elementos:",
@@ -270,7 +284,7 @@ router.post(
                 }
 
                 // Verificar si es un array de bytes (formato común de corrupción móvil)
-                if (Array.isArray(jsonData) && jsonData.length > 1000000) {
+                if (isArray && jsonData.length > 1000000) {
                   console.log(
                     "✅ Detectado array de bytes - recuperando archivo..."
                   );
@@ -302,10 +316,7 @@ router.post(
                       recoveredBuffer.slice(0, 16).toString("hex")
                     );
                   }
-                } else if (
-                  Array.isArray(jsonData) &&
-                  jsonData.length > 100000
-                ) {
+                } else if (isArray && jsonData.length > 100000) {
                   // Array de strings de números (formato alternativo de corrupción móvil)
                   console.log(
                     "✅ Detectado array de strings de bytes - recuperando archivo..."
@@ -351,7 +362,7 @@ router.post(
                       conversionError.message
                     );
                   }
-                } else if (Array.isArray(jsonData)) {
+                } else if (isArray) {
                   // Cualquier array (para casos con menos elementos)
                   console.log(
                     "✅ Detectado array - verificando si son bytes..."
