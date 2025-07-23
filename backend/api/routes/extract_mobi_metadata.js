@@ -288,6 +288,53 @@ router.post(
                       recoveredBuffer.slice(0, 16).toString("hex")
                     );
                   }
+                } else if (
+                  Array.isArray(jsonData) &&
+                  jsonData.length > 100000
+                ) {
+                  // Array de strings de números (formato alternativo de corrupción móvil)
+                  console.log(
+                    "✅ Detectado array de strings de bytes - recuperando archivo..."
+                  );
+
+                  try {
+                    // Convertir strings a números y luego a Buffer
+                    const numericArray = jsonData.map((item) =>
+                      parseInt(item, 10)
+                    );
+                    const recoveredBuffer = Buffer.from(numericArray);
+                    console.log(
+                      "📏 Tamaño del archivo recuperado:",
+                      recoveredBuffer.length
+                    );
+
+                    // Verificar si los datos recuperados son un ZIP válido
+                    const isRecoveredZip =
+                      recoveredBuffer.slice(0, 4).toString("hex") ===
+                      "504b0304";
+                    if (isRecoveredZip) {
+                      console.log(
+                        "✅ Archivo recuperado correctamente - es un ZIP válido"
+                      );
+                      // Sobrescribir el archivo con los datos recuperados
+                      fs.writeFileSync(filePath, recoveredBuffer);
+                      console.log("✅ Archivo corregido y guardado");
+
+                      // Actualizar el buffer para el resto del procesamiento
+                      fileBuffer = recoveredBuffer;
+                    } else {
+                      console.log("❌ Datos recuperados no son un ZIP válido");
+                      console.log(
+                        "🔍 Primeros bytes recuperados:",
+                        recoveredBuffer.slice(0, 16).toString("hex")
+                      );
+                    }
+                  } catch (conversionError) {
+                    console.log(
+                      "❌ Error al convertir strings a bytes:",
+                      conversionError.message
+                    );
+                  }
                 } else {
                   // Buscar datos binarios en el JSON (formato base64)
                   let binaryData = null;
