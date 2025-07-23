@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { Buffer } = require("buffer");
 const pdfParse = require("pdf-parse");
 const { fromPath } = require("pdf2pic");
 
@@ -254,6 +255,19 @@ router.post(
                   "🔍 Contenido JSON detectado:",
                   Object.keys(jsonData)
                 );
+                console.log("🔍 Tipo de datos:", typeof jsonData);
+                console.log("🔍 ¿Es array?:", Array.isArray(jsonData));
+                if (Array.isArray(jsonData)) {
+                  console.log("🔍 Tamaño del array:", jsonData.length);
+                  console.log(
+                    "🔍 Primeros 10 elementos:",
+                    jsonData.slice(0, 10)
+                  );
+                  console.log(
+                    "🔍 Tipo del primer elemento:",
+                    typeof jsonData[0]
+                  );
+                }
 
                 // Verificar si es un array de bytes (formato común de corrupción móvil)
                 if (Array.isArray(jsonData) && jsonData.length > 1000000) {
@@ -347,6 +361,12 @@ router.post(
 
                   // Verificar si los elementos son strings de números
                   const firstElement = jsonData[0];
+                  console.log(
+                    "🔍 Primer elemento:",
+                    firstElement,
+                    "tipo:",
+                    typeof firstElement
+                  );
                   if (
                     typeof firstElement === "string" &&
                     !isNaN(parseInt(firstElement, 10))
