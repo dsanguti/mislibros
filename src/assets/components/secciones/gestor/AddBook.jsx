@@ -42,79 +42,8 @@ const AddBook = () => {
               console.log("🚀 Iniciando procesamiento de EPUB desde móvil...");
               setProgress(10);
 
-              // Primero hacer una prueba de conectividad
-              console.log("🧪 Probando conectividad...");
-              try {
-                const testResponse = await fetch(API_ENDPOINTS.TEST_UPLOAD, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                  body: JSON.stringify({ test: "conectividad" }),
-                  signal: AbortSignal.timeout(10000), // 10 segundos
-                });
-
-                if (testResponse.ok) {
-                  const testResult = await testResponse.json();
-                  console.log("✅ Prueba de conectividad exitosa:", testResult);
-                  toast.info("✅ Conectividad verificada", { autoClose: 2000 });
-                } else {
-                  console.warn(
-                    "⚠️ Prueba de conectividad falló:",
-                    testResponse.status
-                  );
-                  toast.warning("⚠️ Problema de conectividad", {
-                    autoClose: 3000,
-                  });
-                }
-              } catch (testError) {
-                console.error("❌ Error en prueba de conectividad:", testError);
-                toast.error("❌ Error de conectividad", { autoClose: 3000 });
-              }
-
-              // Prueba con archivo pequeño
-              console.log("🧪 Probando subida de archivo pequeño...");
-              try {
-                const testFile = new File(["test content"], "test.txt", {
-                  type: "text/plain",
-                });
-                const testFormData = new FormData();
-                testFormData.append("file", testFile);
-
-                const testFileResponse = await fetch(
-                  API_ENDPOINTS.TEST_FILE_UPLOAD,
-                  {
-                    method: "POST",
-                    body: testFormData,
-                    headers: {
-                      Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                    signal: AbortSignal.timeout(15000), // 15 segundos
-                  }
-                );
-
-                if (testFileResponse.ok) {
-                  const testFileResult = await testFileResponse.json();
-                  console.log("✅ Prueba de archivo exitosa:", testFileResult);
-                  toast.info("✅ Subida de archivos verificada", {
-                    autoClose: 2000,
-                  });
-                } else {
-                  console.warn(
-                    "⚠️ Prueba de archivo falló:",
-                    testFileResponse.status
-                  );
-                  toast.warning("⚠️ Problema con subida de archivos", {
-                    autoClose: 3000,
-                  });
-                }
-              } catch (testFileError) {
-                console.error("❌ Error en prueba de archivo:", testFileError);
-                toast.error("❌ Error con subida de archivos", {
-                  autoClose: 3000,
-                });
-              }
+              // Procesar directamente el archivo sin pruebas previas
+              console.log("📤 Procesando archivo EPUB...");
 
               setProgress(20);
               const formData = new FormData();
@@ -132,8 +61,8 @@ const AddBook = () => {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                // Timeout más corto para detectar problemas rápidamente
-                signal: AbortSignal.timeout(60000), // 1 minuto
+                // Timeout más largo para archivos grandes en producción
+                signal: AbortSignal.timeout(180000), // 3 minutos
               });
 
               console.log(
@@ -156,13 +85,41 @@ const AddBook = () => {
 
               // Convertir la URL de la portada a Blob si existe
               let coverImage = null;
+              console.log("🔍 DEBUG EPUB: metadata.cover:", metadata.cover);
               if (metadata.cover) {
                 try {
-                  const coverResponse = await fetch(
-                    `${API_ENDPOINTS.IMAGES}${metadata.cover}`
+                  console.log(
+                    "🔍 DEBUG EPUB: ===== NUEVA VERSIÓN DEL CÓDIGO ====="
+                  );
+
+                  // Detectar si es URL de Cloudinary o local
+                  const isCloudinaryUrl = metadata.cover.startsWith("http");
+                  const coverUrl = isCloudinaryUrl
+                    ? metadata.cover
+                    : `${API_ENDPOINTS.TEMP_IMAGES}${metadata.cover}`;
+
+                  console.log("🔍 DEBUG EPUB: metadata.cover:", metadata.cover);
+                  console.log(
+                    "🔍 DEBUG EPUB: ¿Es URL completa?:",
+                    isCloudinaryUrl
+                  );
+                  console.log(
+                    "🔍 DEBUG EPUB: URL final para cargar:",
+                    coverUrl
+                  );
+
+                  const coverResponse = await fetch(coverUrl);
+                  console.log(
+                    "🔍 DEBUG EPUB: Respuesta de portada:",
+                    coverResponse.status,
+                    coverResponse.statusText
                   );
                   const coverBuffer = await coverResponse.arrayBuffer();
                   coverImage = arrayBufferToBlob(coverBuffer, "image/jpeg");
+                  console.log(
+                    "🔍 DEBUG EPUB: Portada convertida a Blob:",
+                    coverImage
+                  );
                 } catch (coverError) {
                   console.warn("Error al cargar la portada:", coverError);
                 }
@@ -232,7 +189,7 @@ const AddBook = () => {
               if (metadata.cover) {
                 try {
                   const coverResponse = await fetch(
-                    `${API_ENDPOINTS.IMAGES}${metadata.cover}`
+                    `${API_ENDPOINTS.TEMP_IMAGES}${metadata.cover}`
                   );
                   const coverBuffer = await coverResponse.arrayBuffer();
                   coverImage = arrayBufferToBlob(coverBuffer, "image/png");
@@ -301,7 +258,7 @@ const AddBook = () => {
               if (metadata.cover) {
                 try {
                   const coverResponse = await fetch(
-                    `${API_ENDPOINTS.IMAGES}${metadata.cover}`
+                    `${API_ENDPOINTS.TEMP_IMAGES}${metadata.cover}`
                   );
                   const coverBuffer = await coverResponse.arrayBuffer();
                   coverImage = arrayBufferToBlob(coverBuffer, "image/jpeg");

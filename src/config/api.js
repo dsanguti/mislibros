@@ -47,6 +47,7 @@ export const API_ENDPOINTS = {
   // Imágenes
   IMAGES: `${API_BASE_URL}/images`,
   UPLOADS: `${API_BASE_URL}/uploads`,
+  TEMP_IMAGES: `${API_BASE_URL}`,
 };
 
 export default API_ENDPOINTS;

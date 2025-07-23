@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import style from "../../../css/Gestor.module.css";
 import { API_ENDPOINTS } from "../../../../config/api";
+import style from "../../../css/Gestor.module.css";
 
 const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
+  console.log("🔍 DEBUG: AddBookForm recibió metadata:", metadata);
   const [formData, setFormData] = useState({
     title: metadata?.title || "",
     author: metadata?.author || "",
@@ -24,6 +25,46 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
   const [genres, setGenres] = useState([]);
   const [sagas, setSagas] = useState([]);
 
+  // Actualizar formulario cuando lleguen los metadatos
+  useEffect(() => {
+    if (metadata) {
+      console.log(
+        "🔍 DEBUG FORM: Actualizando formulario con metadatos:",
+        metadata
+      );
+      console.log("🔍 DEBUG FORM: metadata.cover:", metadata.cover);
+      console.log(
+        "🔍 DEBUG FORM: Tipo de metadata.cover:",
+        typeof metadata.cover
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        title: metadata.title || "",
+        author: metadata.author || "",
+        description: metadata.sinopsis || "",
+        coverFile: metadata.cover || null,
+      }));
+
+      if (metadata.cover) {
+        console.log("🔍 DEBUG FORM: Creando URL para portada...");
+        try {
+          const coverUrl = URL.createObjectURL(metadata.cover);
+          console.log("🔍 DEBUG FORM: URL creada:", coverUrl);
+          setCoverPreview(coverUrl);
+          console.log(
+            "🔍 DEBUG FORM: Estado coverPreview establecido a:",
+            coverUrl
+          );
+        } catch (error) {
+          console.error("🔍 DEBUG FORM: Error al crear URL:", error);
+        }
+      } else {
+        console.log("🔍 DEBUG FORM: No hay portada para mostrar");
+      }
+    }
+  }, [metadata]);
+
   // Cargar géneros y sagas al montar el componente
   useEffect(() => {
     const fetchGenresAndSagas = async () => {
@@ -34,14 +75,11 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
         }
 
         // Obtener géneros
-        const genresResponse = await fetch(
-          API_ENDPOINTS.GENERO_ENUM,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const genresResponse = await fetch(API_ENDPOINTS.GENERO_ENUM, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (genresResponse.status === 403) {
           // Token expirado o inválido
@@ -225,11 +263,18 @@ const AddBookForm = ({ metadata, file, onClose, onSuccess, onError }) => {
         <div className={style.formLeftColumn}>
           <label className={style.labelForm}>Carátula:</label>
           <div className={style.containerCoverPreview}>
+            {console.log("🔍 DEBUG RENDER: coverPreview:", coverPreview)}
             {coverPreview && (
               <img
                 src={coverPreview}
                 alt="Vista previa de la carátula"
                 className={style.coverPreview}
+                onLoad={() =>
+                  console.log("🔍 DEBUG RENDER: Imagen cargada correctamente")
+                }
+                onError={(e) =>
+                  console.error("🔍 DEBUG RENDER: Error al cargar imagen:", e)
+                }
               />
             )}
           </div>
