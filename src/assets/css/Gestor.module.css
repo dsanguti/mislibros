@@ -57,7 +57,7 @@
   width: 190px;
   height: 254px;
   background: var(--bg-card);
-  color: var(--text-primary);
+  
   border-radius: 1rem;
   box-shadow: var(--shadow-card);
   transition: all ease-in-out 0.3s;
@@ -193,6 +193,7 @@
   width: 150px; /* Ajusta el tamaño del icono */
   height: 150px;
   margin-bottom: 10px;
+  
   transition: transform 0.6s ease-in-out;
 }
 
@@ -461,7 +462,7 @@
 
   .card {
     background-color: var(--bg-card);
-    color: var(--text-primary);
+    
     box-shadow: var(--shadow-card);
     width: 140px;
     height: 190px;
