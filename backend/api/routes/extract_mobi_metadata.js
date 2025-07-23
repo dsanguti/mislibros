@@ -353,43 +353,67 @@ router.post(
                       arrayFromObject.slice(0, 10)
                     );
 
-                    // Verificar si los elementos son strings de números
+                    // Verificar si los elementos son strings de números o números
                     const firstElement = arrayFromObject[0];
+                    console.log(
+                      "🔍 Primer elemento:",
+                      firstElement,
+                      "tipo:",
+                      typeof firstElement
+                    );
+
                     if (
-                      typeof firstElement === "string" &&
-                      !isNaN(parseInt(firstElement, 10))
+                      (typeof firstElement === "string" &&
+                        !isNaN(parseInt(firstElement, 10))) ||
+                      (typeof firstElement === "number" &&
+                        firstElement >= 0 &&
+                        firstElement <= 255)
                     ) {
                       console.log(
-                        "✅ Confirmado: array de strings de números - recuperando archivo..."
+                        "✅ Confirmado: array de bytes válidos - recuperando archivo..."
                       );
 
-                      // Convertir strings a números en chunks más pequeños para mayor velocidad
-                      console.log(
-                        "🔧 Convirtiendo strings a números en chunks..."
-                      );
-                      const numericArray = new Array(arrayFromObject.length);
-
-                      for (
-                        let i = 0;
-                        i < arrayFromObject.length;
-                        i += chunkSize
-                      ) {
-                        const end = Math.min(
-                          i + chunkSize,
-                          arrayFromObject.length
+                      // Si ya son números, usarlos directamente; si son strings, convertirlos
+                      let numericArray;
+                      if (typeof firstElement === "number") {
+                        console.log(
+                          "🔧 Los elementos ya son números, usando directamente..."
                         );
-                        for (let j = i; j < end; j++) {
-                          if (arrayFromObject[j] !== undefined) {
-                            numericArray[j] = parseInt(arrayFromObject[j], 10);
-                          }
-                        }
-                        // Solo mostrar progreso cada 10 chunks para reducir logs
-                        if ((i / chunkSize) % 10 === 0) {
-                          console.log(
-                            `🔧 Convertido chunk ${
-                              Math.floor(i / chunkSize) + 1
-                            }/${Math.ceil(arrayFromObject.length / chunkSize)}`
+                        numericArray = arrayFromObject;
+                      } else {
+                        // Convertir strings a números en chunks más pequeños para mayor velocidad
+                        console.log(
+                          "🔧 Convirtiendo strings a números en chunks..."
+                        );
+                        numericArray = new Array(arrayFromObject.length);
+
+                        for (
+                          let i = 0;
+                          i < arrayFromObject.length;
+                          i += chunkSize
+                        ) {
+                          const end = Math.min(
+                            i + chunkSize,
+                            arrayFromObject.length
                           );
+                          for (let j = i; j < end; j++) {
+                            if (arrayFromObject[j] !== undefined) {
+                              numericArray[j] = parseInt(
+                                arrayFromObject[j],
+                                10
+                              );
+                            }
+                          }
+                          // Solo mostrar progreso cada 10 chunks para reducir logs
+                          if ((i / chunkSize) % 10 === 0) {
+                            console.log(
+                              `🔧 Convertido chunk ${
+                                Math.floor(i / chunkSize) + 1
+                              }/${Math.ceil(
+                                arrayFromObject.length / chunkSize
+                              )}`
+                            );
+                          }
                         }
                       }
 
@@ -424,8 +448,12 @@ router.post(
                         );
                       }
                     } else {
+                      console.log("❌ Elementos no son bytes válidos");
                       console.log(
-                        "❌ Elementos no son strings de números válidos"
+                        "🔍 Primer elemento:",
+                        firstElement,
+                        "tipo:",
+                        typeof firstElement
                       );
                     }
                   } catch (reconstructionError) {
