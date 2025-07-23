@@ -229,13 +229,26 @@ router.post(
             fileBuffer.slice(0, 4).toString("hex") === "504b0304";
           console.log("🔍 ¿Es archivo ZIP válido?:", isZipFile);
 
+          // Log de los primeros bytes para diagnóstico
+          console.log(
+            "🔍 Primeros 16 bytes:",
+            fileBuffer.slice(0, 16).toString("hex")
+          );
+
           if (!isZipFile) {
-            console.error(
-              "❌ ERROR: El archivo no es un EPUB válido (no es ZIP)"
+            console.log(
+              "⚠️  Archivo no tiene cabecera ZIP estándar, intentando procesar de todas formas..."
             );
-            return res
-              .status(400)
-              .json({ message: "El archivo no es un EPUB válido" });
+            // Algunos EPUBs pueden tener cabeceras diferentes o estar ligeramente corruptos
+            // pero aún ser procesables por la librería epub
+          }
+
+          if (!isZipFile) {
+            console.log(
+              "⚠️  Archivo no tiene cabecera ZIP estándar, intentando procesar de todas formas..."
+            );
+            // Algunos EPUBs pueden tener cabeceras diferentes o estar ligeramente corruptos
+            // pero aún ser procesables por la librería epub
           }
         } catch (fileError) {
           console.error("❌ ERROR al verificar archivo:", fileError);
