@@ -224,7 +224,7 @@ router.post(
           }
 
           // Verificar que es un archivo ZIP válido (los EPUBs son ZIPs)
-          const fileBuffer = fs.readFileSync(filePath);
+          let fileBuffer = fs.readFileSync(filePath);
           const isZipFile =
             fileBuffer.slice(0, 4).toString("hex") === "504b0304";
           console.log("🔍 ¿Es archivo ZIP válido?:", isZipFile);
@@ -255,49 +255,89 @@ router.post(
                   Object.keys(jsonData)
                 );
 
-                // Buscar datos binarios en el JSON
-                let binaryData = null;
-                for (const [key, value] of Object.entries(jsonData)) {
-                  if (typeof value === "string" && value.length > 1000) {
-                    // Posiblemente datos binarios codificados
-                    try {
-                      const decoded = Buffer.from(value, "base64");
-                      if (decoded.length > 1000000) {
-                        // Más de 1MB
-                        binaryData = decoded;
-                        console.log(
-                          "✅ Datos binarios encontrados en clave:",
-                          key
-                        );
-                        break;
-                      }
-                    } catch (base64Error) {
-                      // No es base64, continuar
-                      console.log(
-                        "🔍 No es base64 en clave:",
-                        key,
-                        base64Error.message
-                      );
-                    }
-                  }
-                }
+                // Verificar si es un array de bytes (formato común de corrupción móvil)
+                if (Array.isArray(jsonData) && jsonData.length > 1000000) {
+                  console.log(
+                    "✅ Detectado array de bytes - recuperando archivo..."
+                  );
 
-                if (binaryData) {
+                  // Convertir array de bytes a Buffer
+                  const recoveredBuffer = Buffer.from(jsonData);
+                  console.log(
+                    "�� Tamaño del archivo recuperado:",
+                    recoveredBuffer.length
+                  );
+
                   // Verificar si los datos recuperados son un ZIP válido
                   const isRecoveredZip =
-                    binaryData.slice(0, 4).toString("hex") === "504b0304";
+                    recoveredBuffer.slice(0, 4).toString("hex") === "504b0304";
                   if (isRecoveredZip) {
                     console.log(
                       "✅ Archivo recuperado correctamente - es un ZIP válido"
                     );
                     // Sobrescribir el archivo con los datos recuperados
-                    fs.writeFileSync(filePath, binaryData);
+                    fs.writeFileSync(filePath, recoveredBuffer);
                     console.log("✅ Archivo corregido y guardado");
+
+                    // Actualizar el buffer para el resto del procesamiento
+                    fileBuffer = recoveredBuffer;
                   } else {
                     console.log("❌ Datos recuperados no son un ZIP válido");
+                    console.log(
+                      "🔍 Primeros bytes recuperados:",
+                      recoveredBuffer.slice(0, 16).toString("hex")
+                    );
                   }
                 } else {
-                  console.log("❌ No se encontraron datos binarios en el JSON");
+                  // Buscar datos binarios en el JSON (formato base64)
+                  let binaryData = null;
+                  for (const [key, value] of Object.entries(jsonData)) {
+                    if (typeof value === "string" && value.length > 1000) {
+                      // Posiblemente datos binarios codificados
+                      try {
+                        const decoded = Buffer.from(value, "base64");
+                        if (decoded.length > 1000000) {
+                          // Más de 1MB
+                          binaryData = decoded;
+                          console.log(
+                            "✅ Datos binarios encontrados en clave:",
+                            key
+                          );
+                          break;
+                        }
+                      } catch (base64Error) {
+                        // No es base64, continuar
+                        console.log(
+                          "🔍 No es base64 en clave:",
+                          key,
+                          base64Error.message
+                        );
+                      }
+                    }
+                  }
+
+                  if (binaryData) {
+                    // Verificar si los datos recuperados son un ZIP válido
+                    const isRecoveredZip =
+                      binaryData.slice(0, 4).toString("hex") === "504b0304";
+                    if (isRecoveredZip) {
+                      console.log(
+                        "✅ Archivo recuperado correctamente - es un ZIP válido"
+                      );
+                      // Sobrescribir el archivo con los datos recuperados
+                      fs.writeFileSync(filePath, binaryData);
+                      console.log("✅ Archivo corregido y guardado");
+
+                      // Actualizar el buffer para el resto del procesamiento
+                      fileBuffer = binaryData;
+                    } else {
+                      console.log("❌ Datos recuperados no son un ZIP válido");
+                    }
+                  } else {
+                    console.log(
+                      "❌ No se encontraron datos binarios en el JSON"
+                    );
+                  }
                 }
               } catch (jsonError) {
                 console.log("❌ Error al procesar JSON:", jsonError.message);
