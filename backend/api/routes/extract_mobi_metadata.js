@@ -327,18 +327,21 @@ router.post(
                     const maxKey = sortedKeys[sortedKeys.length - 1];
                     const arrayFromObject = new Array(maxKey + 1);
 
-                    // Llenar el array en chunks para evitar stack overflow
-                    const chunkSize = 10000;
+                    // Llenar el array en chunks más pequeños para mayor velocidad
+                    const chunkSize = 5000; // Reducido de 10000 a 5000
                     for (let i = 0; i < sortedKeys.length; i += chunkSize) {
                       const chunk = sortedKeys.slice(i, i + chunkSize);
                       for (const key of chunk) {
                         arrayFromObject[key] = jsonData[key.toString()];
                       }
-                      console.log(
-                        `🔧 Procesado chunk ${
-                          Math.floor(i / chunkSize) + 1
-                        }/${Math.ceil(sortedKeys.length / chunkSize)}`
-                      );
+                      // Solo mostrar progreso cada 10 chunks para reducir logs
+                      if ((i / chunkSize) % 10 === 0) {
+                        console.log(
+                          `🔧 Procesado chunk ${
+                            Math.floor(i / chunkSize) + 1
+                          }/${Math.ceil(sortedKeys.length / chunkSize)}`
+                        );
+                      }
                     }
 
                     console.log(
@@ -360,7 +363,7 @@ router.post(
                         "✅ Confirmado: array de strings de números - recuperando archivo..."
                       );
 
-                      // Convertir strings a números en chunks para evitar stack overflow
+                      // Convertir strings a números en chunks más pequeños para mayor velocidad
                       console.log(
                         "🔧 Convirtiendo strings a números en chunks..."
                       );
@@ -380,13 +383,17 @@ router.post(
                             numericArray[j] = parseInt(arrayFromObject[j], 10);
                           }
                         }
-                        console.log(
-                          `🔧 Convertido chunk ${
-                            Math.floor(i / chunkSize) + 1
-                          }/${Math.ceil(arrayFromObject.length / chunkSize)}`
-                        );
+                        // Solo mostrar progreso cada 10 chunks para reducir logs
+                        if ((i / chunkSize) % 10 === 0) {
+                          console.log(
+                            `🔧 Convertido chunk ${
+                              Math.floor(i / chunkSize) + 1
+                            }/${Math.ceil(arrayFromObject.length / chunkSize)}`
+                          );
+                        }
                       }
 
+                      console.log("🔧 Creando Buffer desde array numérico...");
                       const recoveredBuffer = Buffer.from(numericArray);
                       console.log(
                         "📏 Tamaño del archivo recuperado:",
