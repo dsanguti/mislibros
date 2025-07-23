@@ -239,14 +239,71 @@ router.post(
             console.log(
               "⚠️  Archivo no tiene cabecera ZIP estándar, intentando procesar de todas formas..."
             );
-            // Algunos EPUBs pueden tener cabeceras diferentes o estar ligeramente corruptos
-            // pero aún ser procesables por la librería epub
-          }
 
-          if (!isZipFile) {
-            console.log(
-              "⚠️  Archivo no tiene cabecera ZIP estándar, intentando procesar de todas formas..."
-            );
+            // Verificar si el archivo se ha corrompido y convertido en JSON (problema común en móvil)
+            const firstBytes = fileBuffer.slice(0, 20).toString("utf8");
+            if (firstBytes.startsWith("{") || firstBytes.startsWith("[")) {
+              console.log(
+                "🚨 DETECTADO: Archivo corrompido (JSON) - intentando recuperar..."
+              );
+
+              try {
+                // Intentar parsear como JSON para ver qué contiene
+                const jsonData = JSON.parse(fileBuffer.toString("utf8"));
+                console.log(
+                  "🔍 Contenido JSON detectado:",
+                  Object.keys(jsonData)
+                );
+
+                // Buscar datos binarios en el JSON
+                let binaryData = null;
+                for (const [key, value] of Object.entries(jsonData)) {
+                  if (typeof value === "string" && value.length > 1000) {
+                    // Posiblemente datos binarios codificados
+                    try {
+                      const decoded = Buffer.from(value, "base64");
+                      if (decoded.length > 1000000) {
+                        // Más de 1MB
+                        binaryData = decoded;
+                        console.log(
+                          "✅ Datos binarios encontrados en clave:",
+                          key
+                        );
+                        break;
+                      }
+                    } catch (base64Error) {
+                      // No es base64, continuar
+                      console.log(
+                        "🔍 No es base64 en clave:",
+                        key,
+                        base64Error.message
+                      );
+                    }
+                  }
+                }
+
+                if (binaryData) {
+                  // Verificar si los datos recuperados son un ZIP válido
+                  const isRecoveredZip =
+                    binaryData.slice(0, 4).toString("hex") === "504b0304";
+                  if (isRecoveredZip) {
+                    console.log(
+                      "✅ Archivo recuperado correctamente - es un ZIP válido"
+                    );
+                    // Sobrescribir el archivo con los datos recuperados
+                    fs.writeFileSync(filePath, binaryData);
+                    console.log("✅ Archivo corregido y guardado");
+                  } else {
+                    console.log("❌ Datos recuperados no son un ZIP válido");
+                  }
+                } else {
+                  console.log("❌ No se encontraron datos binarios en el JSON");
+                }
+              } catch (jsonError) {
+                console.log("❌ Error al procesar JSON:", jsonError.message);
+              }
+            }
+
             // Algunos EPUBs pueden tener cabeceras diferentes o estar ligeramente corruptos
             // pero aún ser procesables por la librería epub
           }
