@@ -302,15 +302,43 @@ router.post(
                   );
 
                   try {
-                    // Convertir objeto a array usando las claves numéricas
-                    const maxKey = Math.max(
-                      ...objectKeys.map((key) => parseInt(key, 10))
+                    // Optimizar la reconstrucción del array para evitar stack overflow
+                    console.log(
+                      "🔧 Reconstruyendo array en chunks para evitar stack overflow..."
                     );
+
+                    // Obtener las claves ordenadas numéricamente
+                    const sortedKeys = objectKeys
+                      .map((key) => parseInt(key, 10))
+                      .sort((a, b) => a - b);
+
+                    console.log(
+                      "📊 Total de claves a procesar:",
+                      sortedKeys.length
+                    );
+                    console.log(
+                      "🔍 Rango de claves:",
+                      sortedKeys[0],
+                      "a",
+                      sortedKeys[sortedKeys.length - 1]
+                    );
+
+                    // Crear array directamente desde los datos sin usar Math.max
+                    const maxKey = sortedKeys[sortedKeys.length - 1];
                     const arrayFromObject = new Array(maxKey + 1);
 
-                    for (const key of objectKeys) {
-                      const index = parseInt(key, 10);
-                      arrayFromObject[index] = jsonData[key];
+                    // Llenar el array en chunks para evitar stack overflow
+                    const chunkSize = 10000;
+                    for (let i = 0; i < sortedKeys.length; i += chunkSize) {
+                      const chunk = sortedKeys.slice(i, i + chunkSize);
+                      for (const key of chunk) {
+                        arrayFromObject[key] = jsonData[key.toString()];
+                      }
+                      console.log(
+                        `🔧 Procesado chunk ${
+                          Math.floor(i / chunkSize) + 1
+                        }/${Math.ceil(sortedKeys.length / chunkSize)}`
+                      );
                     }
 
                     console.log(
@@ -332,10 +360,33 @@ router.post(
                         "✅ Confirmado: array de strings de números - recuperando archivo..."
                       );
 
-                      // Convertir strings a números y luego a Buffer
-                      const numericArray = arrayFromObject.map((item) =>
-                        parseInt(item, 10)
+                      // Convertir strings a números en chunks para evitar stack overflow
+                      console.log(
+                        "🔧 Convirtiendo strings a números en chunks..."
                       );
+                      const numericArray = new Array(arrayFromObject.length);
+
+                      for (
+                        let i = 0;
+                        i < arrayFromObject.length;
+                        i += chunkSize
+                      ) {
+                        const end = Math.min(
+                          i + chunkSize,
+                          arrayFromObject.length
+                        );
+                        for (let j = i; j < end; j++) {
+                          if (arrayFromObject[j] !== undefined) {
+                            numericArray[j] = parseInt(arrayFromObject[j], 10);
+                          }
+                        }
+                        console.log(
+                          `🔧 Convertido chunk ${
+                            Math.floor(i / chunkSize) + 1
+                          }/${Math.ceil(arrayFromObject.length / chunkSize)}`
+                        );
+                      }
+
                       const recoveredBuffer = Buffer.from(numericArray);
                       console.log(
                         "📏 Tamaño del archivo recuperado:",
