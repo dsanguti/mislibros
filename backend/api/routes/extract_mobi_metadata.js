@@ -271,6 +271,21 @@ router.post(
 
                 console.log("🔍 ¿Es array (verificación robusta)?:", isArray);
 
+                // Verificar si es un objeto que en realidad contiene datos de array
+                // (caso común cuando JSON.parse falla con arrays muy grandes)
+                const objectKeys = Object.keys(jsonData);
+                const hasNumericKeys = objectKeys.every(
+                  (key) => !isNaN(parseInt(key, 10))
+                );
+                const hasManyKeys = objectKeys.length > 100000;
+
+                console.log("🔍 Claves del objeto:", objectKeys.slice(0, 10));
+                console.log(
+                  "🔍 ¿Todas las claves son numéricas?:",
+                  hasNumericKeys
+                );
+                console.log("🔍 ¿Tiene muchas claves?:", hasManyKeys);
+
                 if (isArray) {
                   console.log("🔍 Tamaño del array:", jsonData.length);
                   console.log(
@@ -281,89 +296,88 @@ router.post(
                     "🔍 Tipo del primer elemento:",
                     typeof jsonData[0]
                   );
-                }
-
-                // Verificar si es un array de bytes (formato común de corrupción móvil)
-                if (isArray && jsonData.length > 1000000) {
+                } else if (hasNumericKeys && hasManyKeys) {
                   console.log(
-                    "✅ Detectado array de bytes - recuperando archivo..."
+                    "✅ Detectado objeto con claves numéricas (array disfrazado) - recuperando archivo..."
                   );
-
-                  // Convertir array de bytes a Buffer
-                  const recoveredBuffer = Buffer.from(jsonData);
-                  console.log(
-                    "📏 Tamaño del archivo recuperado:",
-                    recoveredBuffer.length
-                  );
-
-                  // Verificar si los datos recuperados son un ZIP válido
-                  const isRecoveredZip =
-                    recoveredBuffer.slice(0, 4).toString("hex") === "504b0304";
-                  if (isRecoveredZip) {
-                    console.log(
-                      "✅ Archivo recuperado correctamente - es un ZIP válido"
-                    );
-                    // Sobrescribir el archivo con los datos recuperados
-                    fs.writeFileSync(filePath, recoveredBuffer);
-                    console.log("✅ Archivo corregido y guardado");
-
-                    // Actualizar el buffer para el resto del procesamiento
-                    fileBuffer = recoveredBuffer;
-                  } else {
-                    console.log("❌ Datos recuperados no son un ZIP válido");
-                    console.log(
-                      "🔍 Primeros bytes recuperados:",
-                      recoveredBuffer.slice(0, 16).toString("hex")
-                    );
-                  }
-                } else if (isArray && jsonData.length > 100000) {
-                  // Array de strings de números (formato alternativo de corrupción móvil)
-                  console.log(
-                    "✅ Detectado array de strings de bytes - recuperando archivo..."
-                  );
-                  console.log("📊 Tamaño del array:", jsonData.length);
-                  console.log("🔍 Primeros elementos:", jsonData.slice(0, 10));
 
                   try {
-                    // Convertir strings a números y luego a Buffer
-                    const numericArray = jsonData.map((item) =>
-                      parseInt(item, 10)
+                    // Convertir objeto a array usando las claves numéricas
+                    const maxKey = Math.max(
+                      ...objectKeys.map((key) => parseInt(key, 10))
                     );
-                    const recoveredBuffer = Buffer.from(numericArray);
+                    const arrayFromObject = new Array(maxKey + 1);
+
+                    for (const key of objectKeys) {
+                      const index = parseInt(key, 10);
+                      arrayFromObject[index] = jsonData[key];
+                    }
+
                     console.log(
-                      "📏 Tamaño del archivo recuperado:",
-                      recoveredBuffer.length
+                      "📏 Tamaño del array reconstruido:",
+                      arrayFromObject.length
+                    );
+                    console.log(
+                      "🔍 Primeros elementos:",
+                      arrayFromObject.slice(0, 10)
                     );
 
-                    // Verificar si los datos recuperados son un ZIP válido
-                    const isRecoveredZip =
-                      recoveredBuffer.slice(0, 4).toString("hex") ===
-                      "504b0304";
-                    if (isRecoveredZip) {
+                    // Verificar si los elementos son strings de números
+                    const firstElement = arrayFromObject[0];
+                    if (
+                      typeof firstElement === "string" &&
+                      !isNaN(parseInt(firstElement, 10))
+                    ) {
                       console.log(
-                        "✅ Archivo recuperado correctamente - es un ZIP válido"
+                        "✅ Confirmado: array de strings de números - recuperando archivo..."
                       );
-                      // Sobrescribir el archivo con los datos recuperados
-                      fs.writeFileSync(filePath, recoveredBuffer);
-                      console.log("✅ Archivo corregido y guardado");
 
-                      // Actualizar el buffer para el resto del procesamiento
-                      fileBuffer = recoveredBuffer;
-                    } else {
-                      console.log("❌ Datos recuperados no son un ZIP válido");
+                      // Convertir strings a números y luego a Buffer
+                      const numericArray = arrayFromObject.map((item) =>
+                        parseInt(item, 10)
+                      );
+                      const recoveredBuffer = Buffer.from(numericArray);
                       console.log(
-                        "🔍 Primeros bytes recuperados:",
-                        recoveredBuffer.slice(0, 16).toString("hex")
+                        "📏 Tamaño del archivo recuperado:",
+                        recoveredBuffer.length
+                      );
+
+                      // Verificar si los datos recuperados son un ZIP válido
+                      const isRecoveredZip =
+                        recoveredBuffer.slice(0, 4).toString("hex") ===
+                        "504b0304";
+                      if (isRecoveredZip) {
+                        console.log(
+                          "✅ Archivo recuperado correctamente - es un ZIP válido"
+                        );
+                        // Sobrescribir el archivo con los datos recuperados
+                        fs.writeFileSync(filePath, recoveredBuffer);
+                        console.log("✅ Archivo corregido y guardado");
+
+                        // Actualizar el buffer para el resto del procesamiento
+                        fileBuffer = recoveredBuffer;
+                      } else {
+                        console.log(
+                          "❌ Datos recuperados no son un ZIP válido"
+                        );
+                        console.log(
+                          "🔍 Primeros bytes recuperados:",
+                          recoveredBuffer.slice(0, 16).toString("hex")
+                        );
+                      }
+                    } else {
+                      console.log(
+                        "❌ Elementos no son strings de números válidos"
                       );
                     }
-                  } catch (conversionError) {
+                  } catch (reconstructionError) {
                     console.log(
-                      "❌ Error al convertir strings a bytes:",
-                      conversionError.message
+                      "❌ Error al reconstruir array desde objeto:",
+                      reconstructionError.message
                     );
                   }
-                } else if (isArray) {
-                  // Cualquier array (para casos con menos elementos)
+                } else if (Array.isArray(jsonData)) {
+                  // Array normal (para casos con menos elementos)
                   console.log(
                     "✅ Detectado array - verificando si son bytes..."
                   );
