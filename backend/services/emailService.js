@@ -27,7 +27,9 @@ const sendVerificationEmail = async (email, verificationToken, userName) => {
     }`
   );
 
-  const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+  const verificationUrl = `${
+    process.env.BACKEND_URL || "http://localhost:8001"
+  }/api/verify-email?token=${verificationToken}`;
   console.log(`URL de verificación: ${verificationUrl}`);
 
   const mailOptions = {
@@ -78,7 +80,9 @@ const sendPasswordResetEmail = async (email, resetToken, userName) => {
   console.log(`Usuario: ${userName}`);
   console.log(`Email origen: ${process.env.EMAIL_USER}`);
 
-  const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+  const resetUrl = `${
+    process.env.FRONTEND_URL || "http://localhost:5173"
+  }/reset-password?token=${resetToken}`;
   console.log(`URL de recuperación: ${resetUrl}`);
 
   const mailOptions = {
