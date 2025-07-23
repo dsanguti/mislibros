@@ -209,6 +209,41 @@ router.post(
         console.log("📏 Tamaño:", req.file.size);
         console.log("📍 Ruta:", filePath);
 
+        // Verificar que el archivo existe y tiene contenido
+        try {
+          const fileStats = fs.statSync(filePath);
+          console.log("📊 Estadísticas del archivo:");
+          console.log("  - Existe:", fs.existsSync(filePath));
+          console.log("  - Tamaño en disco:", fileStats.size);
+          console.log("  - Tamaño reportado:", req.file.size);
+          console.log("  - ¿Coinciden?:", fileStats.size === req.file.size);
+
+          if (fileStats.size === 0) {
+            console.error("❌ ERROR: El archivo está vacío");
+            return res.status(400).json({ message: "El archivo está vacío" });
+          }
+
+          // Verificar que es un archivo ZIP válido (los EPUBs son ZIPs)
+          const fileBuffer = fs.readFileSync(filePath);
+          const isZipFile =
+            fileBuffer.slice(0, 4).toString("hex") === "504b0304";
+          console.log("🔍 ¿Es archivo ZIP válido?:", isZipFile);
+
+          if (!isZipFile) {
+            console.error(
+              "❌ ERROR: El archivo no es un EPUB válido (no es ZIP)"
+            );
+            return res
+              .status(400)
+              .json({ message: "El archivo no es un EPUB válido" });
+          }
+        } catch (fileError) {
+          console.error("❌ ERROR al verificar archivo:", fileError);
+          return res
+            .status(500)
+            .json({ message: "Error al verificar el archivo" });
+        }
+
         const epub = require("epub");
         console.log("✅ Librería epub cargada correctamente");
         const book = new epub(filePath);
