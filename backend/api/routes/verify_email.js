@@ -185,7 +185,7 @@ router.get("/verify-email", async (req, res) => {
           <h1>¡Email Verificado!</h1>
           <p>Hola <strong>${user.name}</strong>, tu cuenta ha sido verificada exitosamente.</p>
           <p>Ya puedes iniciar sesión en MisLibros con tu usuario: <strong>${user.user}</strong></p>
-          <a href="http://localhost:5173" class="button">Ir a MisLibros</a>
+          <a href="https://mislibros-mu.vercel.app" class="button">Ir a MisLibros</a>
         </div>
       </body>
       </html>
