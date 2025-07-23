@@ -27,10 +27,39 @@ const sendVerificationEmail = async (email, verificationToken, userName) => {
     }`
   );
 
-  const verificationUrl = `${
-    process.env.BACKEND_URL || "http://localhost:8001"
-  }/api/verify-email?token=${verificationToken}`;
-  console.log(`URL de verificación: ${verificationUrl}`);
+  // Log temporal para diagnosticar variables de entorno
+  console.log(`🔍 Variables de entorno disponibles:`);
+  console.log(`  - NODE_ENV: ${process.env.NODE_ENV}`);
+  console.log(`  - BACKEND_URL: ${process.env.BACKEND_URL || "NO DEFINIDA"}`);
+  console.log(
+    `  - RAILWAY_STATIC_URL: ${process.env.RAILWAY_STATIC_URL || "NO DEFINIDA"}`
+  );
+  console.log(
+    `  - RAILWAY_PUBLIC_DOMAIN: ${
+      process.env.RAILWAY_PUBLIC_DOMAIN || "NO DEFINIDA"
+    }`
+  );
+  console.log(`  - PORT: ${process.env.PORT}`);
+
+  // Determinar la URL del backend de manera más robusta
+  let backendUrl;
+  if (process.env.BACKEND_URL) {
+    backendUrl = process.env.BACKEND_URL;
+    console.log(`✅ Usando BACKEND_URL de variables de entorno: ${backendUrl}`);
+  } else if (process.env.RAILWAY_STATIC_URL) {
+    backendUrl = process.env.RAILWAY_STATIC_URL;
+    console.log(`✅ Usando RAILWAY_STATIC_URL: ${backendUrl}`);
+  } else if (process.env.NODE_ENV === "production") {
+    // En producción, intentar usar la URL de Railway
+    backendUrl = "https://mislibros-backend-production.up.railway.app";
+    console.log(`✅ Usando URL de Railway por defecto: ${backendUrl}`);
+  } else {
+    backendUrl = "http://localhost:8001";
+    console.log(`✅ Usando localhost para desarrollo: ${backendUrl}`);
+  }
+
+  const verificationUrl = `${backendUrl}/api/verify-email?token=${verificationToken}`;
+  console.log(`URL de verificación final: ${verificationUrl}`);
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
