@@ -264,7 +264,7 @@ router.post(
                   // Convertir array de bytes a Buffer
                   const recoveredBuffer = Buffer.from(jsonData);
                   console.log(
-                    "�� Tamaño del archivo recuperado:",
+                    "📏 Tamaño del archivo recuperado:",
                     recoveredBuffer.length
                   );
 
@@ -296,6 +296,8 @@ router.post(
                   console.log(
                     "✅ Detectado array de strings de bytes - recuperando archivo..."
                   );
+                  console.log("📊 Tamaño del array:", jsonData.length);
+                  console.log("🔍 Primeros elementos:", jsonData.slice(0, 10));
 
                   try {
                     // Convertir strings a números y luego a Buffer
@@ -333,6 +335,69 @@ router.post(
                     console.log(
                       "❌ Error al convertir strings a bytes:",
                       conversionError.message
+                    );
+                  }
+                } else if (Array.isArray(jsonData)) {
+                  // Cualquier array (para casos con menos elementos)
+                  console.log(
+                    "✅ Detectado array - verificando si son bytes..."
+                  );
+                  console.log("📊 Tamaño del array:", jsonData.length);
+                  console.log("🔍 Primeros elementos:", jsonData.slice(0, 10));
+
+                  // Verificar si los elementos son strings de números
+                  const firstElement = jsonData[0];
+                  if (
+                    typeof firstElement === "string" &&
+                    !isNaN(parseInt(firstElement, 10))
+                  ) {
+                    console.log(
+                      "✅ Confirmado: array de strings de números - recuperando archivo..."
+                    );
+
+                    try {
+                      // Convertir strings a números y luego a Buffer
+                      const numericArray = jsonData.map((item) =>
+                        parseInt(item, 10)
+                      );
+                      const recoveredBuffer = Buffer.from(numericArray);
+                      console.log(
+                        "📏 Tamaño del archivo recuperado:",
+                        recoveredBuffer.length
+                      );
+
+                      // Verificar si los datos recuperados son un ZIP válido
+                      const isRecoveredZip =
+                        recoveredBuffer.slice(0, 4).toString("hex") ===
+                        "504b0304";
+                      if (isRecoveredZip) {
+                        console.log(
+                          "✅ Archivo recuperado correctamente - es un ZIP válido"
+                        );
+                        // Sobrescribir el archivo con los datos recuperados
+                        fs.writeFileSync(filePath, recoveredBuffer);
+                        console.log("✅ Archivo corregido y guardado");
+
+                        // Actualizar el buffer para el resto del procesamiento
+                        fileBuffer = recoveredBuffer;
+                      } else {
+                        console.log(
+                          "❌ Datos recuperados no son un ZIP válido"
+                        );
+                        console.log(
+                          "🔍 Primeros bytes recuperados:",
+                          recoveredBuffer.slice(0, 16).toString("hex")
+                        );
+                      }
+                    } catch (conversionError) {
+                      console.log(
+                        "❌ Error al convertir strings a bytes:",
+                        conversionError.message
+                      );
+                    }
+                  } else {
+                    console.log(
+                      "❌ Array no contiene strings de números válidos"
                     );
                   }
                 } else {
