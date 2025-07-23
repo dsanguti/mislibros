@@ -215,7 +215,7 @@ router.post(
         console.log("✅ Objeto EPUB creado correctamente");
 
         return new Promise(() => {
-          book.on("end", () => {
+          book.on("end", async () => {
             const metadata = book.metadata;
 
             const extractedMetadata = {
@@ -429,12 +429,58 @@ router.post(
                     typeof imageContent,
                     imageContent ? imageContent.length : "N/A"
                   );
-                  fs.writeFileSync(coverPath, imageContent);
-                  extractedMetadata.cover = `/uploads/temp/${coverFileName}`;
-                  console.log(
-                    "✅ Portada extraída correctamente en:",
-                    extractedMetadata.cover
-                  );
+
+                  if (process.env.NODE_ENV === "production") {
+                    // En producción: subir a Cloudinary
+                    try {
+                      console.log(
+                        "🚀 Subiendo portada extraída a Cloudinary..."
+                      );
+                      const { cloudinary } = require("../../config/cloudinary");
+
+                      // Guardar temporalmente para subir a Cloudinary
+                      fs.writeFileSync(coverPath, imageContent);
+
+                      const result = await cloudinary.uploader.upload(
+                        coverPath,
+                        {
+                          folder: "mislibros/covers",
+                          transformation: [
+                            { width: 400, height: 600, crop: "fill" },
+                            { quality: "auto" },
+                          ],
+                        }
+                      );
+
+                      extractedMetadata.cover = result.secure_url;
+                      console.log(
+                        "✅ Portada subida a Cloudinary:",
+                        extractedMetadata.cover
+                      );
+
+                      // Eliminar archivo temporal
+                      fs.unlinkSync(coverPath);
+                    } catch (cloudinaryError) {
+                      console.error(
+                        "❌ Error al subir portada a Cloudinary:",
+                        cloudinaryError
+                      );
+                      // Fallback: usar ruta local
+                      extractedMetadata.cover = `/uploads/temp/${coverFileName}`;
+                      console.log(
+                        "⚠️ Usando ruta local como fallback:",
+                        extractedMetadata.cover
+                      );
+                    }
+                  } else {
+                    // En desarrollo: usar archivo local
+                    fs.writeFileSync(coverPath, imageContent);
+                    extractedMetadata.cover = `/uploads/temp/${coverFileName}`;
+                    console.log(
+                      "✅ Portada extraída correctamente en:",
+                      extractedMetadata.cover
+                    );
+                  }
                 } else {
                   console.log(
                     "❌ No se pudo obtener el contenido de la imagen con ningún método"
