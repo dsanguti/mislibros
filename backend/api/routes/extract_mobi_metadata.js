@@ -234,7 +234,11 @@ router.post(
 
             // Buscar la portada en el manifest
             if (book.manifest) {
-              console.log("🔍 DEBUG: Manifest completo:", book.manifest);
+              console.log(
+                "🔍 DEBUG: Manifest encontrado con",
+                Object.keys(book.manifest).length,
+                "elementos"
+              );
               const imageResources = [];
 
               for (const [id, item] of Object.entries(book.manifest)) {
@@ -243,7 +247,12 @@ router.post(
                   item["media-type"].startsWith("image/")
                 ) {
                   imageResources.push({ id, item });
-                  console.log("🔍 DEBUG: Imagen encontrada:", id, item);
+                  console.log(
+                    "🔍 DEBUG: Imagen encontrada:",
+                    id,
+                    "tipo:",
+                    item["media-type"]
+                  );
                 }
               }
 
